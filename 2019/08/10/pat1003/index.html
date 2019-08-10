@@ -63,7 +63,7 @@
 <meta property="og:site_name" content="whenever">
 <meta property="og:description" content="我要通过！题目描述“答案正确”是自动判题系统给出的最令人欢喜的回复。本题属于 PAT 的“答案正确”大派送 —— 只要读入的字符串满足下列条件，系统就输出“答案正确”，否则输出“答案错误”。得到“答案正确”的条件是：  字符串中必须仅有 P、 A、 T这三种字符，不可以包含其它字符； 任意形如 xPATx 的字符串都可以获得“答案正确”，其中 x 或者是空字符串，或者是仅由字母 A 组成的字符串；">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-10T06:44:08.539Z">
+<meta property="og:updated_time" content="2019-08-10T06:56:06.865Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PAT乙级1003 || 我要通过！（详解，C&#x2F;C++示例，测试点分析）">
 <meta name="twitter:description" content="我要通过！题目描述“答案正确”是自动判题系统给出的最令人欢喜的回复。本题属于 PAT 的“答案正确”大派送 —— 只要读入的字符串满足下列条件，系统就输出“答案正确”，否则输出“答案错误”。得到“答案正确”的条件是：  字符串中必须仅有 P、 A、 T这三种字符，不可以包含其它字符； 任意形如 xPATx 的字符串都可以获得“答案正确”，其中 x 或者是空字符串，或者是仅由字母 A 组成的字符串；">
@@ -270,7 +270,7 @@
                 
               
 
-              <time title="创建时间：2019-08-10 14:34:15 / 修改时间：14:44:08" itemprop="dateCreated datePublished" datetime="2019-08-10T14:34:15+08:00">2019-08-10</time>
+              <time title="创建时间：2019-08-10 14:34:15 / 修改时间：14:56:06" itemprop="dateCreated datePublished" datetime="2019-08-10T14:34:15+08:00">2019-08-10</time>
             </span>
           
             
@@ -306,11 +306,13 @@
 <ol>
 <li>字符串中必须仅有 <code>P</code>、 <code>A</code>、 <code>T</code>这三种字符，不可以包含其它字符；</li>
 <li>任意形如 <code>xPATx</code> 的字符串都可以获得“<strong>答案正确</strong>”，其中 <code>x</code> 或者是空字符串，或者是仅由字母 <code>A</code> 组成的字符串；</li>
-<li>如果 <code>aPbTc</code> 是正确的，那么 <code>aPbATca</code> 也是正确的，其中 <code>a</code>、 <code>b</code>、 <code>c</code> 均或者是空字符串，或者是仅由字母 <code>A</code> 组成的字符串。<br>现在就请你为 PAT 写一个自动裁判程序，判定哪些字符串是可以获得“<strong>答案正确</strong>”的。<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h2>每个测试输入包含 1 个测试用例。第 1 行给出一个正整数 <em>n</em> (&lt;10)，是需要检测的字符串个数。接下来每个字符串占一行，字符串长度不超过 100，且不包含空格。<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2>每个字符串的检测结果占一行，如果该字符串可以获得“<strong>答案正确</strong>”，则输出 <code>YES</code>，否则输出 <code>NO</code>。<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8</span></span><br><span class="line">PAT</span><br><span class="line">PAAT</span><br><span class="line">AAPATAA</span><br><span class="line">AAPAATAAAA</span><br><span class="line">xPATx</span><br><span class="line">PT</span><br><span class="line">Whatever</span><br><span class="line">APAAATAA</span><br></pre></td></tr></table></figure></div>
-
-</li>
+<li>如果 <code>aPbTc</code> 是正确的，那么 <code>aPbATca</code> 也是正确的，其中 <code>a</code>、 <code>b</code>、 <code>c</code> 均或者是空字符串，或者是仅由字母 <code>A</code> 组成的字符串。<br>现在就请你为 PAT 写一个自动裁判程序，判定哪些字符串是可以获得“<strong>答案正确</strong>”的。</li>
 </ol>
-<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="YAML"><figure class="iseeu highlight /yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">YES</span></span><br><span class="line"><span class="literal">YES</span></span><br><span class="line"><span class="literal">YES</span></span><br><span class="line"><span class="literal">YES</span></span><br><span class="line"><span class="literal">NO</span></span><br><span class="line"><span class="literal">NO</span></span><br><span class="line"><span class="literal">NO</span></span><br><span class="line"><span class="literal">NO</span></span><br></pre></td></tr></table></figure></div>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h2><p>每个测试输入包含 1 个测试用例。第 1 行给出一个正整数 <em>n</em> (&lt;10)，是需要检测的字符串个数。接下来每个字符串占一行，字符串长度不超过 100，且不包含空格。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2><p>每个字符串的检测结果占一行，如果该字符串可以获得“<strong>答案正确</strong>”，则输出 <code>YES</code>，否则输出 <code>NO</code>。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8</span></span><br><span class="line">PAT</span><br><span class="line">PAAT</span><br><span class="line">AAPATAA</span><br><span class="line">AAPAATAAAA</span><br><span class="line">xPATx</span><br><span class="line">PT</span><br><span class="line">Whatever</span><br><span class="line">APAAATAA</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">NO</span><br><span class="line">NO</span><br><span class="line">NO</span><br><span class="line">NO</span><br></pre></td></tr></table></figure></div>
 
 <h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>此题难点在于理解题意，有描述的3个条件可知，“<strong>答案正确</strong>”的字符串应满足以下条件：</p>
 <ol>
@@ -578,6 +580,55 @@
 
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
   
 
   
