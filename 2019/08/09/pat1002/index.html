@@ -55,18 +55,18 @@
   };
 </script>
 
-  <meta name="description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567  输出样例1qi san  问题解决解题思">
+  <meta name="description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567 输出样例1qi san 问题解决解题思想此">
 <meta name="keywords" content="PAT,C&#x2F;C++,编程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PAT乙级1002 || 写出这个数（详解，C&#x2F;C++示例，测试点分析）">
 <meta property="og:url" content="http://whenever5225.github.io/2019/08/09/pat1002/index.html">
 <meta property="og:site_name" content="whenever">
-<meta property="og:description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567  输出样例1qi san  问题解决解题思">
+<meta property="og:description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567 输出样例1qi san 问题解决解题思想此">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-08-09T12:58:02.928Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PAT乙级1002 || 写出这个数（详解，C&#x2F;C++示例，测试点分析）">
-<meta name="twitter:description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567  输出样例1qi san  问题解决解题思">
+<meta name="twitter:description" content="写出这个数题目描述读入一个正整数 n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 输入格式每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。 输出格式在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。 输入样例112345678901234567 输出样例1qi san 问题解决解题思想此">
   <link rel="canonical" href="http://whenever5225.github.io/2019/08/09/pat1002/">
 
 
@@ -172,7 +172,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">3</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">5</span></a>
 
   </li>
       
@@ -185,7 +185,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">1</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
 
   </li>
       
@@ -198,7 +198,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">5</span></a>
 
   </li>
       
@@ -306,15 +306,12 @@
 <h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h2><p>每个测试输入包含 1 个测试用例，即给出自然数 n 的值。这里保证 n 小于 $10^{100}$。</p>
 <h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2><p>在一行内输出 n 的各位数字之和的每一位，拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。</p>
 <h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">12345678901234567</span></span><br></pre></td></tr></table></figure></div>
-
 <h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qi san</span><br></pre></td></tr></table></figure></div>
-
 <h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>此题重点需要解决以下问题：</p>
 <ol>
 <li>大数输入问题<br>$10^{100}$ 用int和long long都是远远不够的，因此用字符数组来输入，然后再转换成整数</li>
 <li>数字与拼音的转换<br>本题用最基本的方法，使用switch开关语句实现转换</li>
 <li>拼音数字间有 1 空格，但一行中最后一个拼音数字后没有空格。<br>此类问题一般使用以下代码实现：<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, a[i]);</span><br><span class="line">    <span class="keyword">if</span>(i &lt; n<span class="number">-1</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">" "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
 </li>
 </ol>
 <h3 id="知识拓展"><a href="#知识拓展" class="headerlink" title="知识拓展"></a>知识拓展</h3><ul>
@@ -322,7 +319,6 @@
 <li>如果在 $10^9$以上，在 $10^{18}$ 以内用long long型来存放</li>
 </ul>
 <h3 id="代码示例（C）"><a href="#代码示例（C）" class="headerlink" title="代码示例（C）"></a>代码示例（C）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 101</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum=<span class="number">0</span>,i=<span class="number">0</span>,a[N];</span><br><span class="line">    <span class="keyword">char</span> str[N];</span><br><span class="line">    gets(str);<span class="comment">//以字符的方式读入大整数</span></span><br><span class="line">    <span class="keyword">while</span>(str[i]!=<span class="string">'\0'</span>)&#123;</span><br><span class="line">        sum+=str[i]-<span class="string">'0'</span>;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        a[i]=sum%<span class="number">10</span>;</span><br><span class="line">        sum=sum/<span class="number">10</span>;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;<span class="keyword">while</span>(sum);<span class="comment">//将sum的每一位逆向存入数组a中</span></span><br><span class="line">    i--;<span class="comment">//循环退出时i多加1</span></span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        <span class="keyword">switch</span>(a[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"ling"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"yi"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"er"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"san"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"si"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"wu"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"liu"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">7</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"qi"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"ba"</span>);<span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"jiu"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i&gt;<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">" "</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">        &#125;<span class="comment">//每两个输出之间用空格隔开，最后不加空格</span></span><br><span class="line">        i--;</span><br><span class="line">    &#125;<span class="keyword">while</span>(i&gt;=<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
 <blockquote>
 <p>题目来源：PAT乙级1002<br>作者：CHEN, Yue<br>单位：浙江大学</p>
 </blockquote>
@@ -424,7 +420,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -441,7 +437,9 @@
         
           
         
-        <span class="site-state-item-count">1</span>
+          
+        
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -462,7 +460,11 @@
         
           
         
-        <span class="site-state-item-count">3</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>

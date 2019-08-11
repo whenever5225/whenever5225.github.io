@@ -172,7 +172,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">3</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">5</span></a>
 
   </li>
       
@@ -185,7 +185,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">1</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
 
   </li>
       
@@ -198,7 +198,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">5</span></a>
 
   </li>
       
@@ -311,21 +311,19 @@
 <h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h2><p>每个测试输入包含 1 个测试用例。第 1 行给出一个正整数 <em>n</em> (&lt;10)，是需要检测的字符串个数。接下来每个字符串占一行，字符串长度不超过 100，且不包含空格。</p>
 <h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2><p>每个字符串的检测结果占一行，如果该字符串可以获得“<strong>答案正确</strong>”，则输出 <code>YES</code>，否则输出 <code>NO</code>。</p>
 <h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8</span></span><br><span class="line">PAT</span><br><span class="line">PAAT</span><br><span class="line">AAPATAA</span><br><span class="line">AAPAATAAAA</span><br><span class="line">xPATx</span><br><span class="line">PT</span><br><span class="line">Whatever</span><br><span class="line">APAAATAA</span><br></pre></td></tr></table></figure></div>
-
 <h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="LSL"><figure class="iseeu highlight /lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">YES</span><br><span class="line">NO</span><br><span class="line">NO</span><br><span class="line">NO</span><br><span class="line">NO</span><br></pre></td></tr></table></figure></div>
-
 <h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>此题难点在于理解题意，有描述的3个条件可知，“<strong>答案正确</strong>”的字符串应满足以下条件：</p>
 <ol>
 <li><p>必须只包含’P’，’A’，’T’三种字符，含有其它字符时必然是“<strong>答案错误</strong>”</p>
 </li>
 <li><p>‘PAT’两端只能含有’A’，由条件2知，两端’A’的个数相等时，此字符串输出“<strong>答案正确</strong>”</p>
 </li>
-<li><p>条件3是最难理解的，要使 <code>aPbTc</code> 是正确的，则<code>b</code>必定是’A’，<code>a</code>与<code>c</code>中’A’的个数相等时（可同时为0）恰好是条件2的情况，此时 <code>aPbATca</code> 也是正确的，以此迭代下去可以得到如下规律（设’P’之前、’P’与’T’之间及’T’之后’A’的个数为count1、count2和count3）：<br>$$<br>count1 \times count2=count3<br>$$</p>
-</li>
+<li><p>条件3是最难理解的，要使 <code>aPbTc</code> 是正确的，则<code>b</code>必定是’A’，<code>a</code>与<code>c</code>中’A’的个数相等时（可同时为0）恰好是条件2的情况，此时 <code>aPbATca</code> 也是正确的，以此迭代下去可以得到如下规律（设’P’之前、’P’与’T’之间及’T’之后’A’的个数为count1、count2和count3）：</p>
+<script type="math/tex; mode=display">
+count1 \times count2=count3</script></li>
 </ol>
 <p>理解了题意，代码过程就比较简单了。</p>
 <h3 id="代码示例（C）"><a href="#代码示例（C）" class="headerlink" title="代码示例（C）"></a>代码示例（C）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 101</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n,i,j,count1,count2,count3;</span><br><span class="line">    <span class="comment">//count1统计P之前A的个数</span></span><br><span class="line">    <span class="comment">//count2统计P与T之间A的个数</span></span><br><span class="line">    <span class="comment">//count3统计T之后A的个数</span></span><br><span class="line">    <span class="keyword">char</span> str[N];</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;n);</span><br><span class="line">    getchar();<span class="comment">//吸收掉缓冲区的换行符</span></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">        gets(str);</span><br><span class="line">        j = <span class="number">0</span>;</span><br><span class="line">        count1 = count2 = count3 = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(str[j] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str[j] == <span class="string">'P'</span>||str[j] == <span class="string">'A'</span>||str[j] == <span class="string">'T'</span>)&#123;</span><br><span class="line">                <span class="comment">//首先判断是否满足条件1</span></span><br><span class="line">                <span class="comment">//找到第一个P</span></span><br><span class="line">                <span class="keyword">while</span>(str[j] == <span class="string">'A'</span>&amp;&amp;str[j] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">                    count1++;</span><br><span class="line">                    j++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(str[j]!=<span class="string">'\0'</span>&amp;&amp;str[j] == <span class="string">'P'</span>)&#123;</span><br><span class="line">                    j++;</span><br><span class="line">                    <span class="keyword">while</span>(str[j] == <span class="string">'A'</span>&amp;&amp;str[j] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">                        count2++;</span><br><span class="line">                        j++;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span>(str[j]!=<span class="string">'\0'</span>&amp;&amp;str[j] == <span class="string">'T'</span>)&#123;</span><br><span class="line">                        j++;</span><br><span class="line">                        <span class="keyword">while</span>(str[j] == <span class="string">'A'</span>&amp;&amp;str[j] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">                            count3++;</span><br><span class="line">                            j++;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span>(str[j] != <span class="string">'\0'</span>)&#123;<span class="comment">//T之后还有除A之外的字符</span></span><br><span class="line">                            <span class="built_in">printf</span>(<span class="string">"NO\n"</span>);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span>&#123;</span><br><span class="line">                            <span class="comment">//满足count1 * count2 == count3且三者不同时为零</span></span><br><span class="line">                            <span class="keyword">if</span>((count1 * count2 == count3)&amp;&amp;(count1||count2||count3))&#123;</span><br><span class="line">                                <span class="built_in">printf</span>(<span class="string">"YES\n"</span>);</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span>&#123;</span><br><span class="line">                                <span class="built_in">printf</span>(<span class="string">"NO\n"</span>);</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">"NO\n"</span>);</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"NO\n"</span>);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;<span class="comment">//不满足条件1</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"NO\n"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
 <blockquote>
 <p>题目来源：PAT乙级1003<br>作者：CHEN, Yue<br>单位：浙江大学</p>
 </blockquote>
@@ -427,7 +425,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -444,7 +442,9 @@
         
           
         
-        <span class="site-state-item-count">1</span>
+          
+        
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -465,7 +465,11 @@
         
           
         
-        <span class="site-state-item-count">3</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
