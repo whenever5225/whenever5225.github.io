@@ -1730,7 +1730,7 @@ blockquote {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #96f6c3;
+  background: #28ff33;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
