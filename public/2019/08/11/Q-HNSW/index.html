@@ -66,7 +66,7 @@
 <meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/pq.png">
 <meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/pq2.png">
 <meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png">
-<meta property="og:updated_time" content="2019-08-13T14:31:37.081Z">
+<meta property="og:updated_time" content="2019-08-15T13:40:06.249Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="量化编码的分层可通航小世界图（HNSW）笔记">
 <meta name="twitter:description" content="引言两种改进方法HNSW内存开销大，基于量化编码的检索算法能够压缩数据集向量，大幅度降低内存占用。将量化编码与HNSW结合，有两种改进方法：  使用标量量化编码向量的HNSWSQ算法 使用乘积量化编码向量的HNSWPQ算法  HNSW内存开销大的原因 需要存储全部的数据集元素 需要存储每一层中节点之间的连接关系  乘积量化PQ乘积量化建立码本和量化编码 将N * 128的数据集进行切分，划分为4个">
@@ -285,7 +285,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 22:31:37" itemprop="dateModified" datetime="2019-08-13T22:31:37+08:00">2019-08-13</time>
+                <time title="修改时间：2019-08-15 21:40:06" itemprop="dateModified" datetime="2019-08-15T21:40:06+08:00">2019-08-15</time>
               </span>
             
           
@@ -323,11 +323,11 @@
 <li>需要存储全部的数据集元素</li>
 <li>需要存储每一层中节点之间的连接关系</li>
 </ol>
-<h2 id="乘积量化"><a href="#乘积量化" class="headerlink" title="乘积量化"></a>乘积量化</h2><h3 id="PQ乘积量化"><a href="#PQ乘积量化" class="headerlink" title="PQ乘积量化"></a>PQ乘积量化</h3><h4 id="建立码本和量化编码"><a href="#建立码本和量化编码" class="headerlink" title="建立码本和量化编码"></a>建立码本和量化编码</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq.png" alt="pq"></p>
+<h2 id="乘积量化"><a href="#乘积量化" class="headerlink" title="乘积量化"></a>乘积量化</h2><h3 id="PQ乘积量化"><a href="#PQ乘积量化" class="headerlink" title="PQ乘积量化"></a>PQ乘积量化</h3><h4 id="建立码本和量化编码"><a href="#建立码本和量化编码" class="headerlink" title="建立码本和量化编码"></a>建立码本和量化编码</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq.png"></p>
 <p>将<code>N * 128</code>的数据集进行切分，划分为4个子空间，每个子空间中向量的维数为32，得到<code>N * 4 * 32</code>。每个字段（子空间）同样有<code>N</code>个向量，对这<code>N</code>个向量进行聚类得到256个类中心，这样4个字段一共有<code>4 * 256</code>个类中心。每个子空间的所有<code>N</code>个向量都可以用该子空间的256个类中心的某一向量表示，对256个类中心进行编码只需8位即可，从而任一向量在该子空间的子向量的编码就可以用该子向量所属的类中心的编码来表示。</p>
 <p>待编码样本如何编码？</p>
 <p>对于待编码的样本，将它进行相同的切分，然后在各个子空间里逐一找到距离它们最近的类中心，然后用类中心的id来表示它们，即完成了待编码样本的编码。</p>
-<h4 id="码字的搜索算法"><a href="#码字的搜索算法" class="headerlink" title="码字的搜索算法"></a>码字的搜索算法</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq2.png" alt="pq2"></p>
+<h4 id="码字的搜索算法"><a href="#码字的搜索算法" class="headerlink" title="码字的搜索算法"></a>码字的搜索算法</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq2.png"></p>
 <p>对于某个查询向量，要查询离其最近的k个向量，关键就是计算查询向量与dataset中的样本距离了。暴力方法就是计算数据集中所有的样本与查询向量的距离，然后进行排序，选出top@k个最近的样本返回。对数据集进行PQ乘积量化编码后，这个过程就变成下面的方式：</p>
 <p>将查询向量进行切分，切分方式与对数据集切分的相同，计算查询向量的每个子向量在相应的子空间中到256个类中心的距离，从而得到<code>4 * 256</code>的距离矩阵。某个样本到查询向量的距离就可以通过以下方式得到（不需单独计算了）：</p>
 <p>比如该样本的编码是(124, 56, 132, 222)，在<code>4 * 256</code>的距离矩阵中依次找出（查表）查询向量的相应子向量到编码为124（第一个子空间），编码为56（第二个子空间），编码为132（第三个子空间），编码为222（第四个子空间）的类中心的距离，将这4个距离相加的和作为该样本（编码是(124, 56, 132, 222)）到查询向量的距离。</p>
@@ -348,18 +348,9 @@
 <li>原HNSW算法直接在原始向量上构建，而HNSWPQ算法需要先对原始向量进行量化编码建立码本在此基础上再逐个插入结点构建（增加了一步）</li>
 <li>原HNSW算法计算距离时是直接计算，而HNSWPQ算法采用PQ距离计算方法（计算速度快）</li>
 </ul>
-<h2 id="HNSWSQ算法"><a href="#HNSWSQ算法" class="headerlink" title="HNSWSQ算法"></a>HNSWSQ算法</h2><p>标量量化（SQ）对向量的每一维都进行量化，HNSWSQ算法采用最大最小量化方法。对于向量的第 $ i $ 维，通过样本集训练获取该维出现的最大值 $ vmax[i] $ 和最小值 $ vmin[i] $ ，然后将向量 $ \vec{a} $ 第 $ i $ 维的值量化为:</p>
-<script type="math/tex; mode=display">
-\frac{x_i - vmin[i]} {vmax[i]}</script><p>其中，$ i = 1, …, n $ ，量化后的值编码存储，假设每一维编码为１个字节，则进一步处理为：</p>
-<script type="math/tex; mode=display">
-f(x_i) = \lfloor \varphi( \frac{x_i - vmin[i]} {vmax[i]} ) \times 255\rfloor</script><p>其中：</p>
-<script type="math/tex; mode=display">
- \varphi(x) = \begin{cases}
-1 & x \geq 1\\
-x & 0 < x < 1\\
-0 & x \leq 0
-\end{cases}</script><p>HNSWSQ算法在插入结点计算距离时，首先将编码后的向量解码还原，然后计算查询向量与解码向量的距离。</p>
-<p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png" alt="SQ量化计算示例"></p>
+<h2 id="HNSWSQ算法"><a href="#HNSWSQ算法" class="headerlink" title="HNSWSQ算法"></a>HNSWSQ算法</h2><p>标量量化（SQ）对向量的每一维都进行量化，HNSWSQ算法采用最大最小量化方法。对于向量的第 $ i $ 维，通过样本集训练获取该维出现的最大值 $ vmax[i] $ 和最小值 $ vmin[i] $ ，然后将向量 $ \vec{a} $ 第 $ i $ 维的值量化为:<br>$$<br>\frac{x_i - vmin[i]} {vmax[i]}<br>$$<br>其中，$ i = 1, …, n $ ，量化后的值编码存储，假设每一维编码为１个字节，则进一步处理为：<br>$$<br>f(x_i) = \lfloor \varphi( \frac{x_i - vmin[i]} {vmax[i]} ) \times 255\rfloor<br>$$<br>其中：</p>
+<p>$$<br> \varphi(x) = \begin{cases}<br>1 &amp; x \geq 1\<br>x &amp; 0 &lt; x &lt; 1\<br>0 &amp; x \leq 0<br>\end{cases}<br>$$<br>HNSWSQ算法在插入结点计算距离时，首先将编码后的向量解码还原，然后计算查询向量与解码向量的距离。</p>
+<p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png"></p>
 <h2 id="量化后性能分析"><a href="#量化后性能分析" class="headerlink" title="量化后性能分析"></a>量化后性能分析</h2><h3 id="HNSWPQ算法性能分析"><a href="#HNSWPQ算法性能分析" class="headerlink" title="HNSWPQ算法性能分析"></a>HNSWPQ算法性能分析</h3><p>与原始的HNSW算法相比，HNSWPQ算法在同样查询时间下Recall@1准确率要低很多，内存占用几乎只有 HNSW算法的一半（主要是结点连接关系），构建索引耗时是HNSW的几倍，主要是编码引起。</p>
 <p>随着PQ子量化器（子空间）的增多，由于量化误差的降低，各算法的Recall@1准确率逐步提高。</p>
 <h3 id="HNSWSQ算法性能分析"><a href="#HNSWSQ算法性能分析" class="headerlink" title="HNSWSQ算法性能分析"></a>HNSWSQ算法性能分析</h3><p>在GIST-1M数据集上HNSWSQ8的内存开销只有HNSW算法的29.5%，两者性能相当；在SIFT-1M数据集上，两者性能相当，构建索引耗时相当，HNSWSQ8的内存占用比HNSW低45%。</p>
@@ -373,6 +364,29 @@ x & 0 < x < 1\\
     
     
         
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
       
 
       <footer class="post-footer">
