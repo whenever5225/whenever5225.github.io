@@ -63,7 +63,7 @@
 <meta property="og:site_name" content="whenever">
 <meta property="og:description" content="引言近似最近邻搜索中评估算法的搜索性能经常用到召回率，召回率的计算公式一般为：  Recall@K = \frac{R_1 \bigcap R_2}{K}其中，$R_1$ 为搜索算法返回的 $K$ 个元素组成的集合，$R_2$ 为查询点真实的 $K$ 个近邻点，$Recall@K$ 为返回 $K$ 个近邻点时的召回率。 C++代码实现召回率的计算12345678910111213141516171">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T14:31:37.090Z">
+<meta property="og:updated_time" content="2019-08-16T13:48:37.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++计算召回率">
 <meta name="twitter:description" content="引言近似最近邻搜索中评估算法的搜索性能经常用到召回率，召回率的计算公式一般为：  Recall@K = \frac{R_1 \bigcap R_2}{K}其中，$R_1$ 为搜索算法返回的 $K$ 个元素组成的集合，$R_2$ 为查询点真实的 $K$ 个近邻点，$Recall@K$ 为返回 $K$ 个近邻点时的召回率。 C++代码实现召回率的计算12345678910111213141516171">
@@ -281,7 +281,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 22:31:37" itemprop="dateModified" datetime="2019-08-13T22:31:37+08:00">2019-08-13</time>
+                <time title="修改时间：2019-08-16 21:48:37" itemprop="dateModified" datetime="2019-08-16T21:48:37+08:00">2019-08-16</time>
               </span>
             
           
@@ -299,6 +299,32 @@
             </span>
           
 
+          
+            <span id="/2019/08/12/anns-nsg-code3/" class="post-meta-item leancloud_visitors" data-flag-title="C++计算召回率" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/12/anns-nsg-code3/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/12/anns-nsg-code3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
           
 
         </div>
@@ -399,6 +425,9 @@ Recall@K = \frac{R_1 \bigcap R_2}{K}</script><p>其中，$R_1$ 为搜索算法�
 
           </div>
           
+    
+    <div class="comments" id="comments"></div>
+  
 
         </div>
           
@@ -663,6 +692,32 @@ Recall@K = \frac{R_1 \bigcap R_2}{K}</script><p>其中，$R_1$ 为搜索算法�
   <script src="/js/scrollspy.js?v=7.3.0"></script>
 <script src="/js/post-details.js?v=7.3.0"></script>
 
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '此处免登录就可交流评论哦^_^',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
 
 </body>
 </html>

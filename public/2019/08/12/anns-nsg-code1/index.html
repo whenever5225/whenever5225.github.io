@@ -63,7 +63,7 @@
 <meta property="og:site_name" content="whenever">
 <meta property="og:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T14:31:37.088Z">
+<meta property="og:updated_time" content="2019-08-16T13:48:37.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++读取ivecs格式数据">
 <meta name="twitter:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
@@ -281,7 +281,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 22:31:37" itemprop="dateModified" datetime="2019-08-13T22:31:37+08:00">2019-08-13</time>
+                <time title="修改时间：2019-08-16 21:48:37" itemprop="dateModified" datetime="2019-08-16T21:48:37+08:00">2019-08-16</time>
               </span>
             
           
@@ -299,6 +299,32 @@
             </span>
           
 
+          
+            <span id="/2019/08/12/anns-nsg-code1/" class="post-meta-item leancloud_visitors" data-flag-title="C++读取ivecs格式数据" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/12/anns-nsg-code1/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/12/anns-nsg-code1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
           
 
         </div>
@@ -398,6 +424,9 @@
 
           </div>
           
+    
+    <div class="comments" id="comments"></div>
+  
 
         </div>
           
@@ -613,6 +642,32 @@
   <script src="/js/scrollspy.js?v=7.3.0"></script>
 <script src="/js/post-details.js?v=7.3.0"></script>
 
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '此处免登录就可交流评论哦^_^',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
 
 </body>
 </html>
