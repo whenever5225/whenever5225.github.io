@@ -55,19 +55,19 @@
   };
 </script>
 
-  <meta name="description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
-<meta name="keywords" content="ANNS,C&#x2F;C++,源码阅读">
+  <meta name="description" content="A+B 和 C题目描述给定区间$ [−2^{31},2^{31}]$ 内的 3 个整数 A、B 和 C，请判断 A+B 是否大于 C。 输入格式输入第 1 行给出正整数 T (≤10)，是测试用例的个数。随后给出 T 组测试用例，每组占一行，顺序给出 A、B 和 C。整数间以空格分隔。 输出格式对每组测试用例，在一行中输出 Case #X: true 如果 A+B&amp;gt;C，否则输出 Case #">
+<meta name="keywords" content="C&#x2F;C++,PAT,编程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++读取ivecs格式数据">
-<meta property="og:url" content="http://whenever5225.github.io/2019/08/12/anns-nsg-code1/index.html">
+<meta property="og:title" content="PAT乙级1011 || A+B 和 C（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/08/16/pat乙级1011/index.html">
 <meta property="og:site_name" content="whenever">
-<meta property="og:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
+<meta property="og:description" content="A+B 和 C题目描述给定区间$ [−2^{31},2^{31}]$ 内的 3 个整数 A、B 和 C，请判断 A+B 是否大于 C。 输入格式输入第 1 行给出正整数 T (≤10)，是测试用例的个数。随后给出 T 组测试用例，每组占一行，顺序给出 A、B 和 C。整数间以空格分隔。 输出格式对每组测试用例，在一行中输出 Case #X: true 如果 A+B&amp;gt;C，否则输出 Case #">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-16T13:48:37.270Z">
+<meta property="og:updated_time" content="2019-08-16T02:33:42.128Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C++读取ivecs格式数据">
-<meta name="twitter:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
-  <link rel="canonical" href="http://whenever5225.github.io/2019/08/12/anns-nsg-code1/">
+<meta name="twitter:title" content="PAT乙级1011 || A+B 和 C（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="A+B 和 C题目描述给定区间$ [−2^{31},2^{31}]$ 内的 3 个整数 A、B 和 C，请判断 A+B 是否大于 C。 输入格式输入第 1 行给出正整数 T (≤10)，是测试用例的个数。随后给出 T 组测试用例，每组占一行，顺序给出 A、B 和 C。整数间以空格分隔。 输出格式对每组测试用例，在一行中输出 Case #X: true 如果 A+B&amp;gt;C，否则输出 Case #">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/08/16/pat乙级1011/">
 
 
 <script id="page-configurations">
@@ -81,7 +81,7 @@
   };
 </script>
 
-  <title>C++读取ivecs格式数据 | whenever</title>
+  <title>PAT乙级1011 || A+B 和 C（详解，C/C++示例，测试点分析） | whenever</title>
   
 
 
@@ -239,7 +239,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/12/anns-nsg-code1/">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/16/pat乙级1011/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MZ Wang">
@@ -253,7 +253,7 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">C++读取ivecs格式数据
+          <h1 class="post-title" itemprop="name headline">PAT乙级1011 || A+B 和 C（详解，C/C++示例，测试点分析）
 
             
           </h1>
@@ -270,19 +270,11 @@
                 
               
 
-              <time title="创建时间：2019-08-12 21:54:50" itemprop="dateCreated datePublished" datetime="2019-08-12T21:54:50+08:00">2019-08-12</time>
+              <time title="创建时间：2019-08-16 10:19:21 / 修改时间：10:33:42" itemprop="dateCreated datePublished" datetime="2019-08-16T10:19:21+08:00">2019-08-16</time>
             </span>
           
             
 
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-16 21:48:37" itemprop="dateModified" datetime="2019-08-16T21:48:37+08:00">2019-08-16</time>
-              </span>
             
           
             <span class="post-meta-item">
@@ -291,7 +283,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PAT/" itemprop="url" rel="index"><span itemprop="name">PAT</span></a></span>
 
                 
                 
@@ -300,7 +292,7 @@
           
 
           
-            <span id="/2019/08/12/anns-nsg-code1/" class="post-meta-item leancloud_visitors" data-flag-title="C++读取ivecs格式数据" title="阅读次数">
+            <span id="/2019/08/16/pat乙级1011/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1011 || A+B 和 C（详解，C/C++示例，测试点分析）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -319,8 +311,8 @@
       
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/08/12/anns-nsg-code1/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/12/anns-nsg-code1/" itemprop="commentCount"></span>
+    <a title="valine" href="/2019/08/16/pat乙级1011/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/16/pat乙级1011/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -336,11 +328,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>近似最近邻搜索中通常会涉及到<code>fvecs</code>和<code>ivecs</code>格式的数据，其中，原始数据一般为<code>fvecs</code>格式的数据，查询结果一般为<code>ivecs</code>格式的。<code>ivecs</code>内部存储的主要是数据的<code>id</code>，数据类型为<code>unsigned</code>类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。</p>
-<p>可以通过程序来读取<code>ivecs</code>格式数据的内容，下面是用<code>c++</code>程序读取<code>ivecs</code>格式数据内容并输出其查询数据个数和对每个查询点查询返回个数。</p>
-<h2 id="C-读取ivecs格式数据"><a href="#C-读取ivecs格式数据" class="headerlink" title="C++读取ivecs格式数据"></a>C++读取<code>ivecs</code>格式数据</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">load_ivecs_data</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* filename,</span></span></span><br><span class="line"><span class="function"><span class="params">                 <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">unsigned</span>&gt; &gt;&amp; results, <span class="keyword">unsigned</span> &amp;num, <span class="keyword">unsigned</span> &amp;dim)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="function">ifstream <span class="title">in</span><span class="params">(filename, <span class="built_in">std</span>::ios::binary)</span></span>;</span><br><span class="line">  <span class="keyword">if</span> (!in.is_open()) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"open file error"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  in.read((<span class="keyword">char</span>*)&amp;dim, <span class="number">4</span>);</span><br><span class="line">  <span class="comment">//std::cout&lt;&lt;"data dimension: "&lt;&lt;dim&lt;&lt;std::endl;</span></span><br><span class="line">  in.seekg(<span class="number">0</span>, <span class="built_in">std</span>::ios::end);</span><br><span class="line">  <span class="built_in">std</span>::ios::pos_type ss = in.tellg();</span><br><span class="line">  <span class="keyword">size_t</span> fsize = (<span class="keyword">size_t</span>)ss;</span><br><span class="line">  num = (<span class="keyword">unsigned</span>)(fsize / (dim + <span class="number">1</span>) / <span class="number">4</span>);</span><br><span class="line">  results.resize(num);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> i = <span class="number">0</span>; i &lt; num; i++) results[i].resize(dim);</span><br><span class="line"></span><br><span class="line">  in.seekg(<span class="number">0</span>, <span class="built_in">std</span>::ios::beg);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">    in.seekg(<span class="number">4</span>, <span class="built_in">std</span>::ios::cur);</span><br><span class="line">    in.read((<span class="keyword">char</span>*)results[i].data(), dim * <span class="number">4</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  in.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">unsigned</span>&gt; &gt; true_load;</span><br><span class="line">  <span class="keyword">unsigned</span> dim, num;</span><br><span class="line">  load_ivecs_data(argv[<span class="number">1</span>], true_load, num, dim);</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; dim; j++) &#123;</span><br><span class="line">      <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; true_load[i][j] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"result_num："</span>&lt;&lt; num &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span> &lt;&lt; <span class="string">"result dimension："</span> &lt;&lt; dim &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
-<p>[1]付聪, NSG : Navigating Spread-out Graph For Approximate Nearest Neighbor Search, <a href="https://github.com/ZJULearning/nsg" target="_blank" rel="noopener">https://github.com/ZJULearning/nsg</a>, 2019.8.12.</p>
+        <h1 id="A-B-和-C"><a href="#A-B-和-C" class="headerlink" title="A+B 和 C"></a><strong>A+B 和 C</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>给定区间$ [−2^{31},2^{31}]$ 内的 3 个整数 <em>A</em>、<em>B</em> 和 <em>C</em>，请判断 <em>A</em>+<em>B</em> 是否大于 <em>C</em>。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>输入第 1 行给出正整数 <em>T</em> (≤10)，是测试用例的个数。随后给出 <em>T</em> 组测试用例，每组占一行，顺序给出 <em>A</em>、<em>B</em> 和 <em>C</em>。整数间以空格分隔。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>对每组测试用例，在一行中输出 <code>Case #X: true</code> 如果 <em>A</em>+<em>B</em>&gt;<em>C</em>，否则输出 <code>Case #X: false</code>，其中 <code>X</code> 是测试用例的编号（从 1 开始）。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">4</span><br><span class="line">1 2 3</span><br><span class="line">2 3 4</span><br><span class="line">2147483647 0 2147483646</span><br><span class="line">0 -2147483648 -2147483647</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Case #1: false</span><br><span class="line">Case #2: true</span><br><span class="line">Case #3: true</span><br><span class="line">Case #4: false</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>本题主要考察整型<code>int</code>和<code>long long</code>的取值范围，题中给定区间$ [−2^{31},2^{31}]$ ，而<code>int</code>型取整范围为$[−2^{31},2^{31}-1]$，因此不能用<code>int</code>，用<code>int</code>评测系统会报错，要用long long型。<br><strong>注</strong>：绝对值在$10^9$以内的整数都可以定义出<code>int</code>型，$10^9$以上的整数定义成<code>long long</code>型。</p>
+<h3 id="代码示例（C）"><a href="#代码示例（C）" class="headerlink" title="代码示例（C）"></a>代码示例（C）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> a,b,c;</span><br><span class="line">    <span class="keyword">int</span> t,i = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;t);</span><br><span class="line">    <span class="keyword">while</span>(t--)&#123;</span><br><span class="line">        <span class="comment">//注意long long型的格式控制符为%lld</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%lld%lld%lld"</span>,&amp;a,&amp;b,&amp;c);</span><br><span class="line">        <span class="keyword">if</span>(a + b &gt; c)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"Case #%d: true\n"</span>,i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"Case #%d: false\n"</span>,i);</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<blockquote>
+<p>题目来源：PAT乙级1011<br>作者：HOU, Qiming<br>单位：浙江大学</p>
 </blockquote>
 
     </div>
@@ -380,11 +376,11 @@
           
           <div class="post-tags">
             
-              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
-            
               <a href="/tags/C-C/" rel="tag"># C/C++</a>
             
-              <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
+              <a href="/tags/PAT/" rel="tag"># PAT</a>
+            
+              <a href="/tags/编程/" rel="tag"># 编程</a>
             
           </div>
         
@@ -394,8 +390,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/08/11/Q-HNSW/" rel="next" title="量化编码的分层可通航小世界图（HNSW）笔记">
-                  <i class="fa fa-chevron-left"></i> 量化编码的分层可通航小世界图（HNSW）笔记
+                <a href="/2019/08/15/pat1010/" rel="next" title="PAT乙级1010 || 一元多项式求导（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1010 || 一元多项式求导（详解，C/C++示例，测试点分析）
                 </a>
               
             </div>
@@ -404,8 +400,8 @@
 
             <div class="post-nav-prev post-nav-item">
               
-                <a href="/2019/08/12/anns-nsg-code2/" rel="prev" title="C++读取fvecs格式数据（SIFT1M数据集的结构）">
-                  C++读取fvecs格式数据（SIFT1M数据集的结构） <i class="fa fa-chevron-right"></i>
+                <a href="/2019/08/16/pat乙级1012/" rel="prev" title="PAT乙级1012 || 数字分类（详解，C/C++示例，测试点分析）">
+                  PAT乙级1012 || 数字分类（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
                 </a>
               
             </div>
@@ -533,7 +529,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-读取ivecs格式数据"><span class="nav-number">2.</span> <span class="nav-text">C++读取ivecs格式数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#A-B-和-C"><span class="nav-number">1.</span> <span class="nav-text">A+B 和 C</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C）</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -631,6 +627,55 @@
 
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
   
 
   

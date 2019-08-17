@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="福尔摩斯的约会题目描述大侦探福尔摩斯接到一张奇怪的字条：我们约会吧！ 3485djDkxh4hhGE 2984akDfkkkkggEdsb s&amp;amp;hgsfdk d&amp;amp;Hyscvnm。大侦探很快就明白了，字条上奇怪的乱码实际上就是约会的时间星期四 14:04，因为前面两字符串中第 1 对相同的大写英文字母（大小写有区分）是第 4 个字母 D，代表星期四；第 2 对相同的字符是 E ，那是">
+<meta name="keywords" content="C&#x2F;C++,PAT,编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PAT乙级1014 || 福尔摩斯的约会（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/08/16/pat乙级1014/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="福尔摩斯的约会题目描述大侦探福尔摩斯接到一张奇怪的字条：我们约会吧！ 3485djDkxh4hhGE 2984akDfkkkkggEdsb s&amp;amp;hgsfdk d&amp;amp;Hyscvnm。大侦探很快就明白了，字条上奇怪的乱码实际上就是约会的时间星期四 14:04，因为前面两字符串中第 1 对相同的大写英文字母（大小写有区分）是第 4 个字母 D，代表星期四；第 2 对相同的字符是 E ，那是">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-16T02:47:28.541Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PAT乙级1014 || 福尔摩斯的约会（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="福尔摩斯的约会题目描述大侦探福尔摩斯接到一张奇怪的字条：我们约会吧！ 3485djDkxh4hhGE 2984akDfkkkkggEdsb s&amp;amp;hgsfdk d&amp;amp;Hyscvnm。大侦探很快就明白了，字条上奇怪的乱码实际上就是约会的时间星期四 14:04，因为前面两字符串中第 1 对相同的大写英文字母（大小写有区分）是第 4 个字母 D，代表星期四；第 2 对相同的字符是 E ，那是">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/08/16/pat乙级1014/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PAT乙级1014 || 福尔摩斯的约会（详解，C/C++示例，测试点分析） | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">6</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">20</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/16/pat乙级1014/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">PAT乙级1014 || 福尔摩斯的约会（详解，C/C++示例，测试点分析）
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-16 10:19:58 / 修改时间：10:47:28" itemprop="dateCreated datePublished" datetime="2019-08-16T10:19:58+08:00">2019-08-16</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PAT/" itemprop="url" rel="index"><span itemprop="name">PAT</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2019/08/16/pat乙级1014/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1014 || 福尔摩斯的约会（详解，C/C++示例，测试点分析）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/16/pat乙级1014/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/16/pat乙级1014/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="福尔摩斯的约会"><a href="#福尔摩斯的约会" class="headerlink" title="福尔摩斯的约会"></a><strong>福尔摩斯的约会</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>大侦探福尔摩斯接到一张奇怪的字条：我们约会吧！ 3485djDkxh4hhGE 2984akDfkkkkggEdsb s&amp;hgsfdk d&amp;Hyscvnm。大侦探很快就明白了，字条上奇怪的乱码实际上就是约会的时间星期四 14:04，因为前面两字符串中第 1 对相同的大写英文字母（大小写有区分）是第 4 个字母 D，代表星期四；第 2 对相同的字符是 E ，那是第 5 个英文字母，代表一天里的第 14 个钟头（于是一天的 0 点到 23 点由数字 0 到 9、以及大写字母 A 到 N 表示）；后面两字符串第 1 对相同的英文字母 s 出现在第 4 个位置（从 0 开始计数）上，代表第 4 分钟。现给定两对字符串，请帮助福尔摩斯解码得到约会的时间。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h2><p>输入在 4 行中分别给出 4 个非空、不包含空格、且长度不超过 60 的字符串。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2><p>在一行中输出约会的时间，格式为 DAY HH:MM，其中 DAY 是某星期的 3 字符缩写，即 MON 表示星期一，TUE 表示星期二，WED 表示星期三，THU 表示星期四，FRI 表示星期五，SAT 表示星期六，SUN 表示星期日。题目输入保证每个测试存在唯一解。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">3485djDkxh4hhGE </span><br><span class="line">2984akDfkkkkggEdsb </span><br><span class="line">s&amp;hgsfdk </span><br><span class="line">d&amp;Hyscvnm</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">THU 14:04</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决："><a href="#问题解决：" class="headerlink" title="问题解决："></a>问题解决：</h2><h3 id="解题思想及误点剖析"><a href="#解题思想及误点剖析" class="headerlink" title="解题思想及误点剖析"></a>解题思想及误点剖析</h3><p>此题难点在于理解题意，有三个重要问题需要我们明确：</p>
+<ul>
+<li><strong>第 1 对相同的大写英文字母</strong>，注意是大写英文字母</li>
+<li><strong>第 2 对相同的字符</strong>，注意由后面的叙述可知，第二对相同的字符应是在第一对相同的大写英文字母基础上的第二对，而且必须是数字字符或大写的英文字母</li>
+<li><strong>第 1 对相同的英文字母</strong>，注意此处要求是英文字母，大写小写均可，但是，相等时必须对应为大写或小写（比如<code>a</code>与<code>a</code>相等，<code>A</code>与<code>A</code>相等，但<code>a</code>与<code>A</code>不相等）</li>
+</ul>
+<p>以上3个重要问题在实现与时间对应时应当注意以下几点：</p>
+<ol>
+<li><strong>第 1 对相同的大写英文字母</strong>的字母表顺序i对应星期i（比如A的字母表顺序为1，其对应星期一），我们知道一周也就7天，因此<strong>第 1 对相同的大写英文字母</strong>的字母范围必须是<code>A~G</code>，注意如果在代码的if条件中，寻找<strong>第 1 对相同的大写英文字母</strong>的条件是<code>str[0][i] &gt;= &#39;A&#39;&amp;&amp;str[0][i] &lt;= &#39;G&#39;</code>则导致评测不通过（某个测试点答案错误）</li>
+<li><strong>第 2 对相同的字符</strong>与小时的对应为：一天的 0 点到 23 点由数字 0 到 9、以及大写字母 A 到 N 表示。注意判断大写字母时，范围一定为<code>A~N</code></li>
+<li><strong>第 1 对相同的英文字母</strong>，范围是<code>A~Z</code>或<code>a~z</code></li>
+<li>还要特别注意在输出小时和分钟时，小于10的数字前要补0。这里，我用的是格式控制符<code>%02d</code>，<code>%02d</code>中<code>2</code>的含义为：输出宽度为2，<code>0</code>的含义为：宽度不足2时用0填充</li>
+</ol>
+<p><strong>注</strong>：如果大家是在牛客网的评测系统提交代码，则条件没有那么多限制，大写字母的范围都用<code>A~Z</code>也不会出错。<br>  我在书写代码时产生了如下错误，包括一些低级错误。比如while循环内少了i++，输出格式控制等错误。最后，请大家看一下下面的这个程序，<code>代码1</code>在PAT评测系统评测时有一个测试点不通过，<code>代码2</code>是通过的(<code>代码1</code>与<code>代码2</code>的差别已在代码中标出)。请大家思考一下是为什么？</p>
+<p><code>代码1</code><br><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXN 61</span></span><br><span class="line"><span class="comment">//定义一个存放星期字符的字符数组，以便按序号输出星期</span></span><br><span class="line"><span class="keyword">char</span> week[<span class="number">7</span>][<span class="number">4</span>] = &#123;<span class="string">"MON"</span>,<span class="string">"TUE"</span>,<span class="string">"WED"</span>,<span class="string">"THU"</span>,<span class="string">"FRI"</span>,<span class="string">"SAT"</span>,<span class="string">"SUN"</span>&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> str[<span class="number">4</span>][MAXN],first_capital;</span><br><span class="line">    <span class="keyword">int</span> i,num,hour,flag = <span class="number">0</span>;<span class="comment">//flag标记第一个相同大写字母是否已找到</span></span><br><span class="line">    <span class="comment">//输入4个字符串</span></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)&#123;</span><br><span class="line">        gets(str[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//顺次查找前两个字符串中第一个相同的大写字母</span></span><br><span class="line">    <span class="keyword">while</span>(str[<span class="number">0</span>][i] != <span class="string">'\0'</span>&amp;&amp;str[<span class="number">1</span>][i] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(str[<span class="number">0</span>][i] == str[<span class="number">1</span>][i])&#123;</span><br><span class="line">            <span class="comment">//还未找到第一个相同大写英文字母</span></span><br><span class="line">            <span class="keyword">if</span>((str[<span class="number">0</span>][i] &gt;= <span class="string">'A'</span>)&amp;&amp;(str[<span class="number">0</span>][i] &lt;= <span class="string">'G'</span>)&amp;&amp;(!flag))&#123;</span><br><span class="line">                first_capital = str[<span class="number">0</span>][i];</span><br><span class="line">                flag = <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//已经找到第一个相同大写英文字母</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                <span class="keyword">if</span>(str[<span class="number">0</span>][i] &gt;= <span class="string">'0'</span>&amp;&amp;str[<span class="number">0</span>][i] &lt;= <span class="string">'9'</span>)&#123;</span><br><span class="line">                    hour = str[<span class="number">0</span>][i] - <span class="string">'0'</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(str[<span class="number">0</span>][i] &gt;= <span class="string">'A'</span>&amp;&amp;str[<span class="number">0</span>][i] &lt;= <span class="string">'N'</span>)&#123;</span><br><span class="line">                    hour = str[<span class="number">0</span>][i] - <span class="string">'A'</span> + <span class="number">10</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;<span class="comment">//此处与代码2有差别</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    num = first_capital - <span class="string">'A'</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%s"</span>,week[num]);</span><br><span class="line">    i = <span class="number">0</span>;<span class="comment">//注意i要更新为0</span></span><br><span class="line">    <span class="comment">//分钟确定，用相同英文字母的下标确定，</span></span><br><span class="line">    <span class="comment">//注意一定是英文字母（大写相等或小写相等均可）</span></span><br><span class="line">    <span class="keyword">while</span>(str[<span class="number">2</span>][i] != <span class="string">'\0'</span>&amp;&amp;str[<span class="number">3</span>][i] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(str[<span class="number">2</span>][i] == str[<span class="number">3</span>][i])&#123;</span><br><span class="line">            <span class="keyword">if</span>((str[<span class="number">2</span>][i] &gt;= <span class="string">'A'</span>&amp;&amp;str[<span class="number">2</span>][i] &lt;= <span class="string">'Z'</span>)</span><br><span class="line">               ||(str[<span class="number">2</span>][i] &gt;= <span class="string">'a'</span>&amp;&amp;str[<span class="number">2</span>][i] &lt;= <span class="string">'z'</span>))&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">" %02d:%02d"</span>,hour,i);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></p>
+<h3 id="代码示例（C语言）"><a href="#代码示例（C语言）" class="headerlink" title="代码示例（C语言）"></a>代码示例（C语言）</h3><p><code>代码2</code></p>
+<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXN 61</span></span><br><span class="line"><span class="comment">//定义一个存放星期字符的字符数组，以便按序号输出星期</span></span><br><span class="line"><span class="keyword">char</span> week[<span class="number">7</span>][<span class="number">4</span>] = &#123;<span class="string">"MON"</span>,<span class="string">"TUE"</span>,<span class="string">"WED"</span>,<span class="string">"THU"</span>,<span class="string">"FRI"</span>,<span class="string">"SAT"</span>,<span class="string">"SUN"</span>&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> str[<span class="number">4</span>][MAXN],first_capital;</span><br><span class="line">    <span class="keyword">int</span> i,num,hour,flag = <span class="number">0</span>;<span class="comment">//flag标记第一个相同大写字母是否已找到</span></span><br><span class="line">    <span class="comment">//输入4个字符串</span></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)&#123;</span><br><span class="line">        gets(str[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//顺次查找前两个字符串中第一个相同的大写字母</span></span><br><span class="line">    <span class="keyword">while</span>(str[<span class="number">0</span>][i] != <span class="string">'\0'</span>&amp;&amp;str[<span class="number">1</span>][i] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(str[<span class="number">0</span>][i] == str[<span class="number">1</span>][i])&#123;</span><br><span class="line">            <span class="comment">//还未找到第一个相同大写英文字母</span></span><br><span class="line">            <span class="keyword">if</span>((str[<span class="number">0</span>][i] &gt;= <span class="string">'A'</span>)&amp;&amp;(str[<span class="number">0</span>][i] &lt;= <span class="string">'G'</span>)&amp;&amp;(!flag))&#123;</span><br><span class="line">                first_capital = str[<span class="number">0</span>][i];</span><br><span class="line">                flag = <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//已经找到第一个相同大写英文字母</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">                <span class="keyword">if</span>(str[<span class="number">0</span>][i] &gt;= <span class="string">'0'</span>&amp;&amp;str[<span class="number">0</span>][i] &lt;= <span class="string">'9'</span>)&#123;</span><br><span class="line">                    hour = str[<span class="number">0</span>][i] - <span class="string">'0'</span>;</span><br><span class="line">                    <span class="keyword">break</span>;<span class="comment">//此处与代码1有差别</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(str[<span class="number">0</span>][i] &gt;= <span class="string">'A'</span>&amp;&amp;str[<span class="number">0</span>][i] &lt;= <span class="string">'N'</span>)&#123;</span><br><span class="line">                    hour = str[<span class="number">0</span>][i] - <span class="string">'A'</span> + <span class="number">10</span>;</span><br><span class="line">                    <span class="keyword">break</span>;<span class="comment">//此处与代码1有差别</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    num = first_capital - <span class="string">'A'</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%s"</span>,week[num]);</span><br><span class="line">    i = <span class="number">0</span>;<span class="comment">//注意i要更新为0</span></span><br><span class="line">    <span class="comment">//分钟确定，用相同英文字母的下标确定，</span></span><br><span class="line">    <span class="comment">//注意一定是英文字母（大写相等或小写相等均可）</span></span><br><span class="line">    <span class="keyword">while</span>(str[<span class="number">2</span>][i] != <span class="string">'\0'</span>&amp;&amp;str[<span class="number">3</span>][i] != <span class="string">'\0'</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(str[<span class="number">2</span>][i] == str[<span class="number">3</span>][i])&#123;</span><br><span class="line">            <span class="keyword">if</span>((str[<span class="number">2</span>][i] &gt;= <span class="string">'A'</span>&amp;&amp;str[<span class="number">2</span>][i] &lt;= <span class="string">'Z'</span>)</span><br><span class="line">               ||(str[<span class="number">2</span>][i] &gt;= <span class="string">'a'</span>&amp;&amp;str[<span class="number">2</span>][i] &lt;= <span class="string">'z'</span>))&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">" %02d:%02d"</span>,hour,i);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<blockquote>
+<p>题目来源：PAT乙级1014<br>作者：CHEN, Yue<br>单位：浙江大学</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            
+              <a href="/tags/PAT/" rel="tag"># PAT</a>
+            
+              <a href="/tags/编程/" rel="tag"># 编程</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/08/16/pat乙级1013/" rel="next" title="PAT乙级1013 || 数素数（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1013 || 数素数（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/08/16/pat乙级1015/" rel="prev" title="PAT乙级1015 || 德才论（详解，C/C++示例，测试点分析）">
+                  PAT乙级1015 || 德才论（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#福尔摩斯的约会"><span class="nav-number">1.</span> <span class="nav-text">福尔摩斯的约会</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决："><span class="nav-number">1.6.</span> <span class="nav-text">问题解决：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想及误点剖析"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想及误点剖析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C语言）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C语言）</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '此处免登录就可交流评论哦^_^',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
