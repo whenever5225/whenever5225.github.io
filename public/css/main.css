@@ -1108,7 +1108,7 @@ blockquote {
   }
 }
 .header {
-  background: transparent;
+  background: url("https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png");
 }
 .header-inner {
   position: relative;
@@ -1806,7 +1806,7 @@ blockquote {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff86b0;
+  background: #ff05ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
