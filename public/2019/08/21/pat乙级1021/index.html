@@ -55,19 +55,19 @@
   };
 </script>
 
-  <meta name="description" content="素数对猜想题目描述让我们定义$d_n$为：$d_n$=p(n+1)-p(n)，其中p(i)是第 $i$ 个素数。显然有$d_1$=1，且对于 $n&amp;gt;1$ 有$d_n$是偶数。“素数对猜想”认为“存在无穷多对相邻且差为2的素数”。现给定任意正整数N(&amp;lt;$10^5$)，请计算不超过N的满足猜想的素数对的个数。 输入格式输入在一行给出正整数N。 输出格式在一行中输出不超过N的满足猜想的素数对">
+  <meta name="description" content="个位数统计题目描述给定一个$k$位整数 $N=d_{k−1}10^{k−1}+⋯+d_110^1+d_0$$ (0≤d_i ≤9, i=0,⋯,k−1, d_{k−1} &amp;gt;0)$，请编写程序统计每种不同的个位数字出现的次数。例如：给定 $N=100311$，则有 2 个 0，3 个 1，和 1 个 3。 输入格式每个输入包含 1 个测试用例，即一个不超过 1000 位的正整数 $N$。 输出">
 <meta name="keywords" content="C&#x2F;C++,PAT,编程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PAT乙级1007 || 素数对猜想（详解，C&#x2F;C++示例，测试点分析）">
-<meta property="og:url" content="http://whenever5225.github.io/2019/08/15/pat1007/index.html">
+<meta property="og:title" content="PAT乙级1021 || 个位数统计（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/08/21/pat乙级1021/index.html">
 <meta property="og:site_name" content="whenever">
-<meta property="og:description" content="素数对猜想题目描述让我们定义$d_n$为：$d_n$=p(n+1)-p(n)，其中p(i)是第 $i$ 个素数。显然有$d_1$=1，且对于 $n&amp;gt;1$ 有$d_n$是偶数。“素数对猜想”认为“存在无穷多对相邻且差为2的素数”。现给定任意正整数N(&amp;lt;$10^5$)，请计算不超过N的满足猜想的素数对的个数。 输入格式输入在一行给出正整数N。 输出格式在一行中输出不超过N的满足猜想的素数对">
+<meta property="og:description" content="个位数统计题目描述给定一个$k$位整数 $N=d_{k−1}10^{k−1}+⋯+d_110^1+d_0$$ (0≤d_i ≤9, i=0,⋯,k−1, d_{k−1} &amp;gt;0)$，请编写程序统计每种不同的个位数字出现的次数。例如：给定 $N=100311$，则有 2 个 0，3 个 1，和 1 个 3。 输入格式每个输入包含 1 个测试用例，即一个不超过 1000 位的正整数 $N$。 输出">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-15T04:50:46.385Z">
+<meta property="og:updated_time" content="2019-08-21T04:58:08.422Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PAT乙级1007 || 素数对猜想（详解，C&#x2F;C++示例，测试点分析）">
-<meta name="twitter:description" content="素数对猜想题目描述让我们定义$d_n$为：$d_n$=p(n+1)-p(n)，其中p(i)是第 $i$ 个素数。显然有$d_1$=1，且对于 $n&amp;gt;1$ 有$d_n$是偶数。“素数对猜想”认为“存在无穷多对相邻且差为2的素数”。现给定任意正整数N(&amp;lt;$10^5$)，请计算不超过N的满足猜想的素数对的个数。 输入格式输入在一行给出正整数N。 输出格式在一行中输出不超过N的满足猜想的素数对">
-  <link rel="canonical" href="http://whenever5225.github.io/2019/08/15/pat1007/">
+<meta name="twitter:title" content="PAT乙级1021 || 个位数统计（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="个位数统计题目描述给定一个$k$位整数 $N=d_{k−1}10^{k−1}+⋯+d_110^1+d_0$$ (0≤d_i ≤9, i=0,⋯,k−1, d_{k−1} &amp;gt;0)$，请编写程序统计每种不同的个位数字出现的次数。例如：给定 $N=100311$，则有 2 个 0，3 个 1，和 1 个 3。 输入格式每个输入包含 1 个测试用例，即一个不超过 1000 位的正整数 $N$。 输出">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/08/21/pat乙级1021/">
 
 
 <script id="page-configurations">
@@ -81,7 +81,7 @@
   };
 </script>
 
-  <title>PAT乙级1007 || 素数对猜想（详解，C/C++示例，测试点分析） | whenever</title>
+  <title>PAT乙级1021 || 个位数统计（详解，C/C++示例，测试点分析） | whenever</title>
   
 
 
@@ -239,7 +239,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/15/pat1007/">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/21/pat乙级1021/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MZ Wang">
@@ -253,7 +253,7 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">PAT乙级1007 || 素数对猜想（详解，C/C++示例，测试点分析）
+          <h1 class="post-title" itemprop="name headline">PAT乙级1021 || 个位数统计（详解，C/C++示例，测试点分析）
 
             
           </h1>
@@ -270,7 +270,7 @@
                 
               
 
-              <time title="创建时间：2019-08-15 12:19:52 / 修改时间：12:50:46" itemprop="dateCreated datePublished" datetime="2019-08-15T12:19:52+08:00">2019-08-15</time>
+              <time title="创建时间：2019-08-21 12:38:03 / 修改时间：12:58:08" itemprop="dateCreated datePublished" datetime="2019-08-21T12:38:03+08:00">2019-08-21</time>
             </span>
           
             
@@ -292,7 +292,7 @@
           
 
           
-            <span id="/2019/08/15/pat1007/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1007 || 素数对猜想（详解，C/C++示例，测试点分析）" title="阅读次数">
+            <span id="/2019/08/21/pat乙级1021/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1021 || 个位数统计（详解，C/C++示例，测试点分析）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -311,8 +311,8 @@
       
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/08/15/pat1007/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/15/pat1007/" itemprop="commentCount"></span>
+    <a title="valine" href="/2019/08/21/pat乙级1021/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/21/pat乙级1021/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -328,20 +328,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="素数对猜想"><a href="#素数对猜想" class="headerlink" title="素数对猜想"></a><strong>素数对猜想</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>让我们定义$d_n$为：$d_n$=p(n+1)-p(n)，其中p(i)是第 $i$ 个素数。显然有$d_1$=1，且对于 $n&gt;1$ 有$d_n$是偶数。“素数对猜想”认为“存在无穷多对相邻且差为2的素数”。<br>现给定任意正整数<code>N</code>(&lt;$10^5$)，请计算不超过<code>N</code>的满足猜想的素数对的个数。</p>
-<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>输入在一行给出正整数<code>N</code>。</p>
-<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>在一行中输出不超过<code>N</code>的满足猜想的素数对的个数。</p>
-<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">20</span><br></pre></td></tr></table></figure></div>
-<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4</span><br></pre></td></tr></table></figure></div>
-<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>此题的关键点为：</p>
-<ul>
-<li>判断一个数i是否为素数</li>
-<li>记录下刚刚判断的最近邻的素数</li>
-</ul>
-<p>判定i是否为素数这里我们用判断 $i$ 能够被$2 - \sqrt{i}$中的某个数所整除，如果$2 - \sqrt{i}$中存在一个数能整除 $i$，则i就不是素数；反之，如果$2 - \sqrt{i}$中没有能整除 $i​$ 的数，则i就是素数。</p>
-<h3 id="代码示例（C）"><a href="#代码示例（C）" class="headerlink" title="代码示例（C）"></a>代码示例（C）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n,i,j,pre_prime,count = <span class="number">0</span>,flag;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;n);</span><br><span class="line">    pre_prime = <span class="number">2</span>;<span class="comment">//初始化上一个素数为2</span></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">3</span>; i &lt;= n; i++)&#123;<span class="comment">//当前素数的判定从3开始</span></span><br><span class="line">        flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(j = <span class="number">2</span>; j &lt;= <span class="built_in">sqrt</span>(i); j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i % j == <span class="number">0</span>)&#123;</span><br><span class="line">                flag = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(flag == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">//如果i是素数（即flag == 0）</span></span><br><span class="line">            <span class="comment">//且当前素数与上一个素数差为2</span></span><br><span class="line">            <span class="keyword">if</span>(i-pre_prime == <span class="number">2</span>)&#123;</span><br><span class="line">                count++;</span><br><span class="line">            &#125;</span><br><span class="line">            pre_prime = i;<span class="comment">//更新上一个素数为当前素数</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,count);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+        <h1 id="个位数统计"><a href="#个位数统计" class="headerlink" title="个位数统计"></a><strong>个位数统计</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>给定一个$k$位整数 $N=d_{k−1}10^{k−1}+⋯+d_110^1+d_0$$ (0≤d_i ≤9, i=0,⋯,k−1, d_{k−1} &gt;0)$，请编写程序统计每种不同的个位数字出现的次数。例如：给定 $N=100311$，则有 2 个 0，3 个 1，和 1 个 3。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>每个输入包含 1 个测试用例，即一个不超过 1000 位的正整数 $N$。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>对 $N$ 中每一种不同的个位数字，以 <code>D:M</code> 的格式在一行中输出该位数字 <code>D</code> 及其在<code>N</code> 中出现的次数 <code>M</code>。要求按 <code>D</code> 的升序输出。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">100311</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0:2</span><br><span class="line">1:3</span><br><span class="line">3:1</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>$N$为不超过 1000 位的正整数，显然不能用单个变量来存 $N$ 的值，可用字符数组存入 $N$ 的每一位；输入时遇到换行即输入结束；设置一个整型数组coun[10]来统计各位数字出现的次数；个数为0个的数字不输出。</p>
+<h3 id="代码示例（C-C-）"><a href="#代码示例（C-C-）" class="headerlink" title="代码示例（C/C++）"></a>代码示例（C/C++）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXN 1001</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> num[MAXN];<span class="comment">//用字符数组存入输入的大数</span></span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    num[i] = getchar();</span><br><span class="line">    <span class="keyword">while</span>(num[i] != <span class="string">'\n'</span>)&#123;<span class="comment">//遇到换行即输入结束</span></span><br><span class="line">        i++;</span><br><span class="line">        num[i] = getchar();</span><br><span class="line">    &#125;</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> coun[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;<span class="comment">//统计数组</span></span><br><span class="line">    <span class="keyword">while</span>(num[i] != <span class="string">'\n'</span>)&#123;</span><br><span class="line">        <span class="keyword">int</span> n = num[i] - <span class="string">'0'</span>;<span class="comment">//字符转化为数字</span></span><br><span class="line">        coun[n]++;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(coun[i] != <span class="number">0</span>)&#123;<span class="comment">//个数为0个的数字不输出</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d:%d\n"</span>,i,coun[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 <blockquote>
-<p>题目来源：PAT乙级1007<br>作者：CHEN, Yue<br>单位：浙江大学</p>
+<p>题目来源：PAT乙级1021<br>作者：CHEN, Yue<br>单位：浙江大学</p>
 </blockquote>
 
     </div>
@@ -395,8 +390,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/08/14/pat1006/" rel="next" title="PAT乙级1006 || 换个格式输出整数（详解，C/C++示例，测试点分析）">
-                  <i class="fa fa-chevron-left"></i> PAT乙级1006 || 换个格式输出整数（详解，C/C++示例，测试点分析）
+                <a href="/2019/08/18/pat乙级1020/" rel="next" title="PAT乙级1020 || 月饼（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1020 || 月饼（详解，C/C++示例，测试点分析）
                 </a>
               
             </div>
@@ -404,10 +399,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/08/15/pat1008/" rel="prev" title="PAT乙级1008 || 数组元素循环右移问题（详解，C/C++示例，测试点分析）">
-                  PAT乙级1008 || 数组元素循环右移问题（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -534,7 +525,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#素数对猜想"><span class="nav-number">1.</span> <span class="nav-text">素数对猜想</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C）</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#个位数统计"><span class="nav-number">1.</span> <span class="nav-text">个位数统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C-C-）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C/C++）</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
