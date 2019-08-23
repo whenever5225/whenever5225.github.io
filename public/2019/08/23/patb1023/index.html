@@ -55,19 +55,19 @@
   };
 </script>
 
-  <meta name="description" content="换个格式输出整数题目描述让我们用字母 B 来表示“百”、字母 S 表示“十”，用 12...n 来表示不为零的个位数字 n（&amp;lt;10），换个格式来输出任一个不超过 3 位的正整数。例如 234 应该被输出为 BBSSS1234，因为它有 2 个“百”、3 个“十”、以及个位的 4。 输入格式输入格式每个测试输入包含 1 个测试用例，给出正整数 n（&amp;lt;1000）。 输出格式每个测试用例的输">
+  <meta name="description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
 <meta name="keywords" content="C&#x2F;C++,PAT,编程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PAT乙级1006 || 换个格式输出整数（详解，C&#x2F;C++示例，测试点分析）">
-<meta property="og:url" content="http://whenever5225.github.io/2019/08/14/pat1006/index.html">
+<meta property="og:title" content="PAT乙级1023 || 组个最小数（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/08/23/patb1023/index.html">
 <meta property="og:site_name" content="whenever">
-<meta property="og:description" content="换个格式输出整数题目描述让我们用字母 B 来表示“百”、字母 S 表示“十”，用 12...n 来表示不为零的个位数字 n（&amp;lt;10），换个格式来输出任一个不超过 3 位的正整数。例如 234 应该被输出为 BBSSS1234，因为它有 2 个“百”、3 个“十”、以及个位的 4。 输入格式输入格式每个测试输入包含 1 个测试用例，给出正整数 n（&amp;lt;1000）。 输出格式每个测试用例的输">
+<meta property="og:description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-14T04:42:39.141Z">
+<meta property="og:updated_time" content="2019-08-23T04:24:13.483Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PAT乙级1006 || 换个格式输出整数（详解，C&#x2F;C++示例，测试点分析）">
-<meta name="twitter:description" content="换个格式输出整数题目描述让我们用字母 B 来表示“百”、字母 S 表示“十”，用 12...n 来表示不为零的个位数字 n（&amp;lt;10），换个格式来输出任一个不超过 3 位的正整数。例如 234 应该被输出为 BBSSS1234，因为它有 2 个“百”、3 个“十”、以及个位的 4。 输入格式输入格式每个测试输入包含 1 个测试用例，给出正整数 n（&amp;lt;1000）。 输出格式每个测试用例的输">
-  <link rel="canonical" href="http://whenever5225.github.io/2019/08/14/pat1006/">
+<meta name="twitter:title" content="PAT乙级1023 || 组个最小数（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/08/23/patb1023/">
 
 
 <script id="page-configurations">
@@ -81,7 +81,7 @@
   };
 </script>
 
-  <title>PAT乙级1006 || 换个格式输出整数（详解，C/C++示例，测试点分析） | whenever</title>
+  <title>PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析） | whenever</title>
   
 
 
@@ -239,7 +239,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/14/pat1006/">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/23/patb1023/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MZ Wang">
@@ -253,7 +253,7 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">PAT乙级1006 || 换个格式输出整数（详解，C/C++示例，测试点分析）
+          <h1 class="post-title" itemprop="name headline">PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析）
 
             
           </h1>
@@ -270,7 +270,7 @@
                 
               
 
-              <time title="创建时间：2019-08-14 12:37:22 / 修改时间：12:42:39" itemprop="dateCreated datePublished" datetime="2019-08-14T12:37:22+08:00">2019-08-14</time>
+              <time title="创建时间：2019-08-23 12:01:43 / 修改时间：12:24:13" itemprop="dateCreated datePublished" datetime="2019-08-23T12:01:43+08:00">2019-08-23</time>
             </span>
           
             
@@ -292,7 +292,7 @@
           
 
           
-            <span id="/2019/08/14/pat1006/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1006 || 换个格式输出整数（详解，C/C++示例，测试点分析）" title="阅读次数">
+            <span id="/2019/08/23/patb1023/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -311,8 +311,8 @@
       
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/08/14/pat1006/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/14/pat1006/" itemprop="commentCount"></span>
+    <a title="valine" href="/2019/08/23/patb1023/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/23/patb1023/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -328,19 +328,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="换个格式输出整数"><a href="#换个格式输出整数" class="headerlink" title="换个格式输出整数"></a><strong>换个格式输出整数</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>让我们用字母 <code>B</code> 来表示“百”、字母 <code>S</code> 表示“十”，用 <code>12...n</code> 来表示不为零的个位数字 <code>n</code>（&lt;10），换个格式来输出任一个不超过 3 位的正整数。例如 <code>234</code> 应该被输出为 <code>BBSSS1234</code>，因为它有 2 个“百”、3 个“十”、以及个位的 4。</p>
-<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><h2 id="输入格式-1"><a href="#输入格式-1" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>每个测试输入包含 1 个测试用例，给出正整数 <em>n</em>（&lt;1000）。</p>
-<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>每个测试用例的输出占一行，用规定的格式输出 <em>n</em>。</p>
-<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">234</span><br></pre></td></tr></table></figure></div>
-<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BBSSS1234</span><br></pre></td></tr></table></figure></div>
-<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>如果会提取一个多位数的各位数字，那么此题就没有什么难度。</p>
-<h3 id="知识拓展"><a href="#知识拓展" class="headerlink" title="知识拓展"></a>知识拓展</h3><p>循环n次可以用for循环，也可以用while简洁的方式。</p>
-<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">    <span class="comment">//循环体</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<p>while更简洁形式</p>
-<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(n--)&#123;</span><br><span class="line">    <span class="comment">//循环体</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<h3 id="代码示例（C）"><a href="#代码示例（C）" class="headerlink" title="代码示例（C）"></a>代码示例（C）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n,i,h,t,u;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;n);</span><br><span class="line">    h = n / <span class="number">100</span>;<span class="comment">//百位</span></span><br><span class="line">    t = (n % <span class="number">100</span>) / <span class="number">10</span>;<span class="comment">//十位</span></span><br><span class="line">    u = n % <span class="number">10</span>;<span class="comment">//个位</span></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; h; i++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"B"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; t; i++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"S"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; u; i++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d"</span>,i+<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+        <h1 id="组个最小数"><a href="#组个最小数" class="headerlink" title="组个最小数"></a><strong>组个最小数</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。<br>现给定数字，请编写程序输出能够组成的最小的数。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。整数间用一个空格分隔。10 个数字的总个数不超过 50，且至少拥有 1 个非 0 的数字。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>在一行中输出能够组成的最小的数。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3 1 0 0 0 2 0 3 0 0</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">100055777</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>设置一个数组存入每个数字的个数；因为至少有一个非零的数字，所以输出不可能为0，第一个必输出一个最小的个数为非零个的非零数字，然后从0开始依次按个数输出每个数字。</p>
+<h3 id="代码示例（C-C-）"><a href="#代码示例（C-C-）" class="headerlink" title="代码示例（C/C++）"></a>代码示例（C/C++）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num_count[<span class="number">10</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;num_count[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">10</span>; i++)&#123;<span class="comment">//先输出一个最小的个数为非零个的非零数字</span></span><br><span class="line">        <span class="keyword">if</span>(num_count[i] != <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d"</span>,i);</span><br><span class="line">            num_count[i]--;<span class="comment">//输出后个数减一</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;<span class="comment">//顺次从小到大按个数输出各数字</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; num_count[i]; j++)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d"</span>,i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 <blockquote>
-<p>题目来源：PAT乙级1006<br>作者：CHEN, Yue<br>单位：浙江大学</p>
+<p>题目来源：PAT乙级1023<br>作者：CAO, Peng<br>单位：Google</p>
 </blockquote>
 
     </div>
@@ -394,8 +390,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/08/14/pat1005/" rel="next" title="PAT乙级1005 || 继续(3n+1)猜想（详解，C/C++示例，测试点分析）">
-                  <i class="fa fa-chevron-left"></i> PAT乙级1005 || 继续(3n+1)猜想（详解，C/C++示例，测试点分析）
+                <a href="/2019/08/23/patb1022/" rel="next" title="PAT乙级1022 || D进制的A+B（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1022 || D进制的A+B（详解，C/C++示例，测试点分析）
                 </a>
               
             </div>
@@ -404,8 +400,8 @@
 
             <div class="post-nav-prev post-nav-item">
               
-                <a href="/2019/08/15/pat1007/" rel="prev" title="PAT乙级1007 || 素数对猜想（详解，C/C++示例，测试点分析）">
-                  PAT乙级1007 || 素数对猜想（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
+                <a href="/2019/08/23/patb1024/" rel="prev" title="PAT乙级1024 || 科学计数法（详解，C/C++示例，测试点分析）">
+                  PAT乙级1024 || 科学计数法（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
                 </a>
               
             </div>
@@ -533,7 +529,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#换个格式输出整数"><span class="nav-number">1.</span> <span class="nav-text">换个格式输出整数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式-1"><span class="nav-number">1.3.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.4.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.5.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.6.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.7.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.7.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识拓展"><span class="nav-number">1.7.2.</span> <span class="nav-text">知识拓展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C）"><span class="nav-number">1.7.3.</span> <span class="nav-text">代码示例（C）</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#组个最小数"><span class="nav-number">1.</span> <span class="nav-text">组个最小数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C-C-）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C/C++）</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
