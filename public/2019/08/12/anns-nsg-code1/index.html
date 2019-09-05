@@ -56,14 +56,14 @@
 </script>
 
   <meta name="description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
-<meta name="keywords" content="ANNS,C&#x2F;C++,源码阅读">
+<meta name="keywords" content="C&#x2F;C++,ANNS,源码阅读">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C++读取ivecs格式数据">
 <meta property="og:url" content="http://whenever5225.github.io/2019/08/12/anns-nsg-code1/index.html">
 <meta property="og:site_name" content="whenever">
 <meta property="og:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T14:31:37.088Z">
+<meta property="og:updated_time" content="2019-08-16T13:48:37.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++读取ivecs格式数据">
 <meta name="twitter:description" content="引言近似最近邻搜索中通常会涉及到fvecs和ivecs格式的数据，其中，原始数据一般为fvecs格式的数据，查询结果一般为ivecs格式的。ivecs内部存储的主要是数据的id，数据类型为unsigned类型。就其内部数据结构而言，行数为查询点的个数，列数为对每个查询点查询返回个数再加1，因为每行的第一个位置存储的是对每个查询点查询返回个数。 可以通过程序来读取ivecs格式数据的内容，下面是用c">
@@ -172,7 +172,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">6</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">9</span></a>
 
   </li>
       
@@ -185,7 +185,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
 
   </li>
       
@@ -198,7 +198,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">31</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">32</span></a>
 
   </li>
       
@@ -281,7 +281,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 22:31:37" itemprop="dateModified" datetime="2019-08-13T22:31:37+08:00">2019-08-13</time>
+                <time title="修改时间：2019-08-16 21:48:37" itemprop="dateModified" datetime="2019-08-16T21:48:37+08:00">2019-08-16</time>
               </span>
             
           
@@ -380,9 +380,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
-            
               <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
             
               <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
             
@@ -466,7 +466,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -485,7 +485,11 @@
         
           
         
-        <span class="site-state-item-count">2</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -512,7 +516,13 @@
         
           
         
-        <span class="site-state-item-count">6</span>
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
