@@ -55,19 +55,19 @@
   };
 </script>
 
-  <meta name="description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
-<meta name="keywords" content="C&#x2F;C++,PAT,编程">
+  <meta name="description" content="引言网站的gist数据集下载很慢，尝试多次都失败了，科学上网也不行。github上（地址）提供了很多hdf5格式的数据集，其中也包括gist，下载速度很快。但是实验的代码处理的数据格式是fvecs和ivecs格式的，需要将hdf5格式的数据进行转换。 代码示例1（转换成fvecs格式）123456789101112131415161718192021import h5pyimport struct">
+<meta name="keywords" content="HDF5,python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PAT乙级1023 || 组个最小数（详解，C&#x2F;C++示例，测试点分析）">
-<meta property="og:url" content="http://whenever5225.github.io/2019/08/23/patb1023/index.html">
+<meta property="og:title" content="python读取HDF5格式文件并保存为fvecs和ivecs格式（将HDF5格式gist数据集转换为fvecs和ivecs格式）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/09/08/转换hdf5到fvecs和ivecs/index.html">
 <meta property="og:site_name" content="whenever">
-<meta property="og:description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
+<meta property="og:description" content="引言网站的gist数据集下载很慢，尝试多次都失败了，科学上网也不行。github上（地址）提供了很多hdf5格式的数据集，其中也包括gist，下载速度很快。但是实验的代码处理的数据格式是fvecs和ivecs格式的，需要将hdf5格式的数据进行转换。 代码示例1（转换成fvecs格式）123456789101112131415161718192021import h5pyimport struct">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-21T07:15:05.415Z">
+<meta property="og:updated_time" content="2019-09-08T07:28:25.540Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PAT乙级1023 || 组个最小数（详解，C&#x2F;C++示例，测试点分析）">
-<meta name="twitter:description" content="组个最小数题目描述现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。现给定数字，请编写程序输出能够组成的最小的数。 输入格式输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。">
-  <link rel="canonical" href="http://whenever5225.github.io/2019/08/23/patb1023/">
+<meta name="twitter:title" content="python读取HDF5格式文件并保存为fvecs和ivecs格式（将HDF5格式gist数据集转换为fvecs和ivecs格式）">
+<meta name="twitter:description" content="引言网站的gist数据集下载很慢，尝试多次都失败了，科学上网也不行。github上（地址）提供了很多hdf5格式的数据集，其中也包括gist，下载速度很快。但是实验的代码处理的数据格式是fvecs和ivecs格式的，需要将hdf5格式的数据进行转换。 代码示例1（转换成fvecs格式）123456789101112131415161718192021import h5pyimport struct">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/09/08/转换hdf5到fvecs和ivecs/">
 
 
 <script id="page-configurations">
@@ -81,7 +81,7 @@
   };
 </script>
 
-  <title>PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析） | whenever</title>
+  <title>python读取HDF5格式文件并保存为fvecs和ivecs格式（将HDF5格式gist数据集转换为fvecs和ivecs格式） | whenever</title>
   
 
 
@@ -239,7 +239,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/23/patb1023/">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/09/08/转换hdf5到fvecs和ivecs/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MZ Wang">
@@ -253,7 +253,7 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析）
+          <h1 class="post-title" itemprop="name headline">python读取HDF5格式文件并保存为fvecs和ivecs格式（将HDF5格式gist数据集转换为fvecs和ivecs格式）
 
             
           </h1>
@@ -270,19 +270,11 @@
                 
               
 
-              <time title="创建时间：2019-08-23 12:01:43" itemprop="dateCreated datePublished" datetime="2019-08-23T12:01:43+08:00">2019-08-23</time>
+              <time title="创建时间：2019-09-08 15:18:22 / 修改时间：15:28:25" itemprop="dateCreated datePublished" datetime="2019-09-08T15:18:22+08:00">2019-09-08</time>
             </span>
           
             
 
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-21 15:15:05" itemprop="dateModified" datetime="2019-09-21T15:15:05+08:00">2019-09-21</time>
-              </span>
             
           
             <span class="post-meta-item">
@@ -291,7 +283,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PAT/" itemprop="url" rel="index"><span itemprop="name">PAT</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/HDF5/" itemprop="url" rel="index"><span itemprop="name">HDF5</span></a></span>
 
                 
                 
@@ -300,7 +292,7 @@
           
 
           
-            <span id="/2019/08/23/patb1023/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1023 || 组个最小数（详解，C/C++示例，测试点分析）" title="阅读次数">
+            <span id="/2019/09/08/转换hdf5到fvecs和ivecs/" class="post-meta-item leancloud_visitors" data-flag-title="python读取HDF5格式文件并保存为fvecs和ivecs格式（将HDF5格式gist数据集转换为fvecs和ivecs格式）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -319,8 +311,8 @@
       
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/08/23/patb1023/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/23/patb1023/" itemprop="commentCount"></span>
+    <a title="valine" href="/2019/09/08/转换hdf5到fvecs和ivecs/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/08/转换hdf5到fvecs和ivecs/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -336,17 +328,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="组个最小数"><a href="#组个最小数" class="headerlink" title="组个最小数"></a><strong>组个最小数</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>现给定若干个范围在 0-9 的数字。你可以以任意顺序排列这些数字，但必须全部使用。目标是使得最后得到的数尽可能小（注意 0 不能做首位）。例如：给定三个 0，一个 1，两个 5，三个 7，我们得到的最小的数就是 100055777。<br>现给定数字，请编写程序输出能够组成的最小的数。</p>
-<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>输入在一行中给出 10 个非负整数，顺序表示我们拥有数字 0、数字 1、……数字 9 的个数。整数间用一个空格分隔。10 个数字的总个数不超过 50，且至少拥有 1 个非 0 的数字。</p>
-<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>在一行中输出能够组成的最小的数。</p>
-<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3 1 0 0 0 2 0 3 0 0</span><br></pre></td></tr></table></figure></div>
-<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">100055777</span><br></pre></td></tr></table></figure></div>
-<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>设置一个数组存入每个数字的个数；因为至少有一个非零的数字，所以输出不可能为0，第一个必输出一个最小的个数为非零个的非零数字，然后从0开始依次按个数输出每个数字。</p>
-<h3 id="代码示例（C-C-）"><a href="#代码示例（C-C-）" class="headerlink" title="代码示例（C/C++）"></a>代码示例（C/C++）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num_count[<span class="number">10</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;num_count[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">10</span>; i++)&#123;<span class="comment">//先输出一个最小的个数为非零个的非零数字</span></span><br><span class="line">        <span class="keyword">if</span>(num_count[i] != <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d"</span>,i);</span><br><span class="line">            num_count[i]--;<span class="comment">//输出后个数减一</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;<span class="comment">//顺次从小到大按个数输出各数字</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; num_count[i]; j++)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d"</span>,i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<blockquote>
-<p>题目来源：PAT乙级1023<br>作者：CAO, Peng<br>单位：Google</p>
-</blockquote>
-
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p><a href="http://corpus-texmex.irisa.fr/" target="_blank" rel="noopener">网站</a>的gist数据集下载很慢，尝试多次都失败了，科学上网也不行。github上（<a href="https://github.com/erikbern/ann-benchmarks/" target="_blank" rel="noopener">地址</a>）提供了很多<code>hdf5</code>格式的数据集，其中也包括gist，下载速度很快。但是实验的代码处理的数据格式是<code>fvecs</code>和<code>ivecs</code>格式的，需要将<code>hdf5</code>格式的数据进行转换。</p>
+<h2 id="代码示例1（转换成fvecs格式）"><a href="#代码示例1（转换成fvecs格式）" class="headerlink" title="代码示例1（转换成fvecs格式）"></a>代码示例1（转换成<code>fvecs</code>格式）</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PYTHON"><figure class="iseeu highlight /python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> h5py</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_hdf5_file</span><span class="params">(filename)</span>:</span></span><br><span class="line">    f = h5py.File(filename, <span class="string">'r'</span>)</span><br><span class="line">    print(<span class="string">'done !'</span>)</span><br><span class="line">    <span class="keyword">return</span> f</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_fvecs</span><span class="params">(filename, data)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(filename, <span class="string">'wb'</span>) <span class="keyword">as</span> fp:</span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> data:</span><br><span class="line">            d = struct.pack(<span class="string">'I'</span>, y.size)	<span class="comment">#将y.size以C++的unsigned int的形式写入二进制文件</span></span><br><span class="line">            fp.write(d)</span><br><span class="line">            <span class="keyword">for</span> x <span class="keyword">in</span> y:</span><br><span class="line">                a = struct.pack(<span class="string">'f'</span>, x)	<span class="comment">#将x以C++的float的形式写入二进制文件</span></span><br><span class="line">                fp.write(a)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    f = load_hdf5_file(<span class="string">'/home/tdlab/dataset/gist-960-euclidean.hdf5'</span>)</span><br><span class="line">    to_fvecs(<span class="string">'gist_base.fvecs'</span>, f[<span class="string">'train'</span>])</span><br><span class="line">    to_fvecs(<span class="string">'gist_query.fvecs'</span>, f[<span class="string">'test'</span>])</span><br></pre></td></tr></table></figure></div>
+<h2 id="代码示例2（转换成ivecs格式）"><a href="#代码示例2（转换成ivecs格式）" class="headerlink" title="代码示例2（转换成ivecs格式）"></a>代码示例2（转换成<code>ivecs</code>格式）</h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PYTHON"><figure class="iseeu highlight /python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> h5py</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_hdf5_file</span><span class="params">(filename)</span>:</span></span><br><span class="line">    f = h5py.File(filename, <span class="string">'r'</span>)</span><br><span class="line">    print(<span class="string">'done !'</span>)</span><br><span class="line">    <span class="keyword">return</span> f</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_ivecs</span><span class="params">(filename, data)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(filename, <span class="string">'wb'</span>) <span class="keyword">as</span> fp:</span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> data:</span><br><span class="line">            d = struct.pack(<span class="string">'I'</span>, y.size)</span><br><span class="line">            fp.write(d)</span><br><span class="line">            <span class="keyword">for</span> x <span class="keyword">in</span> y:</span><br><span class="line">                a = struct.pack(<span class="string">'I'</span>, x)</span><br><span class="line">                fp.write(a)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    f = load_hdf5_file(<span class="string">'/home/tdlab/dataset/gist-960-euclidean.hdf5'</span>)</span><br><span class="line">    to_ivecs(<span class="string">'gist_groundtruth.ivecs'</span>, f[<span class="string">'neighbors'</span>])</span><br></pre></td></tr></table></figure></div>
     </div>
 
     
@@ -384,11 +368,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+              <a href="/tags/HDF5/" rel="tag"># HDF5</a>
             
-              <a href="/tags/PAT/" rel="tag"># PAT</a>
-            
-              <a href="/tags/编程/" rel="tag"># 编程</a>
+              <a href="/tags/python/" rel="tag"># python</a>
             
           </div>
         
@@ -398,8 +380,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/08/23/patb1022/" rel="next" title="PAT乙级1022 || D进制的A+B（详解，C/C++示例，测试点分析）">
-                  <i class="fa fa-chevron-left"></i> PAT乙级1022 || D进制的A+B（详解，C/C++示例，测试点分析）
+                <a href="/2019/09/06/patb1030/" rel="next" title="PAT乙级1030 || 完美数列（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1030 || 完美数列（详解，C/C++示例，测试点分析）
                 </a>
               
             </div>
@@ -408,8 +390,8 @@
 
             <div class="post-nav-prev post-nav-item">
               
-                <a href="/2019/08/23/patb1024/" rel="prev" title="PAT乙级1024 || 科学计数法（详解，C/C++示例，测试点分析）">
-                  PAT乙级1024 || 科学计数法（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
+                <a href="/2019/09/17/patb1031/" rel="prev" title="PAT乙级1031 || 查验身份证（详解，C/C++示例，测试点分析）">
+                  PAT乙级1031 || 查验身份证（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
                 </a>
               
             </div>
@@ -543,7 +525,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#组个最小数"><span class="nav-number">1.</span> <span class="nav-text">组个最小数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C-C-）"><span class="nav-number">1.6.2.</span> <span class="nav-text">代码示例（C/C++）</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码示例1（转换成fvecs格式）"><span class="nav-number">2.</span> <span class="nav-text">代码示例1（转换成fvecs格式）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码示例2（转换成ivecs格式）"><span class="nav-number">3.</span> <span class="nav-text">代码示例2（转换成ivecs格式）</span></a></li></ol></div>
             
 
           </div>

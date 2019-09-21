@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
+<meta name="keywords" content="论文阅读,ANNS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="极度快速的近似最近邻搜索算法(EFANNA)学习笔记">
+<meta property="og:url" content="http://whenever5225.github.io/2019/09/21/efanna1/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
+<meta property="og:updated_time" content="2019-09-21T08:01:40.814Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="极度快速的近似最近邻搜索算法(EFANNA)学习笔记">
+<meta name="twitter:description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
+<meta name="twitter:image" content="http://whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/09/21/efanna1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>极度快速的近似最近邻搜索算法(EFANNA)学习笔记 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">8</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">3</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">40</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/09/21/efanna1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">极度快速的近似最近邻搜索算法(EFANNA)学习笔记
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-21 15:18:08 / 修改时间：16:01:40" itemprop="dateCreated datePublished" datetime="2019-09-21T15:18:08+08:00">2019-09-21</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2019/09/21/efanna1/" class="post-meta-item leancloud_visitors" data-flag-title="极度快速的近似最近邻搜索算法(EFANNA)学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/09/21/efanna1/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/21/efanna1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>极度快速的近似最近邻搜索算法(EFANNA)是<a href="http://www.vldb.org/pvldb/vol12/p461-fu.pdf" target="_blank" rel="noopener">NSG</a>的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(<a href="https://www.researchgate.net/publication/221022023_Efficient_K-nearest_neighbor_graph_construction_for_generic_similarity_measures" target="_blank" rel="noopener">地址</a>)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都是随机选择入口点，该论文使用树结构而不是随机的方式来选择入口点。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>基于图的方法的两个问题</p>
+<ol>
+<li>贪婪过程往往会收敛到局部最优</li>
+<li>建立 $kNN$ 图非常耗时</li>
+</ol>
+<p>尝试解决第一个问题的一个方法是不随机选择入口点，而是基于辅助结构(如<a href="https://www.ncbi.nlm.nih.gov/pubmed/25330477" target="_blank" rel="noopener">哈希方法</a>，树方法)为查询点提供更好的初始化入口点。</p>
+<p>尝试解决第二个问题的很多方法是要创建近似的 $kNN$ 图，大都采用了 <code>divide-and-conquer</code>策略(分治策略)，这种策略主要分三步：</p>
+<ol>
+<li>划分整个数据集为多个小的子集</li>
+<li>在子集中暴力搜索获得许多重叠子图</li>
+<li>归并子图，用NN-expansion的方法细化图</li>
+</ol>
+<p>该论文提出的EFANNA方法的索引包括两部分：</p>
+<ol>
+<li>多重随机分层结构</li>
+<li>近似 $kNN$ 图</li>
+</ol>
+<p>在离线阶段，首先，EFANNA通过快速分层的方式多次划分数据集为许多子集；接着，自底向上创建近似 $kNN$ 图，在此过程中，EFANNA利用这些结构定位可能的最近邻居，并利用这些候选来更新图，最后采用改进了类似于NN-Descent的方法来精细化索引。</p>
+<p>在在线阶段，首先在分层结构中搜索获取查询点的候选邻居（确定入口点），然后使用贪婪方法（NN-expansion）在近似 $kNN$ 图上执行查询。</p>
+<h2 id="EFANNA索引构建之随机截断KD树构建算法"><a href="#EFANNA索引构建之随机截断KD树构建算法" class="headerlink" title="EFANNA索引构建之随机截断KD树构建算法"></a>EFANNA索引构建之随机截断KD树构建算法</h2><p>EFANNA索引的第一大部分为多个随机分层的结构，作者采用了随机截断的KD树（randomized truncated KD-tree）来实现这一结构，其实还有很多其它方法。作者在给定的数据集 $D$ 上建立了多个随机截断KD树。</p>
+<h3 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h3><p>首先给要建立的随机截断KD树的叶子结点所能包含的数据点的个数限定一个上界 $K$ ，当输入的数据点的个数小于 $K$ 时直接返回，否则的话就进行划分，划分时随机选择一个维度，计算数据集在该维的平均值，然后根据平均值将数据集划分为两个子集，接着递归地对划分的两个子集建立随机截断KD树，直到数据集中点的个数小于 $K$。重复对数据集 $D$ 执行上述过程多次建立多个随机截断KD树。</p>
+<h3 id="伪代码分析"><a href="#伪代码分析" class="headerlink" title="伪代码分析"></a>伪代码分析</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//输入:</span></span><br><span class="line"><span class="comment">//数据集D;树的数量T;一个叶子结点中的数据点数K</span></span><br><span class="line">Input:</span><br><span class="line">the data <span class="built_in">set</span> D, the number of trees T, the number of points in a leaf node K.</span><br><span class="line"><span class="comment">//输出:</span></span><br><span class="line"><span class="comment">//随机截断KD树集S</span></span><br><span class="line">Output:</span><br><span class="line">the randomized truncated KD-tree <span class="built_in">set</span> S</span><br><span class="line"><span class="comment">//构建树的函数BUILDTREE，输入结点和数据点集</span></span><br><span class="line"><span class="function">function <span class="title">BUILDTREE</span><span class="params">(Node,PointSet)</span></span></span><br><span class="line"><span class="function">    <span class="comment">//若数据点的个数小于K则直接返回</span></span></span><br><span class="line">    if size of PointSet &lt; K then</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="comment">//随机选择一个维度d</span></span><br><span class="line">        Randomly choose dimension d.</span><br><span class="line">        <span class="comment">//计算数据集在该维的平均值mid</span></span><br><span class="line">		Calculate the mean mid over PointSet on dimension d. </span><br><span class="line">        <span class="comment">//根据平均值把数据集平分为两个子集LeftHalf和RightHalf</span></span><br><span class="line">		Divide PointSet evenly into two subsets, LeftHalf <span class="keyword">and</span> RightHalf, according to mid.</span><br><span class="line">		<span class="comment">//递归建立左子树</span></span><br><span class="line">        BUILDTREE(Node.LeftChild, LeftHalf)</span><br><span class="line">		<span class="comment">//递归建立右子树</span></span><br><span class="line">		BUILDTREE(Node.RightChild,RightHalf)</span><br><span class="line">	end <span class="keyword">if</span></span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">end function</span><br><span class="line"><span class="comment">//迭代T次，建立T棵树</span></span><br><span class="line"><span class="keyword">for</span> all i = <span class="number">1</span> to T <span class="keyword">do</span></span><br><span class="line">    <span class="comment">//对数据集D建立第i棵树</span></span><br><span class="line">	BUILDTREE(Rooti,D)</span><br><span class="line">    <span class="comment">//添加第i棵树根到树集S</span></span><br><span class="line">	Add Rooti to S.</span><br><span class="line">end <span class="keyword">for</span></span><br></pre></td></tr></table></figure></div>
+<h2 id="EFANNA索引构建之近似kNN图构建算法"><a href="#EFANNA索引构建之近似kNN图构建算法" class="headerlink" title="EFANNA索引构建之近似kNN图构建算法"></a>EFANNA索引构建之近似kNN图构建算法</h2><p>EFANNA索引的另一大部分就是近似kNN图了，作者采用了类似近似最近邻搜索的方法来建立近似kNN图，这个过程包括两个阶段：</p>
+<ol>
+<li>kNN图初始化</li>
+<li>对初始kNN图进行细化</li>
+</ol>
+<p>下面分别进行概括。</p>
+<h3 id="kNN图初始化之分层分治算法"><a href="#kNN图初始化之分层分治算法" class="headerlink" title="kNN图初始化之分层分治算法"></a>kNN图初始化之分层分治算法</h3><p>作者采用<strong>分治</strong>的策略来快速获得一个初始化的kNN图。得到一个初始化的kNN图无非就是给基数据集中的每个点初始化邻居，这个过程其实就是在已经建好的几个随机截断KD树上为数据点找邻居，在这里作者采用的方法不过是“分层分治”的策略。</p>
+<center>
+    <img src="//whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
+         图1 分层分治算法图解
+</center>
+
+<h4 id="主要思想-1"><a href="#主要思想-1" class="headerlink" title="主要思想"></a>主要思想</h4><p>对数据集中的每一个数据点，我们都要给它们初始化邻居，对某个数据点初始化邻居时，我们要在已经建立的<strong>所有</strong>树上以该数据点为查询点进行<strong>分层分治</strong>查找，也就是说在每棵树上都要查找一遍。下面只详细分析在一颗树上的<strong>分层分治</strong>过程，多棵树只是重复的过程。</p>
+<p>为了便于分析，下面以图1的示例来说明。现在要给数据点 $q$ 找邻居（在树中找一些离它较近的数据点），从树根开始执行深度优先搜索进行查找，一直找到标号为<code>8</code>的叶子结点，显然 $q$ 也处于这个结点中（整棵树涵盖了所有的数据点），这个叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中，此时我们处理的是最底层（深度为3）。标号为<code>1</code>、<code>2</code>和<code>4</code>的结点（非叶结点）是搜索的过程中遍历到的结点。接着该处理倒数第2层（深度为2）了，我们<strong>只处理该层中遍历到的结点</strong>，也就是结点<code>4</code>了，其它的标号为<code>5</code>、<code>6</code>和<code>7</code>的结点都没有遍历到。结点<code>4</code>的孩子结点分别为结点<code>8</code>和<code>9</code>，因为结点<code>8</code>已经遍历过了，此时我们<strong>只处理没有遍历过的孩子结点</strong>，因此，我们只处理结点<code>9</code>，对以结点<code>9</code>为根的子树进行深度优先搜索直到某个叶子结点，因为结点<code>9</code>本身就是叶子结点，因此返回的叶子结点也就是它了，把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中。接着处理第1层，同理选中结点<code>2</code>，然后同理选中它的孩子结点<code>5</code>，对以结点<code>5</code>为根的子树执行深度优先搜索，将返回叶子结点<code>10</code>（上面的局限图可以看出结点<code>10</code>离 $q$ 更近），同样把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中……</p>
+<p>上面的那个过程可以一种处理到第0层，即根结点。但是，实际应用时这个过程是很耗时的，因为我们要对多个树重复上述过程，因此，都要处理到根结点是没必要的。在此，可以把能处理到的最小层设定为一个参数<code>Dep</code>，<code>Dep</code>具体值的设定可根据精度和速度的权衡来安排。</p>
+<p>明白了上述过程，我们也就很容易明白作者给该算法命名为<strong>分层分治</strong>的原因了。</p>
+<h4 id="伪代码分析-1"><a href="#伪代码分析-1" class="headerlink" title="伪代码分析"></a>伪代码分析</h4><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//输入：</span></span><br><span class="line"><span class="comment">//数据集D;近似kNN图的k;树构建算法构建的随机截断KD树集S;处理的最小深度Dep(从叶子向上处理)</span></span><br><span class="line">Input:</span><br><span class="line">the data <span class="built_in">set</span> D, the k in approximate kNN graph , the randomized truncated KD-tree <span class="built_in">set</span> S built with Algorithm <span class="number">2</span>, the conquer-to depth Dep.</span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line"><span class="comment">//近似kNN图G</span></span><br><span class="line">Output:</span><br><span class="line">approximate kNN graph G.</span><br><span class="line"><span class="comment">//“分”阶段</span></span><br><span class="line"><span class="comment">//使用树构建算法建立多个随机截断KD树，得到树集S</span></span><br><span class="line">%%Division step</span><br><span class="line">Using Algorithm <span class="number">2</span> to build tree, which leads to the input S</span><br><span class="line"><span class="comment">//“治”阶段</span></span><br><span class="line">%% Conquer step</span><br><span class="line"><span class="comment">//近似kNN图G初始化为空</span></span><br><span class="line">G = ∅</span><br><span class="line"><span class="comment">//对数据集中的每一个结点i</span></span><br><span class="line"><span class="keyword">for</span> all point i in D <span class="keyword">do</span></span><br><span class="line">	Candidate pool C = ∅</span><br><span class="line">	<span class="comment">//对树集中的每一棵树t</span></span><br><span class="line">	<span class="keyword">for</span> all binary tree t in S <span class="keyword">do</span></span><br><span class="line">        <span class="comment">//用数据点i在树t上进行搜索直到叶子结点</span></span><br><span class="line">		search in tree t with point i to the leaf node.</span><br><span class="line">        <span class="comment">//添加叶子结点中的所有数据点到候选集C</span></span><br><span class="line">		add all the point in the leaf node to C.</span><br><span class="line">        <span class="comment">//记下叶子结点的深度d</span></span><br><span class="line">		d = depth of the leaf node</span><br><span class="line">		<span class="comment">//当d大于给定的处理到的最小深度Dep执行下面的循环</span></span><br><span class="line">		<span class="keyword">while</span> d &gt; Dep <span class="keyword">do</span></span><br><span class="line">			d = d − <span class="number">1</span></span><br><span class="line">            <span class="comment">//用数据点i在树t上执行深度优先搜索直到深度d，在深度为d的那层搜索到的非叶结点标记为N，它的还没被访问过的孩子结点标记为Sib</span></span><br><span class="line">			Depth-first-search in the tree t with point i to depth d. Suppose N is the non-leaf node on the search path with depth d. Suppose Sib is the child node of N. And Sib is <span class="keyword">not</span> on the search path of point i.</span><br><span class="line">            <span class="comment">//在以Sib为根的子树上用数据点i执行深度优先搜索，直到叶子结点，添加叶子结点中所有的数据点到候选集C</span></span><br><span class="line">			Depth-first-search to the leaf node in the subtree of Sib with point i . Add all the points in the leaf node to C.</span><br><span class="line">		end <span class="keyword">while</span></span><br><span class="line">	end <span class="keyword">for</span></span><br><span class="line">    <span class="comment">//保留候选集C中离数据点i最近的K个数据点</span></span><br><span class="line">	Reserve K closest points to i in C.</span><br><span class="line">	<span class="comment">//添加候选集C中的点到近邻图，作为数据点i的初始化邻居</span></span><br><span class="line">	Add C to G.</span><br><span class="line">end <span class="keyword">for</span></span><br></pre></td></tr></table></figure></div>
+<h3 id="初始kNN图的精致化算法"><a href="#初始kNN图的精致化算法" class="headerlink" title="初始kNN图的精致化算法"></a>初始kNN图的精致化算法</h3><p>这个过程就是对得到的初始化kNN图进行细化，使其更接近精确的kNN图，从而成为一个高质量的近似kNN图。这里有两种方法，分别为NN-expansion和NN-descent（两者区别详见），实践说明在构建kNN图方面NN-descent更有效，一句话概括它的思想就是<strong>各邻居之间更可能彼此互为邻居</strong>。</p>
+<h4 id="主要思想-2"><a href="#主要思想-2" class="headerlink" title="主要思想"></a>主要思想</h4><p>精致化算法是在初始kNN图的基础上进行的，精致化之后将得到结果图G。一开始先将结果图初始化为预先建好的初始kNN图，对数据集中的每一个点，它在G中会有一定量的邻居（此时就是初始kNN图中它的邻居），将它的这些邻居之间互相添加为各自的邻居（添加到G中），添加后将新添加的邻居标记为new，对数据集中的所有点都执行上述过程后，对每个点保留其最近的一定量个邻居（预先设定的上界），这便是第一次迭代的过程，也是相对简单的一次。</p>
+<p>下面来看第二次迭代。对数据集中的每一个点，它它在G中会有一定量的邻居（此时的邻居有新添加标记为new的，也有初始kNN图中没标记为new的记其标记为old），将它的这些标记为new的邻居（遍历过之后取消new标记记其标记为old）之间互相添加为各自的邻居（同样添加到G中），添加后将新添加的邻居标记为new，不仅如此，对每个标记为new的邻居，还要将所有标记为old的邻居添加到它的邻居中，同时也添加反向边（标记为new的点也要添加到标记为old的点的邻居中），对数据集中的所有点都执行上述过程后，对每个点保留其最近的一定量个邻居（预先设定的上界）。</p>
+<p>接下来的各次迭代就和第二次类似了，可以预先设置一个合适的迭代次数。</p>
+<h4 id="伪代码分析-2"><a href="#伪代码分析-2" class="headerlink" title="伪代码分析"></a>伪代码分析</h4><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//输入：</span></span><br><span class="line"><span class="comment">//初始化的近似kNN图Ginit;数据集D;最大迭代次数Imax;侯选池尺寸P;Gnew中的每个点的最大邻居数L</span></span><br><span class="line">Input:</span><br><span class="line">an initial approximate k-nearest neighbor graph Ginit, data <span class="built_in">set</span> D, maximum iteration number Imax, Candidate pool size P, <span class="keyword">new</span> neighbor checking num L.</span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line"><span class="comment">//结果近似kNN图G</span></span><br><span class="line">Output:</span><br><span class="line">an approximate kNN graph G.</span><br><span class="line">iter = <span class="number">0</span>, G = Ginit</span><br><span class="line"><span class="comment">//Gnew记录每个点在上一次迭代中新添加的候选邻居集，初始化为Ginit</span></span><br><span class="line">Graph Gnew records all the <span class="keyword">new</span> added candidate neighbors of each point. Gnew = Ginit.</span><br><span class="line"><span class="comment">//Gold记录每个点在之前的迭代中添加的旧候选邻居集，初始化为空</span></span><br><span class="line">Graph Gold records all the old candidate neighbors of each point at previous iterations. Gold = ∅</span><br><span class="line"><span class="comment">//Grnew记录本次迭代给NNnew中的点添加的NNnew中的点作为邻居</span></span><br><span class="line">Graph Grnew records all the <span class="keyword">new</span> added reverse candidate neighbors of each point.</span><br><span class="line"><span class="comment">//Grold记录本次迭代给NNold中的点添加的NNnew中的点作为邻居</span></span><br><span class="line">Graph Grold records all the old reverse candidate neighbors of each point.</span><br><span class="line">	<span class="comment">//迭代次数小于最大迭代次数时执行循环</span></span><br><span class="line"><span class="keyword">while</span> iter &lt; Imax <span class="keyword">do</span></span><br><span class="line">    Grnew = ∅, Grold = ∅.</span><br><span class="line">	<span class="keyword">for</span> all point i in D <span class="keyword">do</span></span><br><span class="line">        <span class="comment">//数据点i在Gnew中的邻居集NNnew</span></span><br><span class="line">		NNnew is the neighbor <span class="built_in">set</span> of point i in Gnew.</span><br><span class="line">        <span class="comment">//数据点i在Gold中的邻居集NNold</span></span><br><span class="line">		NNold is the neighbor <span class="built_in">set</span> of of point i in Gold.</span><br><span class="line">        <span class="comment">//对NNnew中某个点j，将其它所有点添加到j在G中的条目中，并标记为新添加的候选邻居，将j添加到</span></span><br><span class="line">		<span class="keyword">for</span> all point j in NNnew <span class="keyword">do</span></span><br><span class="line">            </span><br><span class="line">			<span class="keyword">for</span> all point k in NNnew <span class="keyword">do</span></span><br><span class="line">				<span class="keyword">if</span> j! = k then</span><br><span class="line">					<span class="comment">//计算数据点j和数据点k的距离</span></span><br><span class="line">					calculate the distance between j <span class="keyword">and</span> k.</span><br><span class="line">                    <span class="comment">//添加数据点k到G中j的条目，标记k为new</span></span><br><span class="line">					add k to j’s entry in G. mark k as <span class="keyword">new</span>.</span><br><span class="line">                    <span class="comment">//添加j到G和Grnew中k的条目，标记为new</span></span><br><span class="line">					add j to k’s entry in G <span class="keyword">and</span> Grnew.</span><br><span class="line">					mark j as <span class="keyword">new</span>.</span><br><span class="line">				end <span class="keyword">if</span></span><br><span class="line">			end <span class="keyword">for</span></span><br><span class="line">			<span class="keyword">for</span> all point l in NNold <span class="keyword">do</span></span><br><span class="line">				calculate the distance between j <span class="keyword">and</span> l.</span><br><span class="line">                <span class="comment">//添加l到G中j的条目，标记为old</span></span><br><span class="line">				add l to j’s entry in G. mark l as old.</span><br><span class="line">                <span class="comment">//添加j到G和Grold中l的条目，标记为old</span></span><br><span class="line">				add j to l’s entry in G <span class="keyword">and</span> Grold.</span><br><span class="line">				mark j as old.</span><br><span class="line">			end <span class="keyword">for</span></span><br><span class="line">		end <span class="keyword">for</span></span><br><span class="line">	end <span class="keyword">for</span></span><br><span class="line">	<span class="keyword">for</span> all point i in D <span class="keyword">do</span></span><br><span class="line">        <span class="comment">//保留距离数据点i最近的P个邻居</span></span><br><span class="line">		Reserve the closest P points to i in respective</span><br><span class="line">		<span class="comment">//作为结果图的条目</span></span><br><span class="line">		entry of G.</span><br><span class="line">	end <span class="keyword">for</span></span><br><span class="line">	Gnew = Gold = ∅</span><br><span class="line">	<span class="keyword">for</span> all point i in D <span class="keyword">do</span></span><br><span class="line">        <span class="comment">//G中i的邻居集为NN</span></span><br><span class="line">		l = <span class="number">0.</span> NN is the neighbor <span class="built_in">set</span> of i in G.</span><br><span class="line">		<span class="keyword">while</span> l &lt; L <span class="keyword">and</span> l &lt; P <span class="keyword">do</span></span><br><span class="line">			j = NN[l].</span><br><span class="line">            <span class="comment">//如果j标记为new</span></span><br><span class="line">			<span class="keyword">if</span> j is marked as <span class="keyword">new</span> then</span><br><span class="line">				<span class="comment">//添加j到Gnew中i的条目</span></span><br><span class="line">				add j to i’s entry in Gnew.</span><br><span class="line">                <span class="comment">//l统计标记为new的邻居检查的次数</span></span><br><span class="line">				l = l + <span class="number">1.</span></span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">                <span class="comment">//添加j到Gold中i的条目</span></span><br><span class="line">				add j to i’s entry in Gold.</span><br><span class="line">			end <span class="keyword">if</span></span><br><span class="line">		end <span class="keyword">while</span></span><br><span class="line">	end <span class="keyword">for</span></span><br><span class="line">	Gnew = Gnew ∪ Grnew.</span><br><span class="line">	Gold = Gold ∪ Grold</span><br><span class="line">	iter = iter + <span class="number">1</span></span><br><span class="line">end <span class="keyword">while</span></span><br></pre></td></tr></table></figure></div>
+<h2 id="在EFANNA索引上进行近似最近邻搜索"><a href="#在EFANNA索引上进行近似最近邻搜索" class="headerlink" title="在EFANNA索引上进行近似最近邻搜索"></a>在EFANNA索引上进行近似最近邻搜索</h2><h3 id="EFANNA的搜索算法伪代码"><a href="#EFANNA的搜索算法伪代码" class="headerlink" title="EFANNA的搜索算法伪代码"></a>EFANNA的搜索算法伪代码</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="C"><figure class="iseeu highlight /c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//输入:</span></span><br><span class="line"><span class="comment">//数据集D;查询向量q;要求的最近邻居数K;EFANNA索引(包括树集Stree和kNN图G);</span></span><br><span class="line"><span class="comment">//侯选池尺寸P;扩展因子(贪婪搜索时每次迭代保留的最大候选邻居数)E;迭代次数I.</span></span><br><span class="line">Input:</span><br><span class="line">data set D, query vector q, the number K of required nearest neighbors, EFANNA index (including tree set Stree and kNN graph G), the candidate pool size P, the expansion factor E, the iteration number I.</span><br><span class="line"><span class="comment">//输出:</span></span><br><span class="line"><span class="comment">//查询点的近似最近邻居</span></span><br><span class="line">Output:</span><br><span class="line">approximate nearest neighbor <span class="built_in">set</span> ANNS of the query</span><br><span class="line">iter = <span class="number">0</span></span><br><span class="line">NodeList = ∅</span><br><span class="line">candidate <span class="built_in">set</span> C = ∅</span><br><span class="line"><span class="comment">//每个叶子结点包含的数据点的最大个数记为Sleaf</span></span><br><span class="line">suppose the maximal number of points of leaf node is Sleaf</span><br><span class="line"><span class="comment">//树的数量记为Ntree</span></span><br><span class="line">suppose the number of trees is Ntree</span><br><span class="line"><span class="comment">//每棵树需要返回的最大叶子结点个数Nnode</span></span><br><span class="line">then the maximal node check number is Nnode = P ÷ Sleaf ÷Ntree + <span class="number">1</span></span><br><span class="line"><span class="comment">//遍历Stree中的树，对每一个树执行深度优先搜索，返回其中离查询最近的Nnode个叶子结点</span></span><br><span class="line"><span class="comment">//并添加到NodeList表中</span></span><br><span class="line"><span class="keyword">for</span> all tree i in Stree <span class="keyword">do</span></span><br><span class="line">    Depth-first search i <span class="keyword">for</span> top Nnode closest leaf nodes according to respective tree search criteria, add to NodeList</span><br><span class="line">end <span class="keyword">for</span></span><br><span class="line"><span class="comment">//把NodeList中的叶子结点中的数据点添加到候选集C中</span></span><br><span class="line">add the points belonging to the nodes in NodeList to C</span><br><span class="line"><span class="comment">//保留候选集C中离查询点最近的E个数据点</span></span><br><span class="line">keep E points in C which are closest to q. </span><br><span class="line"><span class="comment">//迭代I次贪婪搜索</span></span><br><span class="line"><span class="keyword">while</span> iter &lt; I <span class="keyword">do</span></span><br><span class="line">    candidate <span class="built_in">set</span> CC = ∅</span><br><span class="line">    <span class="comment">//遍历候选集C中的数据点</span></span><br><span class="line">    <span class="keyword">for</span> all point n in C <span class="keyword">do</span></span><br><span class="line">        <span class="comment">//对于点n,它在kNN图中的邻居集为Sn</span></span><br><span class="line">        Sn is the neighbors of point n based on G.</span><br><span class="line">        <span class="comment">//遍历Sn中的数据点</span></span><br><span class="line">        <span class="keyword">for</span> all point nn in Sn <span class="keyword">do</span></span><br><span class="line">            <span class="comment">//如果nn还没被检查</span></span><br><span class="line">            <span class="keyword">if</span> nn hasn’t been checked then</span><br><span class="line">                <span class="comment">//把nn添加到CC中</span></span><br><span class="line">                put nn into CC.</span><br><span class="line">            end <span class="keyword">if</span></span><br><span class="line">        end <span class="keyword">for</span></span><br><span class="line">    end <span class="keyword">for</span></span><br><span class="line">    <span class="comment">//把CC集中的点添加到候选集C中并保留离查询点最近的P个数据点</span></span><br><span class="line">    move all the points in CC to C <span class="keyword">and</span> keep P points in C which are closest to q.</span><br><span class="line">    iter = iter + <span class="number">1</span></span><br><span class="line">end <span class="keyword">while</span></span><br><span class="line"><span class="keyword">return</span> ANNS as the closet K points to q in C.</span><br></pre></td></tr></table></figure></div>
+<p>注：作者的实验表明，迭代次数 $I=4$ 就足够了。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>Fu C , Cai D . EFANNA : An Extremely Fast Approximate Nearest Neighbor Search Algorithm Based on kNN Graph[J]. 2016.</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/20/patb1032/" rel="next" title="PAT乙级1032 || 挖掘机技术哪家强（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1032 || 挖掘机技术哪家强（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EFANNA索引构建之随机截断KD树构建算法"><span class="nav-number">3.</span> <span class="nav-text">EFANNA索引构建之随机截断KD树构建算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要思想"><span class="nav-number">3.1.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#伪代码分析"><span class="nav-number">3.2.</span> <span class="nav-text">伪代码分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EFANNA索引构建之近似kNN图构建算法"><span class="nav-number">4.</span> <span class="nav-text">EFANNA索引构建之近似kNN图构建算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kNN图初始化之分层分治算法"><span class="nav-number">4.1.</span> <span class="nav-text">kNN图初始化之分层分治算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主要思想-1"><span class="nav-number">4.1.1.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#伪代码分析-1"><span class="nav-number">4.1.2.</span> <span class="nav-text">伪代码分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始kNN图的精致化算法"><span class="nav-number">4.2.</span> <span class="nav-text">初始kNN图的精致化算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主要思想-2"><span class="nav-number">4.2.1.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#伪代码分析-2"><span class="nav-number">4.2.2.</span> <span class="nav-text">伪代码分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在EFANNA索引上进行近似最近邻搜索"><span class="nav-number">5.</span> <span class="nav-text">在EFANNA索引上进行近似最近邻搜索</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#EFANNA的搜索算法伪代码"><span class="nav-number">5.1.</span> <span class="nav-text">EFANNA的搜索算法伪代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '此处免登录就可交流评论哦^_^',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
