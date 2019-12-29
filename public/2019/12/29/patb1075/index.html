@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="链表元素分类题目描述给定一个单链表，请编写程序将链表元素进行分类排列，使得所有负值元素都排在非负值元素的前面，而 [0, K] 区间内的元素都排在大于 K 的元素前面。但每一类内部元素的顺序是不能改变的。例如：给定链表为 18→7→-4→0→5→-6→10→11→-2，K 为 10，则输出应该为 -4→-6→-2→7→0→5→10→18→11。 输入格式每个输入包含一个测试用例。每个测试用例第 1">
+<meta name="keywords" content="C&#x2F;C++,PAT,编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PAT乙级1075 || 链表元素分类（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/12/29/patb1075/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="链表元素分类题目描述给定一个单链表，请编写程序将链表元素进行分类排列，使得所有负值元素都排在非负值元素的前面，而 [0, K] 区间内的元素都排在大于 K 的元素前面。但每一类内部元素的顺序是不能改变的。例如：给定链表为 18→7→-4→0→5→-6→10→11→-2，K 为 10，则输出应该为 -4→-6→-2→7→0→5→10→18→11。 输入格式每个输入包含一个测试用例。每个测试用例第 1">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-29T10:33:51.637Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PAT乙级1075 || 链表元素分类（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="链表元素分类题目描述给定一个单链表，请编写程序将链表元素进行分类排列，使得所有负值元素都排在非负值元素的前面，而 [0, K] 区间内的元素都排在大于 K 的元素前面。但每一类内部元素的顺序是不能改变的。例如：给定链表为 18→7→-4→0→5→-6→10→11→-2，K 为 10，则输出应该为 -4→-6→-2→7→0→5→10→18→11。 输入格式每个输入包含一个测试用例。每个测试用例第 1">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/12/29/patb1075/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PAT乙级1075 || 链表元素分类（详解，C/C++示例，测试点分析） | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">9</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">89</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/12/29/patb1075/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">PAT乙级1075 || 链表元素分类（详解，C/C++示例，测试点分析）
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-29 18:10:43 / 修改时间：18:33:51" itemprop="dateCreated datePublished" datetime="2019-12-29T18:10:43+08:00">2019-12-29</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PAT/" itemprop="url" rel="index"><span itemprop="name">PAT</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2019/12/29/patb1075/" class="post-meta-item leancloud_visitors" data-flag-title="PAT乙级1075 || 链表元素分类（详解，C/C++示例，测试点分析）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/29/patb1075/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/29/patb1075/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="链表元素分类"><a href="#链表元素分类" class="headerlink" title="链表元素分类"></a><strong>链表元素分类</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>给定一个单链表，请编写程序将链表元素进行分类排列，使得所有负值元素都排在非负值元素的前面，而 [0, K] 区间内的元素都排在大于 K 的元素前面。但每一类内部元素的顺序是不能改变的。例如：给定链表为 18→7→-4→0→5→-6→10→11→-2，K 为 10，则输出应该为 -4→-6→-2→7→0→5→10→18→11。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>每个输入包含一个测试用例。每个测试用例第 1 行给出：第 1 个结点的地址；结点总个数，即正整数N (≤$10^5$)；以及正整数K (≤$10^3$)。结点的地址是 5 位非负整数，NULL 地址用 −1 表示。</p>
+<p>接下来有 N 行，每行格式为：</p>
+<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Address Data Next</span><br></pre></td></tr></table></figure></div>
+<p>其中 <code>Address</code> 是结点地址；<code>Data</code> 是该结点保存的数据，为 [−$10^5$, $10^5$] 区间内的整数；<code>Next</code> 是下一结点的地址。题目保证给出的链表不为空。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>对每个测试用例，按链表从头到尾的顺序输出重排后的结果链表，其上每个结点占一行，格式与输入相同。</p>
+<h2 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a><strong>输入样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">00100 9 10</span><br><span class="line">23333 10 27777</span><br><span class="line">00000 0 99999</span><br><span class="line">00100 18 12309</span><br><span class="line">68237 -6 23333</span><br><span class="line">33218 -4 00000</span><br><span class="line">48652 -2 -1</span><br><span class="line">99999 5 68237</span><br><span class="line">27777 11 48652</span><br><span class="line">12309 7 33218</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a><strong>输出样例</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">33218 -4 68237</span><br><span class="line">68237 -6 48652</span><br><span class="line">48652 -2 12309</span><br><span class="line">12309 7 00000</span><br><span class="line">00000 0 99999</span><br><span class="line">99999 5 23333</span><br><span class="line">23333 10 00100</span><br><span class="line">00100 18 27777</span><br><span class="line">27777 11 -1</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>又是一道费时的题，这种乙级难度的题竟然还能如此费劲，一定是我太弱了@^@。</p>
+<p>这种题其实有更简单的方法，三个数组分别放三类数分别输出就行了，可是我就是想试试链表的拆接。链表的拆接有太多的小细节要处理了，多次把自己搞入了绝境。最后还是靠自己一个测试点一个测试点的解决，逐渐完善特殊情况的处理，最终才全部通过。</p>
+<p>链表拆接的思想其实很简单，概括起来就是：遇到负值就接到前面负值区域最后一个的后面，遇到[0,k]区间内的值就接到前面[0, k]区域的最后一个的后面，注意拆下来的时候要注意防止断链，接上去的时候要注意前后接完整。</p>
+<p>小细节太多了，具体看下面的代码吧。</p>
+<h3 id="坑点提醒"><a href="#坑点提醒" class="headerlink" title="坑点提醒"></a>坑点提醒</h3><h4 id="测试点1"><a href="#测试点1" class="headerlink" title="测试点1"></a>测试点1</h4><p>原链表顺序中有连续的负值，这个需要特殊处理。</p>
+<h4 id="测试点4"><a href="#测试点4" class="headerlink" title="测试点4"></a>测试点4</h4><p>需要注意的是输入的数据中可能存在不在链表中的废数据，比如测试点4，所以在遍历筛选和输出时不能用输入节点个数为准，应以结束地址-1和有效链表长度为准。比如下面的测试用例中就含有废数据：</p>
+<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">00100 9 10</span><br><span class="line">23333 10 27777</span><br><span class="line">23314 233 12379</span><br><span class="line">00000 0 99999</span><br><span class="line">00100 -4 12309</span><br><span class="line">68237 -6 23333</span><br><span class="line">33218 7 00000</span><br><span class="line">48652 5 -1</span><br><span class="line">99999 18 68237</span><br><span class="line">27777 11 48652</span><br><span class="line">12309 -2 33218</span><br></pre></td></tr></table></figure></div>
+<h4 id="测试点5"><a href="#测试点5" class="headerlink" title="测试点5"></a>测试点5</h4><p>原链表顺序中有连续的处于区域[0, k]之间的数，这个需要特殊处理。</p>
+<h3 id="代码示例（C-C-）"><a href="#代码示例（C-C-）" class="headerlink" title="代码示例（C/C++）"></a>代码示例（C/C++）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> data, next;</span><br><span class="line">&#125;node[<span class="number">100000</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> addr_first, num, k;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d%d%d"</span>, &amp;addr_first, &amp;num, &amp;k);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> addr1, addr2, tmp;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d%d%d"</span>, &amp;addr1, &amp;tmp, &amp;addr2);</span><br><span class="line">        node[addr1].data = tmp;</span><br><span class="line">        node[addr1].next = addr2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> first1, end1, first2, end2;  <span class="comment">//first1，end1负值结点的第一个元素和最后一个元素的地址，first2，end2处于[0, k]之间的第一个元素的和最后一个元素的地址</span></span><br><span class="line">    first2 = addr_first;</span><br><span class="line">    <span class="keyword">int</span> flag1 = <span class="number">1</span>, flag2 = <span class="number">1</span>;   <span class="comment">//分别标记负值元素和处于[0,k]之间的元素的第一个插入</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> p = addr_first, pre = addr_first; p != <span class="number">-1</span>; ) &#123;   <span class="comment">//p为遍历指针，pre为遍历指针的上一个元素地址</span></span><br><span class="line">        <span class="keyword">if</span>(node[p].data &lt; <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(flag1) &#123;</span><br><span class="line">                node[pre].next = node[p].next;  <span class="comment">//摘下来</span></span><br><span class="line">                addr_first = first1 = end1 = p;</span><br><span class="line">                <span class="keyword">if</span>(p != pre) &#123;</span><br><span class="line">                    node[p].next = first2;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;  <span class="comment">//第一个元素为负值</span></span><br><span class="line">                    first2 = node[p].next;</span><br><span class="line">                &#125;</span><br><span class="line">                flag1 = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(node[pre].data &lt; <span class="number">0</span>) &#123;    <span class="comment">//特殊处理连续的负值</span></span><br><span class="line">                    end1 = pre = p;</span><br><span class="line">                    p = node[p].next;</span><br><span class="line">                    first2 = p;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    node[pre].next = node[p].next;  <span class="comment">//摘下来</span></span><br><span class="line">                &#125;</span><br><span class="line">                node[end1].next = p;</span><br><span class="line">                node[p].next = first2;</span><br><span class="line">                end1 = p;   <span class="comment">//note</span></span><br><span class="line">            &#125;</span><br><span class="line">            p = node[pre].next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(node[p].data &gt;= <span class="number">0</span> &amp;&amp; node[p].data &lt;= k) &#123;</span><br><span class="line">            <span class="keyword">if</span>(node[pre].data &gt;=<span class="number">0</span> &amp;&amp; node[pre].data &lt;= k) &#123; <span class="comment">//特殊处理连续的处于[0,k]之间的数</span></span><br><span class="line">                end2 = pre = p;</span><br><span class="line">                p = node[p].next;</span><br><span class="line">                <span class="keyword">if</span>(flag2) &#123;</span><br><span class="line">                    flag2 = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                node[pre].next = node[p].next;  <span class="comment">//摘下来</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(flag2) &#123;</span><br><span class="line">                <span class="keyword">if</span>(p != pre) &#123;</span><br><span class="line">                    <span class="keyword">if</span>(first2 != p) &#123;</span><br><span class="line">                        node[p].next = first2;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        pre = p;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                 first2 = end2 = p;</span><br><span class="line">                <span class="keyword">if</span>(flag1) &#123; <span class="comment">//负值结点还未插入</span></span><br><span class="line">                    addr_first = first2;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    node[end1].next = first2;   <span class="comment">//note</span></span><br><span class="line">                &#125;</span><br><span class="line">                flag2 = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                node[p].next = node[end2].next;</span><br><span class="line">                node[end2].next = p;</span><br><span class="line">                end2 = p;   <span class="comment">//note</span></span><br><span class="line">            &#125;</span><br><span class="line">            p = node[pre].next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            pre = p;</span><br><span class="line">            p = node[p].next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> p = addr_first; p != <span class="number">-1</span>; p = node[p].next) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%05d %d "</span>, p, node[p].data);</span><br><span class="line">        <span class="keyword">if</span>(node[p].next == <span class="number">-1</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, node[p].next);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%05d\n"</span>, node[p].next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<blockquote>
+<p>题目来源：PAT乙级1075<br>作者：CHEN, Yue<br>单位：浙江大学</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            
+              <a href="/tags/PAT/" rel="tag"># PAT</a>
+            
+              <a href="/tags/编程/" rel="tag"># 编程</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/29/patb1074/" rel="next" title="PAT乙级1074 || 宇宙无敌加法器（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1074 || 宇宙无敌加法器（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/12/29/patb1076/" rel="prev" title="PAT乙级1076 || Wifi密码（详解，C/C++示例，测试点分析）">
+                  PAT乙级1076 || Wifi密码（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#链表元素分类"><span class="nav-number">1.</span> <span class="nav-text">链表元素分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.6.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.6.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#坑点提醒"><span class="nav-number">1.6.2.</span> <span class="nav-text">坑点提醒</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#测试点1"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">测试点1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试点4"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">测试点4</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试点5"><span class="nav-number">1.6.2.3.</span> <span class="nav-text">测试点5</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C-C-）"><span class="nav-number">1.6.3.</span> <span class="nav-text">代码示例（C/C++）</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '此处免登录就可交流评论哦^_^',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
