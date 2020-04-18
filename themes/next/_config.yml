@@ -663,7 +663,7 @@ valine:
   appkey: Fw9Bvc4v9ol7Ui4NeDYciCEP
   notify: false # Mail notifier. See: https://github.com/xCss/Valine/wiki
   verify: false # Verification code
-  placeholder: 此处免登录就可交流评论哦^_^ # Comment box placeholder
+  placeholder: 交流微信：wy156646264 # Comment box placeholder
   avatar: wavatar # Gravatar style
   guest_info: nick,mail,link # Custom comment header
   pageSize: 10 # Pagination size

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目Efficient K-Nearest Neighbor Graph Construction for Generic Similarity Measures 相关信息作者与单位Wei Dong(wdong@cs.princeton.edu); Moses Charikar(moses@cs.princeton.edu); Kai Li(li@cs.princeton.edu). Depa">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NN-Descent构建K近邻图——论文超详细注解">
+<meta property="og:url" content="http://whenever5225.github.io/2020/04/18/NN-Descent/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目Efficient K-Nearest Neighbor Graph Construction for Generic Similarity Measures 相关信息作者与单位Wei Dong(wdong@cs.princeton.edu); Moses Charikar(moses@cs.princeton.edu); Kai Li(li@cs.princeton.edu). Depa">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent1.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/2020-04-18_093617.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent2.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/2020-04-18_094259.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent3.jpg">
+<meta property="og:updated_time" content="2020-04-18T06:39:34.378Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NN-Descent构建K近邻图——论文超详细注解">
+<meta name="twitter:description" content="论文题目Efficient K-Nearest Neighbor Graph Construction for Generic Similarity Measures 相关信息作者与单位Wei Dong(wdong@cs.princeton.edu); Moses Charikar(moses@cs.princeton.edu); Kai Li(li@cs.princeton.edu). Depa">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent1.jpg">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/04/18/NN-Descent/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>NN-Descent构建K近邻图——论文超详细注解 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">11</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">106</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/04/18/NN-Descent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">NN-Descent构建K近邻图——论文超详细注解
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-18 14:09:29 / 修改时间：14:39:34" itemprop="dateCreated datePublished" datetime="2020-04-18T14:09:29+08:00">2020-04-18</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2020/04/18/NN-Descent/" class="post-meta-item leancloud_visitors" data-flag-title="NN-Descent构建K近邻图——论文超详细注解" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/18/NN-Descent/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/18/NN-Descent/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>Efficient K-Nearest Neighbor Graph Construction for Generic Similarity Measures</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>Wei Dong(wdong@cs.princeton.edu);</p>
+<p>Moses Charikar(moses@cs.princeton.edu);</p>
+<p>Kai Li(li@cs.princeton.edu).</p>
+<p>Department of Computer Science, Princeton University</p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>In Proceedings of the 20th international conference on World wide web; 2011</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><p>K近邻图的构建在很多基于Web的应用上是一个重要的操作，比如协同过滤（基于用户的邻居作推荐）、相似性搜索等。一个有效地构建方法将使K近邻图的应用更加广泛。</p>
+<p>暴力构建K近邻图的时间复杂度为$O(n^2)$，为了能更高效的构建K近邻图，现存的工作扩展性都不太好，而且一般都特定于具体的相似性度量。</p>
+<p>有效的K近邻图构建仍然是一个开放的问题，解决该问题的已知方案中没有一个是通用、有效和可扩展的。因此，本文提出了NN-Descent方法，该方法具有以下优点：</p>
+<ol>
+<li>通用。适用于任意的相似性度量准则。</li>
+<li><p>可扩展。随着数据集尺寸的增加，Recall仅有很小的下降。由于对每一个数据点的局部信息进行操作，因此适用于分布式计算环境（MapReduce）.</p>
+</li>
+<li><p>节省空间。整个构建过程仅涉及到一种数据结构——近邻图。</p>
+</li>
+<li>快速、精确。百分之几的相似性比较便可实现90%以上的召回率。</li>
+<li>容易实施。主要代码不超过200行（C++）。</li>
+</ol>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><p>如何有效地构建一个K近邻图，具体如下：</p>
+<ol>
+<li>适用任意相似性度量的K近邻图构建方法。</li>
+<li>在较短的时间内快速构建K近邻图的方法。</li>
+<li>构建一个在其上能快速、精确执行搜索的K近邻图。</li>
+<li>适用于MapReduce框架的K近邻图构建方案。</li>
+</ol>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><h3 id="抽象描述注解"><a href="#抽象描述注解" class="headerlink" title="抽象描述注解"></a>抽象描述注解</h3><p>$V$表示数据集，数据集尺寸为$N=|V|$，相似性度量$\sigma$：$V \times V \rightarrow R$。$\forall v \in V$，$B_K(v)$表示$v$的$K$个最近邻，$R_K(v)= \lbrace u \in V | v \in B_K(u) \rbrace$表示$v$的反向K个最近邻。$B[v]$和$R[v]$分别表示$B_K(v)$和$R_K(v)$的近似。$\overline{B}[v]=B[v] \cup R[v]$表示$v$的一般邻居。</p>
+<p>当在$V$上的度量方式为距离度量时，即$d$：$V \times V \rightarrow [0,\ +\infty]$。$\forall r \in [0,\ +\infty]$，以$v$为球心的r-球定义为：$B_r(v)=\lbrace u \in V | d(u, \ v) \leq r\rbrace$。</p>
+<p>如果$\exists c$满足：</p>
+<script type="math/tex; mode=display">
+|B_{2r}(v)| \leq c|B_{r}(v)|, \ \forall v \in V \tag{1}</script><p>则称度量空间V<strong>增长受限</strong>，$c$是增长常量。</p>
+<h3 id="基础算法注解"><a href="#基础算法注解" class="headerlink" title="基础算法注解"></a>基础算法注解</h3><p>基本思想：<strong>邻居的邻居更可能是邻居</strong>。</p>
+<h4 id="理论推导"><a href="#理论推导" class="headerlink" title="理论推导"></a>理论推导</h4><p>我们可以从$V$中每一个点的现有的近似K近邻出发，通过探索该点邻居的邻居（在当前近似K近邻中）而不断完善该点的K近邻。换句话说，可从粗略的K近邻图出发通过改进而不断完善它。对这一观点的量化表达如下：</p>
+<p>让$K=c^3$（后面公式推导要用到，$K$取此值是方便推导），假定已有的近似K近邻图（可以随机给每个点选邻居构建，也可通过其它数据结构辅助构建，如哈希，树等）为$B$。$\forall v \in V$，$B^\prime[v]=\bigcup _{v^\prime \in B[v]} B[v^\prime]$表示$v$所有邻居的邻居集合，它也是在完善$v$的K近邻时的候选点集。当B的精度比较高时（迭代完善了一定次数或通过某种更好的方式初始化B），高到什么程度呢？就是给定一个固定的半径$r$，对$\forall v \in V$，$B[v]$包含的K个邻居均匀地分布在$B_r(v)$中。这样的话，当各事件相互独立且$K&lt;&lt; |B_{r/2}(v)|$时，$B^\prime [v]$很可能包含在$B_{r/2}(v)$中的K个邻居。换句话说，对$\forall v \in V$，通过探索$B^\prime [v]$来使$v$到它的近似K近邻的距离减半。</p>
+<p>对$B_{r/2}(v)$中的一点$u$，要从$B^\prime[v]$里面找到，则至少存在一点$v^\prime$，使得$v^\prime \in B[v]$，且$u \in B[v^\prime]$。接下来，我们只需要找满足上述条件的$v^\prime$即可。而若$v^\prime \in B_{r/2}(v)$，则有以下几个不等式成立：</p>
+<ol>
+<li>$v^\prime \in B_r(v)$，因此，$P\lbrace v^\prime \in B[v]\rbrace \geq K/|B_r(v)|$，$P\lbrace v^\prime \in B[v]\rbrace$表示概率。<strong>注解：</strong>$v^\prime \in B_{r/2}(v)$，则$v^\prime \in B_r(v)$必然成立。若$v$的$K$个邻居都在$B_r(v)$中取的话，则一共有$C_{|B_r(v)|}^K$种情况，而$B_r(v)$中的一点不是$v$的邻居的情况有$C_{|B_r(v)|-1}^K$种，$B_r(v)$中的一点不是$v$的邻居的概率为$C_{|B_r(v)|-1}^K/C_{|B_r(v)|}^K$，即为$(|B_r(v)|-K)/|B_r(v)|$，因此$B_r(v)$中的一点是$v$的邻居的概率为$1-C_{|B_r(v)|-1}^K/C_{|B_r(v)|}^K$，即为$K/|B_r(v)|$。$B_{r/2}(v)$中的一点更可能是$v$的邻居，故$v^\prime$是$v$的邻居的概率大于等于$K/|B_r(v)|$。</li>
+<li>$d(u,\ v^\prime) \leq d(u, \ v) + d(v, \ v^\prime) \leq r$，因此，$P\lbrace u \in B[v^\prime]\rbrace \geq K/|B_r(v^\prime)|$。<strong>注解：</strong>由第一条推论可知，因此$B_r(v^\prime)$中的一点是$v^\prime$的邻居的概率为$K/|B_r(v^\prime)|$，而$u$与$v^\prime$的距离小于等于$r$，故$u$是$v^\prime$的邻居的概率大于等于$K/|B_r(v^\prime)|$。</li>
+<li>$|B_r(v)| \leq c|B_{r/2}(v)|$，且$|B_r(v^\prime)| \leq c|B_{r/2}(v^\prime)| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|$。<strong>注解：</strong>重点是$|B_{r/2}(v^\prime)| \leq |B_r(v)|$部分的推导，而此处可由图1明显推出。由于$v^\prime$在$v$的$r/2$-球中，$v^\prime$的$r/2$-球一定包含于$v$的$r$-球中。</li>
+</ol>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent1.jpg" width="300">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 不等式推导二维辅助理解图</div>
+</center>
+
+<p>由以上3个不等式和假定的各事件的独立性可得：</p>
+<script type="math/tex; mode=display">
+P\lbrace v^\prime \in B[v] \land u \in B[v^\prime]\rbrace \geq K/|B_{r/2}(v)|^2 \tag{2}</script><p><strong>注解：</strong>上式其实就是1.与2.两个事件同时发生的概率再由3.式化简的结果。它的意义是，对于$B_{r/2}[v]$中的确定的点$v^\prime$，它既是$v$的邻居又是$u$的反向邻居的概率大于等于$K/|B_{r/2}(v)|^2$。</p>
+<p>因此，当$v$的邻居从$B_{r/2}(v)$中取时，在$B_{r/2}(v)$中的一点$u$属于$v$的邻居的邻居的概率为：</p>
+<script type="math/tex; mode=display">
+P\lbrace u \in B^\prime[v]\rbrace \geq 1-(1-K/|B_{r/2}(v)|^2)^{|B_{r/2(v)}|} \approx K/|B_{r/2(v)}| \tag{3}</script><p><strong>注解：</strong>先考虑$u$不是$v$的邻居的邻居的概率。此时，从$B_{r/2}(v)$中取出的一点设为$x$，$x$不是$v$的邻居或者$u$不是$x$的邻居，发生这种情况的概率由式（2）可得应为$1-K/|B_{r/2}(v)|^2$，$B_{r/2}(v)$中一共有$|B_{r/2}(v)|$个点，它们都不满足上述情况（$x$不是$v$的邻居或者$u$不是$x$的邻居）的概率为：$(1-K/|B_{r/2}(v)|^2)^{|B_{r/2(v)}|}$，这便是$u$不是$v$的邻居的邻居的概率，从而$u$是$v$的邻居的邻居的概率为：$1-(1-K/|B_{r/2}(v)|^2)^{|B_{r/2(v)}|}$。下面对该式进行化简，由于$K&lt;&lt; |B_{r/2}(v)|$，因此$K/|B_{r/2}(v)|^2$是无穷小，化简过程用到一个重要极限：</p>
+<script type="math/tex; mode=display">
+\lim_{x \rightarrow \infty}(1+\frac{1}{x})^x=e \tag{4}</script><p>一个等价无穷小公式：</p>
+<script type="math/tex; mode=display">
+e^x -1 \sim x</script><p>整个数据集的直径设为$\Delta$，式（3）表明，<strong>只要我们取一个足够大的$K$（取决于增长因子$c$），即使我们从一个随机的K近邻图开始，通过探索每一个对象邻居的邻居，便可找到该对象的处于半径为$\Delta/2$的范围内的K个近邻。不断的迭代这一过程，每个对象的邻居距离该对象的距离会不断收缩，最终，构建一个高质量近似K近邻图。</strong></p>
+<h4 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h4><center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/04/18/NN-Descent/2020-04-18_093617.png" width="500">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">算法1 NN-Descent基础算法</div>
+</center>
+
+<p><strong>注解：</strong>(1)处为更新统计，如果某一个对象的K近邻列表更新了，$c$就会加1。算法1的终止条件为自然终止，即没有更新时（$c=0$）终止。</p>
+<h3 id="改进算法注解"><a href="#改进算法注解" class="headerlink" title="改进算法注解"></a>改进算法注解</h3><h4 id="局部连接"><a href="#局部连接" class="headerlink" title="局部连接"></a>局部连接</h4><p>让每一个对象探索它邻居的邻居的操作也可通过<strong>局部连接</strong>等价实现。局部连接可这样理解：给定一点$v$，它的邻居集为$\overline{B}[v]$，在$\overline{B}[v]$上的局部连接是计算每一对不同的$p$和$q$之间的相似性（$p，q \in \overline{B}[v]$），并且根据此相似性更新$B[p]$与$B[q]$。通俗的将，<strong>局部连接就是每一个点介绍它的邻居去了解彼此</strong>。</p>
+<p>局部连接能代替一个对象探索它邻居的邻居的操作吗？看下面的示例：</p>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent2.jpg" width="100">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 局部连接实现示例</div>
+</center>
+
+<p>如图2所示，$b \in B_K(a)$，$c \in B_K(b)$。在算法1中，当探索到$a$时，我们需要比较$a$与$c$，当探索到$c$时，我们也需要比较$a$与$c$，这是冗余计算的一种情况，可通过索引编号的顺序来解决。同样地，$a$与$c$之间的比较可通过对$\overline{B}[b]$进行局部连接来实现。</p>
+<p>局部连接实现起来很简单，那么它有什么好处呢？</p>
+<ol>
+<li>增强了数据的局部性，使执行更有效。如果每一个对象的邻居的个数平均为$\overline{K}$，算法1每次迭代探索每一个对象的邻居的邻居时将接触到$\overline{K}^2$个点，而局部连接只需要接触$\overline{K}$个点。</li>
+<li>单机实施时，提升了cache的命中率，从而加速了K近邻图的构建。分布式实施时，能减少机器之间数据的复制。</li>
+</ol>
+<h4 id="增量搜索"><a href="#增量搜索" class="headerlink" title="增量搜索"></a>增量搜索</h4><p>随着算法的执行，每一个对象的K近邻更新的幅度逐渐减小。而且，在某次迭代中参与比较的两个点，就更可能在之前的迭代中已经比较过了。这就造成冗余计算，而增量搜索就是要解决这个问题的。</p>
+<ol>
+<li>给每一个点的K近邻列表中的每一个对象附加一个布尔标记，当一个新对象插入到该列表中的某个条目时，它的标记初始化为true。</li>
+<li>只有当两个对象至少一个的标记为true，它们才进行局部连接。一个对象参与局部连接之后，它被标记为false（true变false，false还是false）。</li>
+</ol>
+<h4 id="采样"><a href="#采样" class="headerlink" title="采样"></a>采样</h4><p>采样是为了解决以下两个问题：</p>
+<ol>
+<li>局部连接的高成本。一次迭代，就算只考虑K近邻，时间复杂度为$K^2N$，如果再考虑反向近邻，时间复杂度更高。</li>
+<li>冗余计算。两个点同时连接到多个不同对象，这两个点将比较多次。</li>
+</ol>
+<p>使用采样来<strong>缓解</strong>这两个问题的具体方案如下：</p>
+<ol>
+<li>邻居取样。局部连接之前，对用于局部连接的每一个对象，从标记为true的K近邻中取样$\rho K$个对象（$\rho \in (0, 1]$）。每一次迭代，仅仅这些被取出的数据被标记为false。</li>
+<li>反向邻居。只根据取样对象和标记为false的对象来构建反向邻居列表。对构建得的反向邻居列表再次取样。</li>
+<li>在标记为true对象之间进行局部连接，以及在标记为true对象与标记为false对象之间进行局部连接。</li>
+</ol>
+<p>因此，我们就可以通过取样率$\rho$来进行精度和速度的trade-off。</p>
+<h4 id="提前终止"><a href="#提前终止" class="headerlink" title="提前终止"></a>提前终止</h4><p>一个很自然的终止标准是：某次迭代中，K近邻图不再被改善。实际上，开始迭代时，K近邻图能充分的更新，而随着迭代的进行，K近邻图更新的次数快速收缩，此时的迭代就显得意义不大了，考虑到迭代的计算成本，这些迭代其实没必要执行。为了解决这个问题，本文采取的方案是：在每次迭代中，统计所有对象K近邻列表更新的次数$count$，当$count &lt; \delta KN $时终止发生，其中$\delta$是精度参数，它粗略反应了由于提前终止允许错过的真正的K近邻的比例。</p>
+<h4 id="伪代码-1"><a href="#伪代码-1" class="headerlink" title="伪代码"></a>伪代码</h4><center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/04/18/NN-Descent/2020-04-18_094259.png" width="500">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">算法2 NN-Descent改进算法</div>
+</center>
+
+<p><strong>注解：</strong>算法2是在算法1的基础上结合了四个改进（局部连接；增量搜索；采样；提前终止），注意算法2其实也不能完全避免冗余计算，先理解一下这个算法，然后我会给出示例。</p>
+<p>(1)、(2)属于增量搜索和采样部分，对于当前对象$v$，在它的邻居列表中取$\rho K$个标记为true的邻居到$new[v]$，并将这些邻居标记为false（对于伪代码中的(3)），在它的邻居列表中取出所有标记为false的邻居到$old[v]$。</p>
+<p>(4)是取$v$的反向邻居，正如取$v$的$old[v]$一样，其它所有点也会取各自的$old$，以所有点的$old$集合中包含的点作为探索范围，检查它们的邻居列表中含$v$的点，含$v$则加入到$old^\prime [v]$，$old^\prime [v]$的意义是：点$v$的反向邻居，且在该反向邻居的邻居表中，$v$被标记为false。$new^\prime$同理。</p>
+<p>(5)是说最后参与局部连接的$old[v]$是由两部分组成：一部分是从$v$的邻居列表中取出的标记为false的邻居集，另一部分是从$old^\prime [v]$中取样的$\rho K$个点。最后参与局部连接的$new[v]$同理（(6)）。</p>
+<p>(7)表示局部连接。$new[v]$里面的点相互之间进行局部连接，为防止重复比较，设定比较顺序。$new[v]$中的点与$old[v]$中的点进行局部连接。</p>
+<p>(8)统计更新，某一对象的邻居列表更新时，新插入的对象标记为true（满足：增量搜索）。</p>
+<p>(9)为终止条件。当更新量小于某一阈值时终止。</p>
+<p><strong>冗余计算示例</strong></p>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/04/18/NN-Descent/NN-Descent3.jpg" width="300">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图3 冗余计算示例</div>
+</center>
+
+<p>如图3所示，第一次迭代时$v_3$和$v_4$都取样了$v_1$，都没有取样$v_2$，因此，它们的邻居列表中$v_1$都标记为false，$v_2$都标记为true。此时，$new^\prime[v_1]$含$v_3$、$v_4$，若$v_3$、$v_4$都被取样加入到参与局部连接的$new[v_1]$，则$v_3$和$v_4$会进行一次相似性计算。第二次迭代时，$v_3$和$v_4$都取样了$v_2$，然后$v_2$在它们的列表中被标记为false。此时，$new^\prime[v_2]$含$v_3$、$v_4$，若$v_3$、$v_4$都被取样加入到参与局部连接的$new[v_2]$，则$v_3$和$v_4$又会进行一次相似性计算。</p>
+<p>当然，上述分两次迭代的说明也可在一次迭代中发生。不过，上述冗余计算的情况在取样过程的参与下发生的概率是很小的。</p>
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><p>一种新的构建K近邻图的方法，具体创新包括：</p>
+<ol>
+<li>对于一个随机K近邻图，通过几次迭代而不断的完善K近邻图，最终得到一个更好的K近邻图。（构图思路）</li>
+<li>处理某个点时，在该点的各邻居之间进行选边。这种方式相较于处理某个点时，该点与该点的邻居的邻居之间进行选边而言，局部性更好。两种方式实现的结果都是一样的。（选边策略）</li>
+</ol>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>具体实验分析可以看作者的原文。本文提出的NN-Descent方法可使用任意度量方式构建的K近邻图。经验复杂度为$O(n^{1.14})$，很容易实现并行化。</p>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><p>本文一开始是随机构建一个K近邻图，这样做的优点是简单快速。但是，迭代的过程过多地依赖随机初始化的K近邻图，这样可能不够稳定，某些情况下只需几次迭代，而另一些情况则可能需要很多。因此，一个简单地改进可从初始化K近邻图这个角度入手。</p>
+<p>最近提出的基于近邻图的近似最近邻搜索算法——NSG和NSSG，他们在构建索引时，第一步构建K近邻图与第二部MRNG或SSG选边策略是分开进行的，有没有可能在K近邻图构建的同时执行某一选边策略。</p>
+<p>选边的时候将三角不等式考虑进去，从而避免一些不必要的计算。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/19/20200219-1/" rel="next" title="M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记">
+                  <i class="fa fa-chevron-left"></i> M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象描述注解"><span class="nav-number">5.1.</span> <span class="nav-text">抽象描述注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础算法注解"><span class="nav-number">5.2.</span> <span class="nav-text">基础算法注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理论推导"><span class="nav-number">5.2.1.</span> <span class="nav-text">理论推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#伪代码"><span class="nav-number">5.2.2.</span> <span class="nav-text">伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改进算法注解"><span class="nav-number">5.3.</span> <span class="nav-text">改进算法注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#局部连接"><span class="nav-number">5.3.1.</span> <span class="nav-text">局部连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增量搜索"><span class="nav-number">5.3.2.</span> <span class="nav-text">增量搜索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#采样"><span class="nav-number">5.3.3.</span> <span class="nav-text">采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#提前终止"><span class="nav-number">5.3.4.</span> <span class="nav-text">提前终止</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#伪代码-1"><span class="nav-number">5.3.5.</span> <span class="nav-text">伪代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">8.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '交流微信：wy156646264',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

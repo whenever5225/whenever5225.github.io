@@ -56,7 +56,7 @@
 </script>
 
   <meta name="description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
-<meta name="keywords" content="论文阅读,ANNS">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
 <meta property="og:type" content="article">
 <meta property="og:title" content="极度快速的近似最近邻搜索算法(EFANNA)学习笔记">
 <meta property="og:url" content="http://whenever5225.github.io/2019/09/21/efanna1/index.html">
@@ -64,7 +64,7 @@
 <meta property="og:description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
-<meta property="og:updated_time" content="2019-09-22T04:06:10.473Z">
+<meta property="og:updated_time" content="2020-04-18T06:16:27.061Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="极度快速的近似最近邻搜索算法(EFANNA)学习笔记">
 <meta name="twitter:description" content="引言极度快速的近似最近邻搜索算法(EFANNA)是NSG的作者之前的一篇论文，这篇论文主要介绍用更快的方法建立KNN图并且建立一个高性能的KNN图索引。这种方法建KNN图时采用类似于Wei等人提出的方案(地址)，首先初始化一个KNN图，然后再使用NN-descent的方法精细化KNN图。该论文提出的方法改进了初始化KNN图的方式，使用更快的方法来初始化KNN图。在基于近似KNN图搜索时，大多方法都">
@@ -187,7 +187,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">5</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
 
   </li>
       
@@ -283,7 +283,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-22 12:06:10" itemprop="dateModified" datetime="2019-09-22T12:06:10+08:00">2019-09-22</time>
+                <time title="修改时间：2020-04-18 14:16:27" itemprop="dateModified" datetime="2020-04-18T14:16:27+08:00">2020-04-18</time>
               </span>
             
           
@@ -368,10 +368,7 @@
 </ol>
 <p>下面分别进行概括。</p>
 <h3 id="kNN图初始化之分层分治算法"><a href="#kNN图初始化之分层分治算法" class="headerlink" title="kNN图初始化之分层分治算法"></a>kNN图初始化之分层分治算法</h3><p>作者采用<strong>分治</strong>的策略来快速获得一个初始化的kNN图。得到一个初始化的kNN图无非就是给基数据集中的每个点初始化邻居，这个过程其实就是在已经建好的几个随机截断KD树上为数据点找邻居，在这里作者采用的方法不过是“分层分治”的策略。</p>
-<center>
-    <img src="//whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
-         图1 分层分治算法图解
-</center>
+<center><br>    <img src="//whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png"><br>         图1 分层分治算法图解<br></center>
 
 <h4 id="主要思想-1"><a href="#主要思想-1" class="headerlink" title="主要思想"></a>主要思想</h4><p>对数据集中的每一个数据点，我们都要给它们初始化邻居，对某个数据点初始化邻居时，我们要在已经建立的<strong>所有</strong>树上以该数据点为查询点进行<strong>分层分治</strong>查找，也就是说在每棵树上都要查找一遍。下面只详细分析在一颗树上的<strong>分层分治</strong>过程，多棵树只是重复的过程。</p>
 <p>为了便于分析，下面以图1的示例来说明。现在要给数据点 $q$ 找邻居（在树中找一些离它较近的数据点），从树根开始执行深度优先搜索进行查找，一直找到标号为<code>8</code>的叶子结点，显然 $q$ 也处于这个结点中（整棵树涵盖了所有的数据点），这个叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中，此时我们处理的是最底层（深度为3）。标号为<code>1</code>、<code>2</code>和<code>4</code>的结点（非叶结点）是搜索的过程中遍历到的结点。接着该处理倒数第2层（深度为2）了，我们<strong>只处理该层中遍历到的结点</strong>，也就是结点<code>4</code>了，其它的标号为<code>5</code>、<code>6</code>和<code>7</code>的结点都没有遍历到。结点<code>4</code>的孩子结点分别为结点<code>8</code>和<code>9</code>，因为结点<code>8</code>已经遍历过了，此时我们<strong>只处理没有遍历过的孩子结点</strong>，因此，我们只处理结点<code>9</code>，对以结点<code>9</code>为根的子树进行深度优先搜索直到某个叶子结点，因为结点<code>9</code>本身就是叶子结点，因此返回的叶子结点也就是它了，把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中。接着处理第1层，同理选中结点<code>2</code>，然后同理选中它的孩子结点<code>5</code>，对以结点<code>5</code>为根的子树执行深度优先搜索，将返回叶子结点<code>10</code>（上面的局限图可以看出结点<code>10</code>离 $q$ 更近），同样把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中……</p>
@@ -429,6 +426,8 @@
               <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
             
               <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
             
           </div>
         
@@ -533,9 +532,7 @@
         
           
         
-          
-        
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -767,7 +764,7 @@ NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.
     notify: false,
     appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
     appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
-    placeholder: '此处免登录就可交流评论哦^_^',
+    placeholder: '交流微信：wy156646264',
     avatar: 'wavatar',
     meta: guest,
     pageSize: '10' || 10,
