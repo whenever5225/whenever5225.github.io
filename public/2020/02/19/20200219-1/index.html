@@ -201,7 +201,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">106</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">107</span></a>
 
   </li>
       
@@ -276,18 +276,6 @@
               <time title="创建时间：2020-02-19 22:01:42" itemprop="dateCreated datePublished" datetime="2020-02-19T22:01:42+08:00">2020-02-19</time>
             </span>
           
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 14:02:50" itemprop="dateModified" datetime="2020-04-18T14:02:50+08:00">2020-04-18</time>
-              </span>
-            
-          
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -355,18 +343,26 @@
 <li>使用$k_2$个哈希函数将$(h_1(o),\cdots,h_{k_1}(o))$投影到$k_2$条线上，使相邻的哈希桶号投影到相邻的位置。（第二次哈希）</li>
 <li>对二次哈希后组合哈希向量表示的桶号进行桶合并。合并时需要考虑3个因素：①桶中存放数据的平均数(AC)；②哈希到相邻位置的哈希桶号之间的距离；③当前哈希桶中保存数据的个数。</li>
 </ol>
-<center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png" width="800"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png" width="800">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
-    padding: 2px;">图1 M2LSH索引构建</div><br></center>
+    padding: 2px;">图1 M2LSH索引构建</div>
+</center>
 
 <h3 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h3><p>下面是查询点$q$在一个哈希表中的查询过程。$q$经过第一次哈希后生成组合哈希向量，对其进行二次哈希后，可以知道它在直线上所映射的位置，这样只需要在直线上左右探测与其标记相同的其它桶号，那么这些桶中的数据对象也将作为$q$的查询候选集。</p>
-<center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png" width="500"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png" width="500">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
-    padding: 2px;">图2 M2LSH查询过程</div><br></center>
+    padding: 2px;">图2 M2LSH查询过程</div>
+</center>
 
 <h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><p>为了加快查询速度，采用了对第一次组合哈希后的组合哈希桶号进行<strong>二次哈希</strong>来找与该桶相近的其它桶的策略。并且在基于桶计数以及在实际的查询中需要返回的查询结果的数量提出了<strong>哈希桶合并</strong>的方式，使得最终索引文件中每个桶中的数据个数比较均衡。</p>
 <h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>实验表明，M2LSH的性能要优于参与比较的方法(C2LSH; Multi-probe LSH)，特别是当数据分布不均时，M2LSH的优势更显著。</p>
@@ -500,7 +496,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">107</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

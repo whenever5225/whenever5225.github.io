@@ -200,7 +200,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">106</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">107</span></a>
 
   </li>
       
@@ -274,18 +274,6 @@
 
               <time title="创建时间：2019-09-21 15:18:08" itemprop="dateCreated datePublished" datetime="2019-09-21T15:18:08+08:00">2019-09-21</time>
             </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 14:16:27" itemprop="dateModified" datetime="2020-04-18T14:16:27+08:00">2020-04-18</time>
-              </span>
-            
           
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -368,7 +356,10 @@
 </ol>
 <p>下面分别进行概括。</p>
 <h3 id="kNN图初始化之分层分治算法"><a href="#kNN图初始化之分层分治算法" class="headerlink" title="kNN图初始化之分层分治算法"></a>kNN图初始化之分层分治算法</h3><p>作者采用<strong>分治</strong>的策略来快速获得一个初始化的kNN图。得到一个初始化的kNN图无非就是给基数据集中的每个点初始化邻居，这个过程其实就是在已经建好的几个随机截断KD树上为数据点找邻居，在这里作者采用的方法不过是“分层分治”的策略。</p>
-<center><br>    <img src="//whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png"><br>         图1 分层分治算法图解<br></center>
+<center>
+    <img src="//whenever5225.github.io/2019/09/21/efanna1/分层分治初始化图.png">
+         图1 分层分治算法图解
+</center>
 
 <h4 id="主要思想-1"><a href="#主要思想-1" class="headerlink" title="主要思想"></a>主要思想</h4><p>对数据集中的每一个数据点，我们都要给它们初始化邻居，对某个数据点初始化邻居时，我们要在已经建立的<strong>所有</strong>树上以该数据点为查询点进行<strong>分层分治</strong>查找，也就是说在每棵树上都要查找一遍。下面只详细分析在一颗树上的<strong>分层分治</strong>过程，多棵树只是重复的过程。</p>
 <p>为了便于分析，下面以图1的示例来说明。现在要给数据点 $q$ 找邻居（在树中找一些离它较近的数据点），从树根开始执行深度优先搜索进行查找，一直找到标号为<code>8</code>的叶子结点，显然 $q$ 也处于这个结点中（整棵树涵盖了所有的数据点），这个叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中，此时我们处理的是最底层（深度为3）。标号为<code>1</code>、<code>2</code>和<code>4</code>的结点（非叶结点）是搜索的过程中遍历到的结点。接着该处理倒数第2层（深度为2）了，我们<strong>只处理该层中遍历到的结点</strong>，也就是结点<code>4</code>了，其它的标号为<code>5</code>、<code>6</code>和<code>7</code>的结点都没有遍历到。结点<code>4</code>的孩子结点分别为结点<code>8</code>和<code>9</code>，因为结点<code>8</code>已经遍历过了，此时我们<strong>只处理没有遍历过的孩子结点</strong>，因此，我们只处理结点<code>9</code>，对以结点<code>9</code>为根的子树进行深度优先搜索直到某个叶子结点，因为结点<code>9</code>本身就是叶子结点，因此返回的叶子结点也就是它了，把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中。接着处理第1层，同理选中结点<code>2</code>，然后同理选中它的孩子结点<code>5</code>，对以结点<code>5</code>为根的子树执行深度优先搜索，将返回叶子结点<code>10</code>（上面的局限图可以看出结点<code>10</code>离 $q$ 更近），同样把该叶子结点中的数据点加入到数据点 $q$ 的邻居候选集中……</p>
@@ -509,7 +500,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">107</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -200,7 +200,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">106</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">107</span></a>
 
   </li>
       
@@ -275,18 +275,6 @@
               <time title="创建时间：2019-09-05 21:34:39" itemprop="dateCreated datePublished" datetime="2019-09-05T21:34:39+08:00">2019-09-05</time>
             </span>
           
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 14:02:50" itemprop="dateModified" datetime="2020-04-18T14:02:50+08:00">2020-04-18</time>
-              </span>
-            
-          
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -342,7 +330,9 @@
 <p>因为实验代码是以载入<strong>fvecs</strong>格式数据写的，需要将<strong>hdf5</strong>格式转换成<strong>fvecs</strong>&amp;<strong>ivecs</strong>格式可以用python很方便的读取<strong>hdf5</strong>格式的数据集，在此基础上转换为<strong>fvec</strong>&amp;<strong>ivecs</strong>格式。</p>
 <h2 id="hdf5格式的结构"><a href="#hdf5格式的结构" class="headerlink" title="hdf5格式的结构"></a>hdf5格式的结构</h2><p>一个hdf5格式的文件是一个包含两个对象的容器，一个是<strong>数据集</strong>（datasets），另一个是<strong>组</strong>（groups）。数据集的结构非常类似于Numpy的<strong>array</strong>，组的结构非常类似于python的字典，它像一个文件夹一样，它可以包含数据集和其它的组。总结起来：<strong>组像字典一样工作，数据集像NumPy数组一样工作</strong>。</p>
 <p>拿hdf5格式数据集<strong>gist-960-euclidean.hdf5</strong>为例（<a href="http://ann-benchmarks.com/gist-960-euclidean.hdf5" target="_blank" rel="noopener">下载地址</a>），整个文件有一个<strong>根组</strong>，就是下图的<code>&quot;/&quot;</code>。</p>
-<center><br><img src="//whenever5225.github.io/2019/09/05/hdf5使用/hdf5结构1.png"><br></center>
+<center>
+<img src="//whenever5225.github.io/2019/09/05/hdf5使用/hdf5结构1.png">
+</center>
 
 <p>根组下有四个键，分别为<strong>distances</strong>、<strong>neighbors</strong>、<strong>test</strong>和<strong>train</strong>，类比于上图中的<strong>A</strong>、<strong>B</strong>和<strong>C</strong>。<strong>distances</strong>对应的是shape为<strong>(1000, 100)</strong>的数据集（类比于Numpy的<strong>array</strong>），为每个查询向量最近的100个向量距该查询向量的距离，数据类型为<strong>float32</strong>；<strong>neighbors</strong>对应的是shape为<strong>(1000, 100)</strong>的数据集，为每个查询向量最近的100个向量，数据类型为<strong>int32</strong>；<strong>test</strong>对应的是shape为<strong>(1000000, 960)</strong>的数据集，这是基数据（原始数据），一共1000000个向量，每个向量的维度为960维，数据类型为<strong>float32</strong>；<strong>train</strong>对应的是shape为<strong>(1000, 960)</strong>的数据集，只是查询数据，一共1000个向量，向量的维度为960维，数据类型为<strong>float32</strong>。</p>
 <h2 id="读取转换过程"><a href="#读取转换过程" class="headerlink" title="读取转换过程"></a>读取转换过程</h2><p>安装<strong>h5py</strong>模块。我的python是用<strong>anaconda</strong>装的，可以用下面命令安装。</p>
@@ -475,7 +465,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">107</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
