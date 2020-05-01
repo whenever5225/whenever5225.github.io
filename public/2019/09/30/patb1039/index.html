@@ -63,12 +63,10 @@
 <meta property="og:site_name" content="whenever">
 <meta property="og:description" content="到底买不买题目描述小红想买些珠子做一串自己喜欢的珠串。卖珠子的摊主有很多串五颜六色的珠串，但是不肯把任何一串拆散了卖。于是小红要你帮忙判断一下，某串珠子里是否包含了全部自己想要的珠子？如果是，那么告诉她有多少多余的珠子；如果不是，那么告诉她缺了多少珠子。 为方便起见，我们用[0-9]、[a-z]、[A-Z]范围内的字符来表示颜色。例如在图1中，第3串是小红想做的珠串；那么第1串可以买，因为包含了全">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://images.ptausercontent.com/b7e2ffa6-8819-436d-ad79-a41263abe914.jpg">
 <meta property="og:updated_time" content="2020-04-18T06:02:50.987Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PAT乙级1039 || 到底买不买（详解，C&#x2F;C++示例，测试点分析）">
 <meta name="twitter:description" content="到底买不买题目描述小红想买些珠子做一串自己喜欢的珠串。卖珠子的摊主有很多串五颜六色的珠串，但是不肯把任何一串拆散了卖。于是小红要你帮忙判断一下，某串珠子里是否包含了全部自己想要的珠子？如果是，那么告诉她有多少多余的珠子；如果不是，那么告诉她缺了多少珠子。 为方便起见，我们用[0-9]、[a-z]、[A-Z]范围内的字符来表示颜色。例如在图1中，第3串是小红想做的珠串；那么第1串可以买，因为包含了全">
-<meta name="twitter:image" content="https://images.ptausercontent.com/b7e2ffa6-8819-436d-ad79-a41263abe914.jpg">
   <link rel="canonical" href="http://whenever5225.github.io/2019/09/30/patb1039/">
 
 
@@ -328,7 +326,7 @@
       
         <h1 id="到底买不买"><a href="#到底买不买" class="headerlink" title="到底买不买"></a><strong>到底买不买</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>小红想买些珠子做一串自己喜欢的珠串。卖珠子的摊主有很多串五颜六色的珠串，但是不肯把任何一串拆散了卖。于是小红要你帮忙判断一下，某串珠子里是否包含了全部自己想要的珠子？如果是，那么告诉她有多少多余的珠子；如果不是，那么告诉她缺了多少珠子。</p>
 <p>为方便起见，我们用[0-9]、[a-z]、[A-Z]范围内的字符来表示颜色。例如在图1中，第3串是小红想做的珠串；那么第1串可以买，因为包含了全部她想要的珠子，还多了8颗不需要的珠子；第2串不能买，因为没有黑色珠子，并且少了一颗红色的珠子。</p>
-<p><img src="https://images.ptausercontent.com/b7e2ffa6-8819-436d-ad79-a41263abe914.jpg" alt="figbuy.jpg"></p>
+<p><img src data-echo="https://images.ptausercontent.com/b7e2ffa6-8819-436d-ad79-a41263abe914.jpg" alt="figbuy.jpg"></p>
 <h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>每个输入包含 1 个测试用例。每个测试用例分别在 2 行中先后给出摊主的珠串和小红想做的珠串，两串都不超过 1000 个珠子。</p>
 <h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>如果可以买，则在一行中输出 <code>Yes</code> 以及有多少多余的珠子；如果不可以买，则在一行中输出 <code>No</code> 以及缺了多少珠子。其间以 1 个空格分隔。</p>
 <h2 id="输入样例1"><a href="#输入样例1" class="headerlink" title="输入样例1"></a><strong>输入样例1</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ppRYYGrrYBR2258</span><br><span class="line">YrR8RrY</span><br></pre></td></tr></table></figure></div>

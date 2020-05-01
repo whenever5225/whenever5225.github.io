@@ -362,17 +362,8 @@
 <li>原HNSW算法直接在原始向量上构建，而HNSWPQ算法需要先对原始向量进行量化编码建立码本在此基础上再逐个插入结点构建（增加了一步）</li>
 <li>原HNSW算法计算距离时是直接计算，而HNSWPQ算法采用PQ距离计算方法（计算速度快）</li>
 </ul>
-<h2 id="HNSWSQ算法"><a href="#HNSWSQ算法" class="headerlink" title="HNSWSQ算法"></a>HNSWSQ算法</h2><p>标量量化（SQ）对向量的每一维都进行量化，HNSWSQ算法采用最大最小量化方法。对于向量的第 $ i $ 维，通过样本集训练获取该维出现的最大值 $ vmax[i] $ 和最小值 $ vmin[i] $ ，然后将向量 $ \vec{a} $ 第 $ i $ 维的值量化为:</p>
-<script type="math/tex; mode=display">
-\frac{x_i - vmin[i]} {vmax[i]}</script><p>其中，$ i = 1, …, n $ ，量化后的值编码存储，假设每一维编码为１个字节，则进一步处理为：</p>
-<script type="math/tex; mode=display">
-f(x_i) = \lfloor \varphi( \frac{x_i - vmin[i]} {vmax[i]} ) \times 255\rfloor</script><p>其中：</p>
-<script type="math/tex; mode=display">
- \varphi(x) = \begin{cases}
-1 & x \geq 1\\
-x & 0 < x < 1\\
-0 & x \leq 0
-\end{cases}</script><p>HNSWSQ算法在插入结点计算距离时，首先将编码后的向量解码还原，然后计算查询向量与解码向量的距离。</p>
+<h2 id="HNSWSQ算法"><a href="#HNSWSQ算法" class="headerlink" title="HNSWSQ算法"></a>HNSWSQ算法</h2><p>标量量化（SQ）对向量的每一维都进行量化，HNSWSQ算法采用最大最小量化方法。对于向量的第 $ i $ 维，通过样本集训练获取该维出现的最大值 $ vmax[i] $ 和最小值 $ vmin[i] $ ，然后将向量 $ \vec{a} $ 第 $ i $ 维的值量化为:<br>$$<br>\frac{x_i - vmin[i]} {vmax[i]}<br>$$<br>其中，$ i = 1, …, n $ ，量化后的值编码存储，假设每一维编码为１个字节，则进一步处理为：<br>$$<br>f(x_i) = \lfloor \varphi( \frac{x_i - vmin[i]} {vmax[i]} ) \times 255\rfloor<br>$$<br>其中：</p>
+<p>$$<br> \varphi(x) = \begin{cases}<br>1 &amp; x \geq 1\<br>x &amp; 0 &lt; x &lt; 1\<br>0 &amp; x \leq 0<br>\end{cases}<br>$$<br>HNSWSQ算法在插入结点计算距离时，首先将编码后的向量解码还原，然后计算查询向量与解码向量的距离。</p>
 <p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png"></p>
 <h2 id="量化后性能分析"><a href="#量化后性能分析" class="headerlink" title="量化后性能分析"></a>量化后性能分析</h2><h3 id="HNSWPQ算法性能分析"><a href="#HNSWPQ算法性能分析" class="headerlink" title="HNSWPQ算法性能分析"></a>HNSWPQ算法性能分析</h3><p>与原始的HNSW算法相比，HNSWPQ算法在同样查询时间下Recall@1准确率要低很多，内存占用几乎只有 HNSW算法的一半（主要是结点连接关系），构建索引耗时是HNSW的几倍，主要是编码引起。</p>
 <p>随着PQ子量化器（子空间）的增多，由于量化误差的降低，各算法的Recall@1准确率逐步提高。</p>

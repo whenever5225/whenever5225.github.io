@@ -65,7 +65,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png">
 <meta property="og:image" content="http://whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png">
-<meta property="og:updated_time" content="2020-04-18T06:02:50.969Z">
+<meta property="og:updated_time" content="2020-05-01T02:03:29.233Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记">
 <meta name="twitter:description" content="论文题目M2LSH：基于LSH的高维数据近似最近邻查找算法 相关信息作者与单位李 灿，钱江波，董一鸿，陈华辉； 宁波大学信息科学与工程学院 出处与时间电子学报；2017年6月 作者拟解决的主要问题虽然位置敏感哈希(LSH)算法在解决高维空间中近邻问题上取得了非常瞩目的成就，但在处理高维数据时却很少考虑分布不均的情况。在LSH算法的基础上，本文针对高维数据分布不均的情况，提出了一种新的解决方案。 论">
@@ -343,26 +343,18 @@
 <li>使用$k_2$个哈希函数将$(h_1(o),\cdots,h_{k_1}(o))$投影到$k_2$条线上，使相邻的哈希桶号投影到相邻的位置。（第二次哈希）</li>
 <li>对二次哈希后组合哈希向量表示的桶号进行桶合并。合并时需要考虑3个因素：①桶中存放数据的平均数(AC)；②哈希到相邻位置的哈希桶号之间的距离；③当前哈希桶中保存数据的个数。</li>
 </ol>
-<center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png" width="800">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
-    padding: 2px;">图1 M2LSH索引构建</div>
-</center>
+    padding: 2px;">图1 M2LSH索引构建</div><br></center>
 
 <h3 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h3><p>下面是查询点$q$在一个哈希表中的查询过程。$q$经过第一次哈希后生成组合哈希向量，对其进行二次哈希后，可以知道它在直线上所映射的位置，这样只需要在直线上左右探测与其标记相同的其它桶号，那么这些桶中的数据对象也将作为$q$的查询候选集。</p>
-<center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png" width="500">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png" width="500"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
-    padding: 2px;">图2 M2LSH查询过程</div>
-</center>
+    padding: 2px;">图2 M2LSH查询过程</div><br></center>
 
 <h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><p>为了加快查询速度，采用了对第一次组合哈希后的组合哈希桶号进行<strong>二次哈希</strong>来找与该桶相近的其它桶的策略。并且在基于桶计数以及在实际的查询中需要返回的查询结果的数量提出了<strong>哈希桶合并</strong>的方式，使得最终索引文件中每个桶中的数据个数比较均衡。</p>
 <h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>实验表明，M2LSH的性能要优于参与比较的方法(C2LSH; Multi-probe LSH)，特别是当数据分布不均时，M2LSH的优势更显著。</p>

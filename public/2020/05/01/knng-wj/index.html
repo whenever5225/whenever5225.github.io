@@ -67,7 +67,7 @@
 <meta property="og:image" content="http://whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_222442.png">
 <meta property="og:image" content="http://whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_225234.png">
 <meta property="og:image" content="http://whenever5225.github.io/2020/05/01/knng-wj/2020-04-30_235039.png">
-<meta property="og:updated_time" content="2020-04-30T16:25:41.471Z">
+<meta property="og:updated_time" content="2020-05-01T02:03:46.566Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多重分治和邻居传播构建高质量近邻图——CVPR论文阅读笔记">
 <meta name="twitter:description" content="论文题目Scalable k-NN graph construction for visual descriptors 相关信息作者与单位Jing Wang(cis.wangjing@pku.edu.cn); Peking University; Jingdong Wang(jingdw@microsoft.com); Microsoft Research Asia; Gang Zeng(g.ze">
@@ -352,7 +352,7 @@
 <p><strong>注：</strong>由于论文中并没有详细阐述划分的细节（给出方法来源的两个工作），之前的工作还未看，因此，划分过程的时间复杂度推导过程暂不列出。构建子图时，随机划分树的叶子个数为$n/g$，每个叶子暴力构建子图时间复杂度$O(dg^2)$，因此，执行一次随机分治过程构建子图的时间复杂度为$O(ndg)$。综上，执行一次随机分治的总时间复杂度为$O(nd \log {n})$。</p>
 <p>经过一次随机分治划分会产生$n/g$个彼此独立的子图，一个点只可能和它所处的子图内部的点连接，不能和其它子图内部的点连接。因此，需要执行多次随机分治划分来给每个点寻找更多的邻居。为了更好理解多次随机划分的作用，考虑一个给定的点$p$，每一次随机划分相当于枚举$p$周围的邻居点集。我们来看图1：</p>
 <center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_120040.png" width="700"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_120040.png" width="700"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
     padding: 2px;">图1 随着划分次数的增多，p的更多邻居被覆盖</div><br></center>
@@ -360,15 +360,15 @@
 <p>设$p$的第$m$次划分的邻居集为$N^m _p$，多次划分后$p$邻居集的并集为$\tilde{N}^m _p=\bigcup _{i \leq m}N^i _p$。当增加随机划分的次数时，$\tilde{N}^m _p$将覆盖到更多$p$的真实邻居（图1中绿色点），从而提升近邻图的质量。具体实现时，每一次划分都会得到一个基近邻图，表示为$\lbrace G_1,\dots,G_M \rbrace$，在图$G_m$中，点$x_i$的邻接表为$Adj^m \lbrack x_i \rbrack$，经过$M$次划分后，我们把这些邻接表并在一起，然后只保留前k个最近的邻居。</p>
 <p>本质上，多次随机划分是利用子图之间的重叠来归并子图的。看图2，我们执行两次随机划分，第一次划分得到(a)所示的结果，第二次划分得到(b)所示的结果。$1$和$3$重叠的部分是$A$，$2$和$3$重叠的部分是$B$，因此，$3$作为一个桥梁连接独立的子图$1$和$2$。当然，$4$也作为一个桥梁连接独立的子图$1$和$2$。当然，反过来$1$和$2$也是这个道理。</p>
 <center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_222442.png" width="700"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_222442.png" width="700"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
     padding: 2px;">图2 不同划分下子图重叠作为桥梁连接独立子图</div><br></center>
 
-<h3 id="邻居传播"><a href="#邻居传播" class="headerlink" title="邻居传播"></a>邻居传播</h3><p>虽然，执行多次随机划分能提升近邻图的质量。但是，随着随机划分次数的增多，新的随机划分所起的作用越来越小。为了定量描述这一点，我们定义第$m$次划分所做的贡献为：$r_m=\frac{\Sigma _p \vert \tilde{N}^m <em>p - \tilde{N}^{m-1}</em>{p} \vert}{\Sigma _p \vert \tilde{N}^m _p \vert}$。然后，假设$q$是$p$之前识别的邻居点，而$q$与$p$有一个公共真实邻居点$o$，通过增加随机划分的数量，$o$被识别为$q$或$p$的邻居的概率逐渐增加。而无论$o$被先识别为谁的邻居($q$或$p$)，另一个点(比如$q$)可通过该点(比如$p$)的扩展来识别$o$。</p>
-<p>看图3，$o$被识别为$q$的邻居(蓝色虚线椭圆内)，但它没被识别为$p$的邻居，因此，我们可以借助$q$将$o$识别为$p$的邻居，此时的邻居传播路径为：$p \rightarrow q \rightarrow o$。</p>
+<h3 id="邻居传播"><a href="#邻居传播" class="headerlink" title="邻居传播"></a>邻居传播</h3><p>虽然，执行多次随机划分能提升近邻图的质量。但是，随着随机划分次数的增多，新的随机划分所起的作用越来越小。为了定量描述这一点，我们定义第 $m$ 次划分所做的贡献为<br>$$<br>r_m=\frac{\Sigma_p \vert \tilde{N}^m_p - \tilde{N}^{m-1}_{p} \vert}{\Sigma_p \vert \tilde{N}^m_p \vert}<br>$$<br>然后，假设$q$是$p$之前识别的邻居点，而 $q$ 与 $p$ 有一个公共真实邻居点 $o$ ，通过增加随机划分的数量， $o$ 被识别为 $q$ 或 $p$ 的邻居的概率逐渐增加。而无论 $o$ 被先识别为谁的邻居( $q$ 或 $p$ )，另一个点(比如 $q$ )可通过该点(比如 $p$ )的扩展来识别 $o$ 。</p>
+<p>看图3，$o$被识别为$q$的邻居(蓝色虚线椭圆内)，但它没被识别为$p$的邻居，因此，我们可以借助$q$将$o$识别为$p$的邻居，此时的邻居传播路径为：$p \rightarrow q \rightarrow o$ 。</p>
 <center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_225234.png" width="300"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-29_225234.png" width="300"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
     padding: 2px;">图3 邻居传播示例</div><br></center>
@@ -382,7 +382,7 @@
 <p><strong>引理2.</strong> $x_i$和$x_j$在第$L$棵随机划分树中被划分到同一叶子，而在前$L-1$个随机划分树中都没有划分到同一叶子的概率是$P_{rL}=(1-P_{ij}^h)^{L-1}P_{ij}^h$。</p>
 <p>引理2表明，随着$L$的增大在第$L$棵随机划分树中才将$x_i$和$x_j$划分到同一叶子的概率逐渐减小。</p>
 <p><strong>引理3.</strong> 若$x_i$与$x_j$有同一个邻居点$x_n$，经过$L-1$次划分既将$x_n$与$x_i$划分到同一叶子，又将$x_n$与$x_j$划分到同一叶子的概率为$P_{pL}=(1-(1-P_{in}^h)^{L-1})(1-(1-P_{jn}^h)^{L-1})$，注意$x_i$与$x_j$不一定要划分到同一叶子。</p>
-<p>既将$x_n$与$x_i$划分到同一叶子，又将$x_n$与$x_j$划分到同一叶子，这意味着我们可以用$x_n$作为媒介来发现$x_i$与$x_j$之间的邻居关系。而且，随着$L$的增大上述事件发生的概率也在增大。通过$t$个媒介点来发现$x_i$与$x_j$之间邻居关系的概率为$P_{pL}=\prod <em>{k=0} ^t (1-(1-P</em>{n_k n_{k+1}})^{L-1})$，其中$n_0=i$，$n_{t+1}=j$。</p>
+<p>既将$x_n$与$x_i$划分到同一叶子，又将$x_n$与$x_j$划分到同一叶子，这意味着我们可以用$x_n$作为媒介来发现$x_i$与$x_j$之间的邻居关系。而且，随着$L$的增大上述事件发生的概率也在增大。通过$t$个媒介点来发现$x_i$与$x_j$之间邻居关系的概率为<br>$$<br>P_{pL}=\prod_{k=0}^t (1-(1-P_{n_k n_{k+1}})^{L-1})<br>$$<br>其中 $n_0=i$ ， $n_{t+1}=j$ 。</p>
 <p>下面我们来比较一下经过一个随机划分过程和一个邻居传播过程能够找到真正的邻居关系的概率。假设$x_i$和$x_j$在前$L-1$次随机划分中都没有发现他们的邻居关系。</p>
 <ol>
 <li>不管$L$为多大，在第$L$次随机划分中发现他们的邻居关系的概率为$P_{ij} ^h$</li>
@@ -392,7 +392,7 @@
 <p>上述第3条从$P_{rL}$与$P_{pL}$的计算表达式中我们可很容易得出，$P_{rL}$随$L$为减函数，而$P_{pL}$随$L$为增函数。</p>
 <p>当$x_i$与$x_j$有更多相同邻居的时候，邻居传播方案将更具优势。总结一下，我们可以得到如下定理：</p>
 <p><strong>定理1.</strong> 假定$P=min \lbrace P_{ij} \vert \langle x_i,x_j \rangle \in E(G) \rbrace$，其中$G$是精确的近邻图。经过$L$次随机划分和一阶邻居传播发现$x_i$与$x_j$之间的邻居关系的概率为$1-(1-P^h)^{2L}(2-(1-P^h)^L)$，这里假定$x_i$与$x_j$至少有一个公共邻居。</p>
-<p><strong>推导：</strong>$P$是数据集中发现任意两点邻居关系的概率中最小的那个。经过$L$次随机划分和一阶邻居传播发现$x_i$与$x_j$之间的邻居关系的概率，其实就是或者经$L$次随机划分发现$x_i$与$x_j$之间的邻居关系（直接发现邻居关系），或者经过$L$次随机划分都没有发现$x_i$与$x_j$之间的邻居关系但是将两者的公共邻居($x_n$)都划分到各自的子集（间接发现邻居关系）。前者的概率为$1-(1-P_{ij}^h)^L$，至少应为$1-(1-P^h)^L$，后者的概率为$(1-P_{ij}^h)^L \cdot (1-(1-P_{in}^h)^{L})(1-(1-P_{jn}^n)^{L})$，至少应为$(1-P^h)^L \cdot (1-(1-P^h)^{L})(1-(1-P^h)^{L})$。两者相加即得经过$L$次随机划分和一阶邻居传播发现$x_i$与$x_j$之间的邻居关系的概率为$1-(1-P^h)^{2L}(2-(1-P^h)^L)$。</p>
+<p><strong>推导：</strong>$P$是数据集中发现任意两点邻居关系的概率中最小的那个。经过$L$次随机划分和一阶邻居传播发现$x_i$与$x_j$之间的邻居关系的概率，其实就是或者经$L$次随机划分发现$x_i$与$x_j$之间的邻居关系（直接发现邻居关系），或者经过$L$次随机划分都没有发现$x_i$与$x_j$之间的邻居关系但是将两者的公共邻居($x_n$)都划分到各自的子集（间接发现邻居关系）。前者的概率为$1-(1-P_{ij}^h)^L$，至少应为$1-(1-P^h)^L$，后者的概率为$(1-P_{ij}^h)^L \cdot (1-(1-P_{in}^h)^{L})(1-(1-P_{jn}^n)^{L})$，至少应为 $(1-P^h)^L \cdot (1-(1-P^h)^{L})(1-(1-P^h)^{L})$ 。两者相加即得经过$L$次随机划分和一阶邻居传播发现$x_i$与$x_j$之间的邻居关系的概率为$1-(1-P^h)^{2L}(2-(1-P^h)^L)$ 。</p>
 <h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><p>$M$次随机划分的时间复杂度为$O(Mdn \log {n})$，访问点的最大数量为$T$时，邻居传播的时间复杂度为$O(Tdn \log {T})$。前者很容易理解，后者的$T \log {T}$部分我的理解是：执行邻居传播时，访问到的点是以优先队列的形式组织的，而优先队列一般用堆来实现，当访问点的数量为$T$时维护堆的时间复杂度为$O(T \log {T})$。</p>
 <p>在大规模高维场景下，$M$和$T$都很小，因此总的时间复杂度为$O(dn \log {n})$。</p>
 <h3 id="算法细节"><a href="#算法细节" class="headerlink" title="算法细节"></a>算法细节</h3><h4 id="随机划分"><a href="#随机划分" class="headerlink" title="随机划分"></a>随机划分</h4><p>具体实施时，本文采用<strong>随机主方向</strong>（random principal directions）来执行划分，使得每一个子集的直径足够小。使用随机主方向的原因是已有工作理论证实基于主方向来分层划分点能确保子集的直径快速下降，这样的话，最后在同一子集的点有很大的概率是真正的最近邻。</p>
@@ -407,7 +407,7 @@
 <p>注：之前的工作在近邻图构建时，一般选用<strong>二阶邻居传播</strong>提升近邻图的质量，即改善$p$的邻居时，将$p$邻居的邻居作为候选去改善（比如之前介绍的<a href="https://mp.weixin.qq.com/s/S2tnLEyhwfICKcY6ulBV3g" target="_blank" rel="noopener">NN-Descent</a>方法），而本文使用最佳优先搜索的方式来改善$p$的邻居。我的理解是：从$p$点开始，以$p$为查询点执行贪婪搜索，返回的最近的几个点作为$p$的邻居。因此，不仅$p$的二阶邻居中离$p$更近的点被考虑，一些高阶邻居中离$p$更近的点也能被考虑到。</p>
 <h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>一大波肌肉来袭：</p>
 <center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-30_235039.png" width="800"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/01/knng-wj/2020-04-30_235039.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
     color: #999;
     padding: 2px;">图4 性能比较</div><br></center>
@@ -415,6 +415,7 @@
 <p>通过多重随机分治和邻居传播两步构建一个适用于大规模数据的近似近邻图。由图4可很清晰看出，本文提出的方法性能远超其它方法。</p>
 <h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><p><strong>近邻图构建框架：</strong>本文的近邻图构建过程也是满足”First-Coarse-Last-Refinement”框架的，这个框架应该是很多近邻图的构建思路。比如NN-Descent，它的”First-Coarse”部分是随机初试化得到近邻图的过程，它的”Last-Refinement”部分也就是<a href="https://mp.weixin.qq.com/s/S2tnLEyhwfICKcY6ulBV3g" target="_blank" rel="noopener">NN-Descent</a>改善邻居的过程。而本文的”First-Coarse”部分是随机分治过程，”Last-Refinement”部分是多重随机分治和邻居传播过程。</p>
 <p><strong>邻居传播：</strong>在某点执行选边时，通过最佳优先搜索的方式产生候选集，这类似与插入构图模式。<a href="https://mp.weixin.qq.com/s/S2tnLEyhwfICKcY6ulBV3g" target="_blank" rel="noopener">NN-Descent</a>是邻居之间互相了解，这只是一阶邻居，通过最佳优先搜索产生高阶邻居互相了解？</p>
+<p><strong>多重随机分治与邻居传播如何协调？</strong> 先执行前者再执行后者；边执行前者边执行后者；先执行前者然后边执行前者边执行后者（本文）；这是一个需要考虑的问题。</p>
 
     </div>
 
