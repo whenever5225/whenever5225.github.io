@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="为什么启发式选边？HNSW是增量式构建的，构图时它的启发式的选边策略不仅考虑了相似度问题也考虑了数据的分布问题。因为HNSW是站在近似最近邻搜索的角度去考虑的，而不是站在构建一个尽可能精确的近邻图的角度考虑问题，这可以说是HNSW选用启发式选边的intuition。一个精确的近邻图不一定是最适合近似最近邻搜索的。 既考虑相似度问题又考虑数据分布情况的选边策略有很多，这里选用启发式选边有何优势？请看">
+<meta name="keywords" content="ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HNSW启发式选边策略分析">
+<meta property="og:url" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="为什么启发式选边？HNSW是增量式构建的，构图时它的启发式的选边策略不仅考虑了相似度问题也考虑了数据的分布问题。因为HNSW是站在近似最近邻搜索的角度去考虑的，而不是站在构建一个尽可能精确的近邻图的角度考虑问题，这可以说是HNSW选用启发式选边的intuition。一个精确的近邻图不一定是最适合近似最近邻搜索的。 既考虑相似度问题又考虑数据分布情况的选边策略有很多，这里选用启发式选边有何优势？请看">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/2020-05-10_111857.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边1.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边2.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边3.jpg">
+<meta property="og:updated_time" content="2020-05-11T12:02:32.224Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HNSW启发式选边策略分析">
+<meta name="twitter:description" content="为什么启发式选边？HNSW是增量式构建的，构图时它的启发式的选边策略不仅考虑了相似度问题也考虑了数据的分布问题。因为HNSW是站在近似最近邻搜索的角度去考虑的，而不是站在构建一个尽可能精确的近邻图的角度考虑问题，这可以说是HNSW选用启发式选边的intuition。一个精确的近邻图不一定是最适合近似最近邻搜索的。 既考虑相似度问题又考虑数据分布情况的选边策略有很多，这里选用启发式选边有何优势？请看">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/2020-05-10_111857.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>HNSW启发式选边策略分析 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">11</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">108</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/05/11/hnsw-heuristic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">HNSW启发式选边策略分析
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-05-11 19:57:35" itemprop="dateCreated datePublished" datetime="2020-05-11T19:57:35+08:00">2020-05-11</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2020/05/11/hnsw-heuristic/" class="post-meta-item leancloud_visitors" data-flag-title="HNSW启发式选边策略分析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/05/11/hnsw-heuristic/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/11/hnsw-heuristic/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="为什么启发式选边？"><a href="#为什么启发式选边？" class="headerlink" title="为什么启发式选边？"></a>为什么启发式选边？</h2><p>HNSW是增量式构建的，构图时它的启发式的选边策略不仅考虑了相似度问题也考虑了数据的分布问题。因为HNSW是站在近似最近邻搜索的角度去考虑的，而不是站在构建一个尽可能精确的近邻图的角度考虑问题，这可以说是HNSW选用启发式选边的intuition。一个精确的近邻图不一定是最适合近似最近邻搜索的。</p>
+<p>既考虑相似度问题又考虑数据分布情况的选边策略有很多，这里选用启发式选边有何优势？请看它具体是怎样操作的。</p>
+<h2 id="怎样启发式选边？"><a href="#怎样启发式选边？" class="headerlink" title="怎样启发式选边？"></a>怎样启发式选边？</h2><center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/11/hnsw-heuristic/2020-05-10_111857.png" width="400"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 HNSW启发式选边示意</div><br></center>
+
+<p>图1中绿色的点是刚插入点，假设它的候选邻居集足够大能涵盖图中所有蓝色点，假设一个点最多只能连4个邻居。根据论文中的描述，绿色点的最近邻居（图中编号为1的点）必连，接着检查第二近的邻居（编号为2），点2与绿色点的距离大于点2与点1（其实点2要与选中的点集中所有点都要比较选一个距离最小的，此时选中的点只有点1）的距离，因此点2不连（放入垃圾堆），额，图1中怎么给连上了？这是论文作者连的，误操作？这里先给它画个红叉。继续检查第3近的邻居（编号3），点3与绿色点的距离大于点3与点1的距离（可能不太明显，暂且这么认为），因此点3也不连（放入垃圾堆），又误操作？剩下的Cluster1中的蓝色点按到绿色点的距离由近及远重复执行上述操作，很明显，它们都不会与绿色点连边，统统放入垃圾堆。</p>
+<p>因为我们的候选邻居集足够大，下面轮到Cluster2中的点了，先点4，它与绿色点的距离小于它与点1的距离（此时只选中了点1），因此选中点4，接下来Cluster2中的其它点重复上述操作都不会选中，放入垃圾堆。经过一波启发式之后，已给绿色点选了两个邻居，分别是点1和点4，但是我们需要给插入点选4个邻居，还差2个，论文中的处理很简单，从垃圾堆里面选两个离绿色点最近的连边，毫无悬念，点2和点3光荣选中，毕竟在垃圾堆里它们离插入点更近。这个时候，图1中的那两个红叉可以去掉了，误操作不存在的。</p>
+<h2 id="有什么好处呢？"><a href="#有什么好处呢？" class="headerlink" title="有什么好处呢？"></a>有什么好处呢？</h2><p>先说一下它的一个明显的缺点，复杂了一些，肯定比只考虑距离的朴素选边策略构建复杂度更高，它多计算了一些距离。</p>
+<p>为了更好的搜索性能，索引构建的这点小牺牲算不了什么。启发式选边的优势主要有以下两点：</p>
+<ol>
+<li>尽可能地保证图的全局连通性，特别是数据集在分布上有很多聚簇时；</li>
+<li>长边起到“高速公路”的作用，使搜索过程可以快速收敛。</li>
+</ol>
+<p>先说第1点，注意关键词“尽可能地”，这里的意思是，相比朴素选边，启发式选边在某些情况能保证图的全局连通性，但不保证所有情况。下面这个例子应该能清晰说明启发式相比于朴素式的优势，前者能保证全局连通性，而后者不能保证全局连通性。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边1.jpg" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 HNSW插入式图构建过程简化版（不考虑分层）</div><br></center>
+
+<p>图2是HNSW简化版的插入式构图过程，假设每个点最多连两个邻居，插入过程为插入点选边也是按照启发式的策略，这里只给出结果，具体过程可自行分析，其实图2给出的例子启发式和朴素式选边的结果都是一样的。需要注意的一点是：HNSW给插入点选邻居时，在选中的邻居与插入点之间连接的是双向边，HNSW构建的是一个有向图。</p>
+<p>插入点1，2，3都没什么问题，当插入点4后，点2和点3邻居“超载”，需要裁边。裁边的时候采用的策略也是启发式的，裁边后的结果看图3，具体过程可按启发式的过程自行分析。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边2.jpg" width="600"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图3 启发式裁边</div><br></center>
+
+<p>可见，经启发式裁边之后，全局连通性依然存在。如果用朴素选边呢？看图4。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/11/hnsw-heuristic/HNSW启发式选边3.jpg" width="600"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图4 朴素裁边</div><br></center>
+
+<p>注意红色的线已经是单向边了。可见，无论从点2，点3还是点4出发，都不能到达点1了，全局连通不存在了。</p>
+<p>其实，对于<strong>某些情况启发式的裁边策略可能也不能保证全局连通性，这个时候朴素式的肯定是更不能保证的</strong>。</p>
+<p>第2点“高速公路”没什么可说的，在裁边的机制下，朴素裁边很难保留长边。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/05/01/knng-wj/" rel="next" title="多重分治和邻居传播构建高质量近邻图——CVPR论文阅读笔记">
+                  <i class="fa fa-chevron-left"></i> 多重分治和邻居传播构建高质量近邻图——CVPR论文阅读笔记
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">108</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么启发式选边？"><span class="nav-number">1.</span> <span class="nav-text">为什么启发式选边？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样启发式选边？"><span class="nav-number">2.</span> <span class="nav-text">怎样启发式选边？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有什么好处呢？"><span class="nav-number">3.</span> <span class="nav-text">有什么好处呢？</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '交流微信：wy156646264',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
