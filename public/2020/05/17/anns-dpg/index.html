@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目Approximate Nearest Neighbor Search on High Dimensional Data — Experiments, Analyses, and Improvement 相关信息作者与单位Wen Li(Wen.Li@uts.edu.au); Nanjing Audit University; University of Technology Sydney;">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记">
+<meta property="og:url" content="http://whenever5225.github.io/2020/05/17/anns-dpg/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目Approximate Nearest Neighbor Search on High Dimensional Data — Experiments, Analyses, and Improvement 相关信息作者与单位Wen Li(Wen.Li@uts.edu.au); Nanjing Audit University; University of Technology Sydney;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/17/anns-dpg/2020-05-16_211609.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/05/17/anns-dpg/2020-05-17_153519.png">
+<meta property="og:updated_time" content="2020-05-17T08:32:38.897Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记">
+<meta name="twitter:description" content="论文题目Approximate Nearest Neighbor Search on High Dimensional Data — Experiments, Analyses, and Improvement 相关信息作者与单位Wen Li(Wen.Li@uts.edu.au); Nanjing Audit University; University of Technology Sydney;">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/05/17/anns-dpg/2020-05-16_211609.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/05/17/anns-dpg/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">11</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">109</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/05/17/anns-dpg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MZ Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-05-17 15:47:22" itemprop="dateCreated datePublished" datetime="2020-05-17T15:47:22+08:00">2020-05-17</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span id="/2020/05/17/anns-dpg/" class="post-meta-item leancloud_visitors" data-flag-title="同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+          
+            
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/05/17/anns-dpg/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/17/anns-dpg/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>Approximate Nearest Neighbor Search on High Dimensional Data — Experiments, Analyses, and Improvement</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>Wen Li(<a href="mailto:Wen.Li@uts.edu.au" target="_blank" rel="noopener">Wen.Li@uts.edu.au</a>); Nanjing Audit University; University of Technology Sydney;</p>
+<p>Ying Zhang(<a href="mailto:Ying.Zhang@uts.edu.au" target="_blank" rel="noopener">Ying.Zhang@uts.edu.au</a>); University of Technology Sydney;</p>
+<p>Yifang Sun(<a href="mailto:yifangs@cse.unsw.edu.au" target="_blank" rel="noopener">yifangs@cse.unsw.edu.au</a>); The University of New South Wales;</p>
+<p>Wei Wang(<a href="mailto:weiw@cse.unsw.edu.au" target="_blank" rel="noopener">weiw@cse.unsw.edu.au</a>); The University of New South Wales;</p>
+<p>Mingjie Li(<a href="mailto:Mingjie.Li@student.uts.edu.au" target="_blank" rel="noopener">Mingjie.Li@student.uts.edu.au</a>); University of Technology Sydney;</p>
+<p>Wenjie Zhang(<a href="mailto:zhangw@cse.unsw.edu.au" target="_blank" rel="noopener">zhangw@cse.unsw.edu.au</a>); The University of New South Wales</p>
+<p>Xuemin Lin(<a href="mailto:lxue@cse.unsw.edu.au" target="_blank" rel="noopener">lxue@cse.unsw.edu.au</a>); The University of New South Wales</p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>Transactions on Knowledge and Data Engineering(2019数据库/数据挖掘/内容检索A类期刊); 2019</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><p>尽管目前已有很多近似最近邻算法，但是它们的性能没有得到全面的评估和分析。本文对各类近似最近邻算法进行了一个全面的评估，这样做的目的有以下三点：</p>
+<ol>
+<li>各个领域的算法和数据集可能会”并行提出”。某一领域的解决方案可能已在另一领域中存在，而不必重复开发。而且，不同领域的算法很少能放在一起比较的。</li>
+<li>忽略了评估标准和设置。一个近似最近邻算法可从各个角度来评估。比如，搜索时间、搜索质量、索引尺寸、可扩展性（关于数据集的规模和维数）、鲁棒性（数据集、查询负载和参数设置）、可更新性，调参工作量等。</li>
+<li>现存结果的差异。同一个算法不同的实施结果差别很大，我们需要一个一致性的比较结果。</li>
+</ol>
+<p>而且，通过实验和分析，本文提出了一种新的基于近邻图的近似最近邻搜索算法——DPG。该方法在构建k近邻图时同时考虑了数据点的距离和数据点的分布，这不同于之前的<a href="https://mp.weixin.qq.com/s/S2tnLEyhwfICKcY6ulBV3g" target="_blank" rel="noopener">NN-Descent</a>和<a href="https://mp.weixin.qq.com/s/ZKynr1jM7eo--dpCULvg0A" target="_blank" rel="noopener">Wang</a>提出的方法。</p>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><ol>
+<li>对现存一些主要的近似最近邻算法做一个全面的评估。</li>
+<li>分析造成各种算法在不同情况下的优劣的原因。</li>
+<li>构建一个更有效的基于近邻图的近似最近邻算法。</li>
+</ol>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><h3 id="动机案例"><a href="#动机案例" class="headerlink" title="动机案例"></a>动机案例</h3><p>近邻图的构建一般只考虑数据点与它的邻居点的距离。但是，本文不仅考虑这一点，它还考虑邻居点的分布，为什么要这样呢？请看图1。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/17/anns-dpg/2020-05-16_211609.png" width="700"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 考虑邻居点分布的作用示例</div><br></center>
+
+<p>图1中， $a_3$ 和 $a_4$ 是 $p$ 的最近邻，在2-NN图中，如果查询点为 $q$ ，搜索执行到 $p$ 时是无法继续收敛到 $q$ 的最近邻点 $b$ 的。$a_1$ ， $a_2$ ， $a_3$ ，$a_4$ 之间离得很近，可以认为它们处于同一个集簇，这个时候$a_3$ 和 $a_4$ 都在 $p$ 的邻居列表中其实作用不大。本文在<strong>连边时不仅考虑距离的远近，而且还考虑方向的多样性</strong>，从而构建一个多样化近邻图（Diversified Proximity Graph, DPG）。在图1中，如果 $p$ 的邻居是 $a_3$ 和 $b$ ，那将更有意义。</p>
+<p>假设现在有向边 $\langle p, a_4 \rangle$ 已经没了，现在 $p$ 的邻居是 $a_3$ 和 $b$ 。另一个问题又发生了， $p$ 只有出边而没有入边，因为 $p$ 周围的点距 $p$ 都挺远的， $p$ 不是这些点前两个最近邻点。这将导致 $p$ 左右两边的两个聚簇其实是不连通的，有研究表明，这一现象在高维数据中更普遍。因此，本文在<strong>连边时添加的边是双向边</strong>。</p>
+<h3 id="DPG的构建过程"><a href="#DPG的构建过程" class="headerlink" title="DPG的构建过程"></a>DPG的构建过程</h3><p>给定点 $p$ ，它的最近邻列表为 $L$ ，在 $p$ 的最近邻列表中的两点 $x$ 和 $y$ 的相似性定义为角度 $\measuredangle xpy$ ，表示为 $\theta (x,y)$ 。我们的目标就是在 $L$ 中找一个子集 $S$ ，其中 $\lvert S \rvert = k$ ，使得在 $S$ 中，任意两点的夹角的平均值最大，这样的 $S$ 中的点与 $p$ 连边。</p>
+<p><strong>核心选边过程：</strong> $S$ 初始化为 $L$ 中距 $p$ 最近的点，接下来就是 $k-1$ 次迭代选边过程，此过程同时考虑距离和分布两个因素。在每一次迭代，从集合 $L \setminus S$ 中移出一个点到 $S$ 中，并且移出的这个点是使 $S$ 中各点对之间的夹角的平均值最小的点（类似于经典的求最短路径的算法）。这个过程的时间复杂度为 $O(k^2 K n)$ 。</p>
+<p><strong>时间复杂度推导过程：</strong> 现数据集中一共有 $n$ 个点，给其中一个点 $p$ 选边，它的最近邻列表 $L$ 中有 $K$ 个点，表示为： $v_1, v_2, \cdots, v_K$ ，假设它们已按距 $p$ 的距离升序排好序。开始时先将 $v_1$ （作为 $s_1$）加入集合 $S$ ，接着，从 $L$ 中剩下的 $K-1$ 个点里面选一个 $s_2$ ，使得 $\measuredangle s_1 p s_2$ 最大，因此需要 $K-1$ 次计算。$s_2$ 找到后，$L$ 里面还剩下 $K-2$ 个点，从其中选一个 $s_3$ ，使得 $\measuredangle s_1 p s_3$ 与 $\measuredangle s_2 p s_3$之和最大，因此需要 $2(K-2)$ 次计算，……</p>
+<p>因此，从 $L$ 中选择 $k$ 个点到 $S$ 中，需要的总计算次数为<br>$$<br>\sum_{i=1}^{k-1} i(k-i)<br>$$<br>化简可得<br>$$<br>\frac{k(k-1)}{2} K - \frac{k(k-1)(2k-1)}{6}<br>$$<br>即为<br>$$<br>O(k^2 K) - O(k^3)=O(k^2 K)<br>$$<br>因此，给所有点选边的理论时间复杂度为 $O(k^2 K n)$ 。</p>
+<p>$K$ 值是权衡距离因素和分布因素的一个重要参数，作者在实验中得出，$K=2k$ 时能够实现最好的性能。</p>
+<p>在实际实施时，本文并不是完全按照上述描述来执行的，因为上述过程的时间复杂度还是挺高的，作者通过对上述过程近似实施了一个简化版本，它的时间复杂度为 $O(K^2 n)$ 。</p>
+<p><strong>简化版本选边过程：</strong> 给 $p$ 选边时，为它的 $K$ 近邻列表 $L$ 中的每个点都设置一个计数器。比如，对于点对 $u$ 和 $v$，如果 $v$ 到 $u$ 的距离小于 $v$ 到 $p$ 的距离，则 $v$ 的计数器加一，对 $L$ 中的任意两个点都执行上述操作。之后，保留 $k$ 个计数器的值最小的点作为 $p$ 的邻居。这样做的直觉是： 对于点 $x$，如果有很多点与之处于同一方向，则 $x$ 的计数器的值就会很大。这个简化版本的选边与<a href="https://blog.csdn.net/whenever5225/article/details/106061653/" target="_blank" rel="noopener">HNSW</a>有一点点类似的。</p>
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><ol>
+<li>实践了更全面的对近似最近邻搜索算法进行评估的方法；</li>
+<li>近邻图构建时把选边过程的约束总结为两个因素，并分析说明数据分布因素对构建一个面向近似最近邻搜索的近邻图的重要性；</li>
+<li>提出了按角度选边这种数据分布因素的具体实施方式；</li>
+<li>提出了能够和按角度选边实现近似效果的简化版本实施数据分布因素的选边方式。</li>
+</ol>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>先看一个搜索性能图</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/05/17/anns-dpg/2020-05-17_153519.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 搜索性能比较</div><br></center>
+
+<p>由图2可见，大部分情况下，HNSW的搜索性能是最优的，本文提出的DPG只在少数情况下是最优。而且，HNSW的性能在各种数据集下是最稳定的。因此，整体而言，HNSW的选边策略还是更好一些，它的分层结构可能也做出了一些贡献。</p>
+<p>另一方面，DPG性能普遍优于KGraph，特别在召回率区域，这说明了考虑数据分布因素的必要性。</p>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><p>要构建一个面向相似性搜索的近邻图，只考虑距离因素是不行的，如何实施一个数据分布因素是一个值得考虑的问题。</p>
+<p>近邻图构建的常用思路： 先提出抽象构建思路，这个过程一般可以很容易的符号化描述，一些性质也可严密推导，但一般其构建的时间复杂度较高，因此，会有一个近似的版本，近似版本可与抽象版本实现非常接近的效果（或者稍微差一点），而且近似版本一般还可显著降低构建的时间复杂度。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="MZ Wang 微信支付">
+        <p>微信支付</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="MZ Wang 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/05/11/hnsw-heuristic/" rel="next" title="HNSW启发式选边策略分析">
+                  <i class="fa fa-chevron-left"></i> HNSW启发式选边策略分析
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://image.135editor.com/files/users/646/6469581/201908/mepOKABn_8tee.png"
+      alt="MZ Wang">
+  <p class="site-author-name" itemprop="name">MZ Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动机案例"><span class="nav-number">5.1.</span> <span class="nav-text">动机案例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DPG的构建过程"><span class="nav-number">5.2.</span> <span class="nav-text">DPG的构建过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">8.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MZ Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    
+
+<script>
+NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js', function() {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '8eIUdFDN7cAiXKQpfSf5SWEB-gzGzoHsz',
+    appKey: 'Fw9Bvc4v9ol7Ui4NeDYciCEP',
+    placeholder: '交流微信：wy156646264',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

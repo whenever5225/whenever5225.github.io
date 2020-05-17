@@ -1806,7 +1806,7 @@ blockquote {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #9a16ac;
+  background: #25e8ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
