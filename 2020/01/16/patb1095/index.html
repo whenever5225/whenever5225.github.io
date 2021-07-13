@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="解码PAT准考证题目描述PAT 准考证号由 4 部分组成：  第 1 位是级别，即 T 代表顶级；A 代表甲级；B 代表乙级； 第 2~4 位是考场编号，范围从 101 到 999； 第 5~10 位是考试日期，格式为年、月、日顺次各占 2 位； 最后 11~13 位是考生编号，范围从 000 到 999。  现给定一系列考生的准考证号和他们的成绩，请你按照要求输出各种统计信息。 输入格式输入首先">
+<meta name="keywords" content="C&#x2F;C++,PAT,编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PAT乙级1095 || 解码PAT准考证（详解，C&#x2F;C++示例，测试点分析）">
+<meta property="og:url" content="http://whenever5225.github.io/2020/01/16/patb1095/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="解码PAT准考证题目描述PAT 准考证号由 4 部分组成：  第 1 位是级别，即 T 代表顶级；A 代表甲级；B 代表乙级； 第 2~4 位是考场编号，范围从 101 到 999； 第 5~10 位是考试日期，格式为年、月、日顺次各占 2 位； 最后 11~13 位是考生编号，范围从 000 到 999。  现给定一系列考生的准考证号和他们的成绩，请你按照要求输出各种统计信息。 输入格式输入首先">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-08-07T12:13:20.255Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PAT乙级1095 || 解码PAT准考证（详解，C&#x2F;C++示例，测试点分析）">
+<meta name="twitter:description" content="解码PAT准考证题目描述PAT 准考证号由 4 部分组成：  第 1 位是级别，即 T 代表顶级；A 代表甲级；B 代表乙级； 第 2~4 位是考场编号，范围从 101 到 999； 第 5~10 位是考试日期，格式为年、月、日顺次各占 2 位； 最后 11~13 位是考生编号，范围从 000 到 999。  现给定一系列考生的准考证号和他们的成绩，请你按照要求输出各种统计信息。 输入格式输入首先">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/01/16/patb1095/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PAT乙级1095 || 解码PAT准考证（详解，C/C++示例，测试点分析） | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/01/16/patb1095/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">PAT乙级1095 || 解码PAT准考证（详解，C/C++示例，测试点分析）
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-16 19:40:55" itemprop="dateCreated datePublished" datetime="2020-01-16T19:40:55+08:00">2020-01-16</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PAT/" itemprop="url" rel="index"><span itemprop="name">PAT</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="解码PAT准考证"><a href="#解码PAT准考证" class="headerlink" title="解码PAT准考证"></a><strong>解码PAT准考证</strong></h1><h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><strong>题目描述</strong></h2><p>PAT 准考证号由 4 部分组成：</p>
+<ul>
+<li>第 1 位是级别，即 <code>T</code> 代表顶级；<code>A</code> 代表甲级；<code>B</code> 代表乙级；</li>
+<li>第 2~4 位是考场编号，范围从 101 到 999；</li>
+<li>第 5~10 位是考试日期，格式为年、月、日顺次各占 2 位；</li>
+<li>最后 11~13 位是考生编号，范围从 000 到 999。</li>
+</ul>
+<p>现给定一系列考生的准考证号和他们的成绩，请你按照要求输出各种统计信息。</p>
+<h2 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a><strong>输入格式</strong></h2><p>输入首先在一行中给出两个正整数 <em>N</em>（≤$10^4$）和 <em>M</em>（≤100），分别为考生人数和统计要求的个数。</p>
+<p>接下来 <em>N</em> 行，每行给出一个考生的准考证号和其分数（在区间 [0,100] 内的整数），其间以空格分隔。</p>
+<p>考生信息之后，再给出 <em>M</em> 行，每行给出一个统计要求，格式为：<code>类型 指令</code>，其中</p>
+<ul>
+<li><code>类型</code> 为 1 表示要求按分数非升序输出某个指定级别的考生的成绩，对应的 <code>指令</code> 则给出代表指定级别的字母；</li>
+<li><code>类型</code> 为 2 表示要求将某指定考场的考生人数和总分统计输出，对应的 <code>指令</code> 则给出指定考场的编号；</li>
+<li><code>类型</code> 为 3 表示要求将某指定日期的考生人数分考场统计输出，对应的 <code>指令</code> 则给出指定日期，格式与准考证上日期相同。</li>
+</ul>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a><strong>输出格式</strong></h2><p>对每项统计要求，首先在一行中输出 <code>Case #: 要求</code>，其中 <code>#</code> 是该项要求的编号，从 1 开始；<code>要求</code> 即复制输入给出的要求。随后输出相应的统计结果：</p>
+<ul>
+<li><code>类型</code> 为 1 的指令，输出格式与输入的考生信息格式相同，即 <code>准考证号 成绩</code>。对于分数并列的考生，按其准考证号的字典序递增输出（题目保证无重复准考证号）；</li>
+<li><code>类型</code> 为 2 的指令，按 <code>人数 总分</code> 的格式输出；</li>
+<li><code>类型</code> 为 3 的指令，输出按人数非递增顺序，格式为 <code>考场编号 总人数</code>。若人数并列则按考场编号递增顺序输出。</li>
+</ul>
+<p>如果查询结果为空，则输出 <code>NA</code>。</p>
+<h2 id="输入样例1"><a href="#输入样例1" class="headerlink" title="输入样例1"></a><strong>输入样例1</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">8 4</span><br><span class="line">B123180908127 99</span><br><span class="line">B102180908003 86</span><br><span class="line">A112180318002 98</span><br><span class="line">T107150310127 62</span><br><span class="line">A107180908108 100</span><br><span class="line">T123180908010 78</span><br><span class="line">B112160918035 88</span><br><span class="line">A107180908021 98</span><br><span class="line">1 A</span><br><span class="line">2 107</span><br><span class="line">3 180908</span><br><span class="line">2 999</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例1"><a href="#输出样例1" class="headerlink" title="输出样例1"></a><strong>输出样例1</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Case 1: 1 A</span><br><span class="line">A107180908108 100</span><br><span class="line">A107180908021 98</span><br><span class="line">A112180318002 98</span><br><span class="line">Case 2: 2 107</span><br><span class="line">3 260</span><br><span class="line">Case 3: 3 180908</span><br><span class="line">107 2</span><br><span class="line">123 2</span><br><span class="line">102 1</span><br><span class="line">Case 4: 2 999</span><br><span class="line">NA</span><br></pre></td></tr></table></figure></div>
+<h2 id="输入样例2"><a href="#输入样例2" class="headerlink" title="输入样例2"></a><strong>输入样例2</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1 6</span><br><span class="line">T101000101000 0</span><br><span class="line">3 000101</span><br><span class="line">2 101</span><br><span class="line">1 T</span><br><span class="line">1 A</span><br><span class="line">1 B</span><br><span class="line">3 180908</span><br></pre></td></tr></table></figure></div>
+<h2 id="输出样例2"><a href="#输出样例2" class="headerlink" title="输出样例2"></a><strong>输出样例2</strong></h2><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PLAIN"><figure class="iseeu highlight /plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Case 1: 3 000101</span><br><span class="line">101 1</span><br><span class="line">Case 2: 2 101</span><br><span class="line">1 0</span><br><span class="line">Case 3: 1 T</span><br><span class="line">T101000101000 0</span><br><span class="line">Case 4: 1 A</span><br><span class="line">NA</span><br><span class="line">Case 5: 1 B</span><br><span class="line">NA</span><br><span class="line">Case 6: 3 180908</span><br><span class="line">NA</span><br></pre></td></tr></table></figure></div>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><h3 id="解题思想"><a href="#解题思想" class="headerlink" title="解题思想"></a>解题思想</h3><p>题目内容比较长，处理起来也就相对复杂些。根据指令的要求，很容易看出不仅要对准考证号整体处理，而且还要对部分内容进行处理，所以，存储每个考生信息的结构体中要分开存储各个部分的信息（如级别，考场编号等）。</p>
+<p>之后分开处理各类型的统计要求。当某类型的统计要求查询结果为空，则输出<code>NA</code>。</p>
+<p>注意复制输出统计要求中的日期时，宽度为6位，如<code>001010</code>,应输出为<code>001010</code>,而不是<code>1010</code>，如果日期按整数处理，则需要考虑输出宽度的问题，若日期不是按整数处理（比如字符串），则不需要考虑输出格式问题了。</p>
+<h3 id="坑点提醒"><a href="#坑点提醒" class="headerlink" title="坑点提醒"></a>坑点提醒</h3><p><strong>超时问题</strong></p>
+<ol>
+<li><p>此题出现超时问题一般是由于使用了<code>cin</code>输入，<code>cout</code>输出。因此需要将它们都改成<code>scanf</code>输入，<code>printf</code>输出。</p>
+</li>
+<li><p>如果还有超时，则一般是处理类型3的统计要求时使用了<code>map</code>，因为<code>map</code>会按<code>键</code>自动排序，会造成超时，将用到<code>map</code>的地方改成用<code>unordered_map</code>一般能解决问题。</p>
+</li>
+<li><p>其它超时可能就是自己的算法有问题了。</p>
+</li>
+</ol>
+<h3 id="代码示例（C-C-）"><a href="#代码示例（C-C-）" class="headerlink" title="代码示例（C/C++）"></a>代码示例（C/C++）</h3><div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="CPP"><figure class="iseeu highlight /cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unordered_map&gt;    //用map测试点3会超时</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span> &#123;</span></span><br><span class="line">    <span class="built_in">string</span> id, r, a, d, num;   <span class="comment">//分别为准考证号，级别，考场编号，考试日期，考生编号</span></span><br><span class="line">    <span class="keyword">int</span> g;  <span class="comment">// 分数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">room_num</span> &#123;</span></span><br><span class="line">    <span class="built_in">string</span> a;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span> &lt;student&gt; stu;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp1</span><span class="params">(student x, student y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (x.g != y.g) &#123;</span><br><span class="line">        <span class="keyword">return</span> x.g &gt; y.g;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> x.id &lt; y.id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp2</span><span class="params">(room_num x, room_num y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (x.c != y.c) &#123;</span><br><span class="line">        <span class="keyword">return</span> x.c &gt; y.c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> x.a &lt; y.a;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">command1</span><span class="params">(<span class="built_in">string</span> tmp, <span class="keyword">int</span> &amp;flag)</span> </span>&#123;</span><br><span class="line">    sort(stu.begin(), stu.end(), cmp1);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; stu.size(); i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (stu[i].r == tmp) &#123;</span><br><span class="line">            flag = <span class="number">1</span>;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%s %d\n"</span>, stu[i].id.c_str(), stu[i].g);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">command2</span><span class="params">(<span class="built_in">string</span> tmp, <span class="keyword">int</span> &amp;flag)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> c = <span class="number">0</span>, sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; stu.size(); i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (stu[i].a == tmp) &#123;</span><br><span class="line">            flag = <span class="number">1</span>;</span><br><span class="line">            c++;</span><br><span class="line">            sum += stu[i].g;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (flag) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d %d\n"</span>, c, sum);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">command3</span><span class="params">(<span class="built_in">string</span> tmp, <span class="keyword">int</span> &amp;flag)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">unordered_map</span> &lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; mp;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; stu.size(); i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (stu[i].d == tmp) &#123;</span><br><span class="line">            flag = <span class="number">1</span>;</span><br><span class="line">            mp[stu[i].a]++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">vector</span> &lt;room_num&gt; rn;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">unordered_map</span> &lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; :: iterator it = mp.begin(); it != mp.end(); it++) &#123;</span><br><span class="line">        room_num tmp;</span><br><span class="line">        tmp.a = it -&gt; first;</span><br><span class="line">        tmp.c = it -&gt; second;</span><br><span class="line">        rn.push_back(tmp);</span><br><span class="line">    &#125;</span><br><span class="line">    sort(rn.begin(), rn.end(), cmp2);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; rn.size(); i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s %d\n"</span>, rn[i].a.c_str(), rn[i].c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> N, M;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; N &gt;&gt; M;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        <span class="keyword">char</span> s[<span class="number">14</span>];</span><br><span class="line">        student tmp;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%s%d"</span>, s, &amp;tmp.g);</span><br><span class="line">        tmp.id = s;</span><br><span class="line">        tmp.r = tmp.id.substr(<span class="number">0</span>, <span class="number">1</span>);   <span class="comment">//note</span></span><br><span class="line">        tmp.a = tmp.id.substr(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        tmp.d = tmp.id.substr(<span class="number">4</span>, <span class="number">6</span>);</span><br><span class="line">        tmp.num = tmp.id.substr(<span class="number">10</span>, <span class="number">3</span>);</span><br><span class="line">        stu.push_back(tmp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; M; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> c, flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">char</span> s[<span class="number">7</span>];</span><br><span class="line">        <span class="built_in">string</span> str;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d%s"</span>, &amp;c, s);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Case %d: %d %s\n"</span>, i + <span class="number">1</span>, c, s);</span><br><span class="line">        str = s;</span><br><span class="line">        <span class="keyword">switch</span>(c) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                command1(str, flag); <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                command2(str, flag); <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                command3(str, flag); </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (flag == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"NA\n"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<blockquote>
+<p>题目来源：PAT乙级1095<br>作者：CHEN, Yue<br>单位：浙江大学</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            
+              <a href="/tags/PAT/" rel="tag"># PAT</a>
+            
+              <a href="/tags/编程/" rel="tag"># 编程</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/16/patb1094/" rel="next" title="PAT乙级1094 || 谷歌的招聘（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1094 || 谷歌的招聘（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/02/19/20200219-1/" rel="prev" title="M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记">
+                  M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#解码PAT准考证"><span class="nav-number">1.</span> <span class="nav-text">解码PAT准考证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出格式"><span class="nav-number">1.3.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例1"><span class="nav-number">1.4.</span> <span class="nav-text">输入样例1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例1"><span class="nav-number">1.5.</span> <span class="nav-text">输出样例1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输入样例2"><span class="nav-number">1.6.</span> <span class="nav-text">输入样例2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出样例2"><span class="nav-number">1.7.</span> <span class="nav-text">输出样例2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">1.8.</span> <span class="nav-text">问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题思想"><span class="nav-number">1.8.1.</span> <span class="nav-text">解题思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#坑点提醒"><span class="nav-number">1.8.2.</span> <span class="nav-text">坑点提醒</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例（C-C-）"><span class="nav-number">1.8.3.</span> <span class="nav-text">代码示例（C/C++）</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

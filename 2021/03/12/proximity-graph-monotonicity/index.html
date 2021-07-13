@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="引言最近，基于近邻图的近似最近邻搜索算法（ANNS）取得了最优的效率和精度权衡。在图索引上，路径的单调性对相关ANNS算法的搜索性能起着至关重要的影响。几种当前最优的ANNS算法比如HNSW，NSG普遍能使搜索路径尽可能的单调递减，从而避免由于“绕远路”而降低搜索效率。本文介绍的几种proximity graphs是这些ANNS算法的基础，与当前的实用算法相比，这些proximity graphs">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几种 Proximity Graphs 的单调性分析">
+<meta property="og:url" content="http://whenever5225.github.io/2021/03/12/proximity-graph-monotonicity/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="引言最近，基于近邻图的近似最近邻搜索算法（ANNS）取得了最优的效率和精度权衡。在图索引上，路径的单调性对相关ANNS算法的搜索性能起着至关重要的影响。几种当前最优的ANNS算法比如HNSW，NSG普遍能使搜索路径尽可能的单调递减，从而避免由于“绕远路”而降低搜索效率。本文介绍的几种proximity graphs是这些ANNS算法的基础，与当前的实用算法相比，这些proximity graphs">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210116121515966.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210116121515872.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210116121515885.png">
+<meta property="og:updated_time" content="2021-03-12T00:50:22.477Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="几种 Proximity Graphs 的单调性分析">
+<meta name="twitter:description" content="引言最近，基于近邻图的近似最近邻搜索算法（ANNS）取得了最优的效率和精度权衡。在图索引上，路径的单调性对相关ANNS算法的搜索性能起着至关重要的影响。几种当前最优的ANNS算法比如HNSW，NSG普遍能使搜索路径尽可能的单调递减，从而避免由于“绕远路”而降低搜索效率。本文介绍的几种proximity graphs是这些ANNS算法的基础，与当前的实用算法相比，这些proximity graphs">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210116121515966.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2021/03/12/proximity-graph-monotonicity/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>几种 Proximity Graphs 的单调性分析 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2021/03/12/proximity-graph-monotonicity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">几种 Proximity Graphs 的单调性分析
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-03-12 08:42:40" itemprop="dateCreated datePublished" datetime="2021-03-12T08:42:40+08:00">2021-03-12</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>最近，基于近邻图的近似最近邻搜索算法（ANNS）取得了最优的效率和精度权衡。在图索引上，路径的单调性对相关ANNS算法的搜索性能起着至关重要的影响。几种当前最优的ANNS算法比如HNSW，NSG普遍能使搜索路径尽可能的单调递减，从而避免由于“绕远路”而降低搜索效率。本文介绍的几种proximity graphs是这些ANNS算法的基础，与当前的实用算法相比，这些proximity graphs有着严格的形式化定义，这给理论分析相关性质带来便利，从而也给实用的ANNS算法提供理论保证和优化方向。接下来，我们主要分析proximity graphs的单调性，proximity graphs包括德劳内图（Delaunay Graph, 它与voronoi diagram对偶）、Relative Neighborhood Graph (RNG)、Gabriel Graph (GG)、Minimum Spanning Trees (MST)。</p>
+<p>首先给出结论：<strong>Delaunay Graph 是单调的图，而RNG, GG和MST都不是单调的图。</strong></p>
+<h2 id="何为图的单调性"><a href="#何为图的单调性" class="headerlink" title="何为图的单调性"></a>何为图的单调性</h2><p>在此之前，我们需要先了解一下什么是单调路径？对于图G上的一个m个依次邻接的顶点形成的路径$(v_{1},v_{2},\cdots, v_{m})$，若$dist(v_1,v_m) &gt; dist (v_2, v_m) &gt; \cdots &gt; dist(v_{m-1},v_m)$，则该路径是一条<strong>单调路径</strong>，$dist(,)$表示两个顶点之间的距离。如果一个图G的任意两个顶点之间均存在单调路径，则图G便是<strong>单调图</strong>了。</p>
+<h2 id="如何证明一个图不是单调的"><a href="#如何证明一个图不是单调的" class="headerlink" title="如何证明一个图不是单调的"></a>如何证明一个图不是单调的</h2><p>只需要举一个反例就行了。任意画几个点，分别根据RNG, GG和MST的定义建立相应的图结构，很容易找到不存在单调路径的例子。</p>
+<h2 id="证明DG是单调的"><a href="#证明DG是单调的" class="headerlink" title="证明DG是单调的"></a>证明DG是单调的</h2><p>下面证明DG是单调的。在此之前先给出一个定理。</p>
+<p><strong>定理1. 对于DG中的任意两个顶点$v_a$和$v_j$，存在一个德劳内边$e_{ak}$满足$d(v_k, v_j) &lt; d(v_a, v_j)$。</strong></p>
+<p>证明：给定在数据集S上的DG。$v_a$可能在DG的边界（如图1(a)）或在DG的内部（如图1(b)）两种情况。但无论哪一种情况，$v_a$对应的Voronoi diagram（图1中虚线围成的绿色多边形区域，记为$V(v_a)$）都不包含其它点（这是由定义保证的），所以$v_j$一定落在$V(v_a)$外面。因此，连接$v_a$和$v_j$的线段一定经过$V(v_a)$的至少一条边。记这条边为$e_{ak}$的垂直平分线$h_{ak}$，$v_j$和$v_k$在$h_{ak}$的同一侧，故$d(v_k, v_j) &lt; d(v_a, v_j)$。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://img-blog.csdnimg.cn/20210116121515966.png" width="700"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 (a)$v_a$位于边界，(b)$v_a$位于内部</div><br></center>
+
+<p>下面证明DG是单调的。</p>
+<p>证明：我们只需证明DG中的任意两个点$v_a$和$v_j$，总存在一条由$v_a$至$v_j$的单调路径。若$v_j$是$v_a$的邻居，则单调路径是显然的。接下来，我们考虑$v_a$与$v_j$不邻接的情况。根据定理1，存在一条边$e_{ak_1}$，满足$d(v_{k_1},v_j) &lt; d(v_a,v_j)$，存在边$e_{k_{1}k_2}$，满足$d(v_{k_2}, v_j) &lt; d(v_{k_1},v_j)$ … …，最终，存在边$e_{k_ij}$，满足$d(v_j, v_j) &lt; d(v_{k_i)},v_j)$。从而路径$(v_a, v_{k_1}, \cdots,v_{k_i},v_{j})$满足$d(v_a, v_j) &gt; d(v_{k_1}, v_j) &gt; d(v_{k_2},v_j) &gt; \cdots &gt; d(v_{k_i},v_j) &gt; d(v_j, v_j)$，即是一条单调路径。</p>
+<h2 id="RNG几乎是单调的"><a href="#RNG几乎是单调的" class="headerlink" title="RNG几乎是单调的"></a>RNG几乎是单调的</h2><p>虽然不能确保RNG是单调的，但在大部分情况下RNG是单调的，而且RNG是几乎所有单调图的子图。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://img-blog.csdnimg.cn/20210116121515872.png" width="400"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 边$e_{ik}$不属于RNG</div><br></center>
+
+<p>如图2所示，边$e_{ij} \in$ RNG，则$lune(i,j)$（红色圆弧包围的部分）是空的，即里面没有其它点（RNG的定义决定的）。因此，一条从$v_i$至$v_j$且不包含$e_{ij}$的单调路径的中间点必然落在红色圆弧上，即图3所示的$v_{k_1}$。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://img-blog.csdnimg.cn/20210116121515885.png" width="400"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图3 边$e_{ij}$是冗余边</div><br></center>
+
+<p>在图3中，$(v_i, v_,v_j)$是单调路径，此时，$e_{ij}$就是冗余边，因为可通过其它单调路径由$v_i$到$v_j$。因此，就RNG而言，若存在冗余边，则可替代单调路径的中间点必须落在图2的红色圆弧上，发生这种情况的概率是非常小的。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>Kurup, G. D. (1992). A database organized on the basis of similarities with applications in computer vision.</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/10/16/2020-10-16/" rel="next" title="免密登录远程服务器（适用于命令窗口和VScode）">
+                  <i class="fa fa-chevron-left"></i> 免密登录远程服务器（适用于命令窗口和VScode）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/03/12/multiattribute-anns-nsw/" rel="prev" title="导航小世界图上实现有标签过滤约束的近似最近邻搜索">
+                  导航小世界图上实现有标签过滤约束的近似最近邻搜索 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#何为图的单调性"><span class="nav-number">2.</span> <span class="nav-text">何为图的单调性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何证明一个图不是单调的"><span class="nav-number">3.</span> <span class="nav-text">如何证明一个图不是单调的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明DG是单调的"><span class="nav-number">4.</span> <span class="nav-text">证明DG是单调的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RNG几乎是单调的"><span class="nav-number">5.</span> <span class="nav-text">RNG几乎是单调的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

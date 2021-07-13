@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目Multiattribute Approximate Nearest Neighbor Search Based on Navigable Small World Graph 相关信息作者与单位Xiaoliang Xu | Chang Li | Yuxiang Wang | Yixing Xia; Hangzhou Dianzi University 出处与时间Concurrency an">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="导航小世界图上实现有标签过滤约束的近似最近邻搜索">
+<meta property="og:url" content="http://whenever5225.github.io/2021/03/12/multiattribute-anns-nsw/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目Multiattribute Approximate Nearest Neighbor Search Based on Navigable Small World Graph 相关信息作者与单位Xiaoliang Xu | Chang Li | Yuxiang Wang | Yixing Xia; Hangzhou Dianzi University 出处与时间Concurrency an">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201025183154374.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020102518320036.png">
+<meta property="og:updated_time" content="2021-06-30T11:01:40.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="导航小世界图上实现有标签过滤约束的近似最近邻搜索">
+<meta name="twitter:description" content="论文题目Multiattribute Approximate Nearest Neighbor Search Based on Navigable Small World Graph 相关信息作者与单位Xiaoliang Xu | Chang Li | Yuxiang Wang | Yixing Xia; Hangzhou Dianzi University 出处与时间Concurrency an">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201025183154374.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2021/03/12/multiattribute-anns-nsw/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>导航小世界图上实现有标签过滤约束的近似最近邻搜索 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2021/03/12/multiattribute-anns-nsw/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">导航小世界图上实现有标签过滤约束的近似最近邻搜索
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-03-12 08:52:44" itemprop="dateCreated datePublished" datetime="2021-03-12T08:52:44+08:00">2021-03-12</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>Multiattribute Approximate Nearest Neighbor Search Based on Navigable Small World Graph</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>Xiaoliang Xu | Chang Li | Yuxiang Wang | Yixing Xia; Hangzhou Dianzi University</p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>Concurrency and Computation: Practice and Experience; 2020</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><p>本文主要研究有属性过滤的要求情况下，基于图的近似最近邻搜索(ANNS)问题。当前现存的大部分ANNS方法都是仅采用距离度量来建立索引，不能支持多属性的ANNS。当前的ANNS方法主要针对大规模的、时间敏感的搜索，还没有能很好的支持多属性的工作。下面是一个多属性搜索的例子。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://img-blog.csdnimg.cn/20201025183154374.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 电影推荐系统示例</div><br></center>
+
+<p>$m_1$是查询，现在要找与其最接近且属性一致的两个点，传统的基于图的ANNS算法是先根据贪婪搜索获取一定量（比如4个，分别是：$m_3$, $m_9$, $m_7$, $m_4$）最近的点，然后从这4个元素里面过滤出属性与$m_1$一致的两个点。传统的方案过滤的结果是：$m_3$。我们想要两个与$m_1$接近的结果，为了保证搜索效率，返回的点不能太多（4个），但对这4个点筛选后，最终仅剩一个点符合要求。为了实现最初需求，我们需要增加返回结果的量（比如6个），这样会显著增加搜索延迟，影响效率。这便是传统的方法在应对有属性约束的查询时存在的弊端。</p>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><p>有属性（或标签）约束的ANNS</p>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><p>本文提出了一种基于导航小世界图的多属性近似最近邻搜索(MA-NSW)方法。具体如下：</p>
+<ol>
+<li>对每一个多属性组合建立一个近邻子图，整合所有的子图为一个层次索引结构(类似HNSW)。</li>
+<li>使用一个导航树来获取相关的子图，剪枝不相关的子图。</li>
+<li>在相关的子图上通过贪婪搜索获取最近邻结果。</li>
+</ol>
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><p>在近邻图实现了有属性约束的ANNS。具体地，根据属性组合构建子图，并通过导航树（属性组合映射）组织子图。查询时，根据查询点的属性约束并通过属性映射表获取与查询属性组合相同的子图，在该子图上执行贪婪搜索。</p>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>与在HNSW上一边搜索一边属性筛选的传统方案相比，MA-NSW有以下优势：</p>
+<ol>
+<li>在不同数据集上普遍更好的搜索性能；</li>
+<li>在目标属性组合不同的比例下更好的稳定性；</li>
+</ol>
+<p>缺陷：索引尺寸随属性的个数呈指数级增长，而且随属性个数的增加索引构建时间也会增加。</p>
+<h2 id="其它内容"><a href="#其它内容" class="headerlink" title="其它内容"></a>其它内容</h2><p>为了测试有属性约束的ANNS，我们可以在一些公用数据集上添加属性来执行实验。论文中的属性组合生成主要有两种方式：一种是平衡的，即每个属性取值的概率相同；一种是不平衡的，即每个属性取值的概率不同。</p>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><ol>
+<li>每个属性组合都要建立子图，造成很大的索引尺寸，内存占用，以及低的索引构建效率。</li>
+<li>如果有n个属性，构建时，每个元素要插入$2^n$个子图中。</li>
+<li>图2中的例子感觉有问题，一般而言，数据库里面的点（同一类型的点）每个属性都是有的，只是不同的取值而已，这么多带NULL属性的点感觉是不现实的。</li>
+</ol>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://img-blog.csdnimg.cn/2020102518320036.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 MA-NSW整体概览</div><br></center>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/03/12/proximity-graph-monotonicity/" rel="next" title="几种 Proximity Graphs 的单调性分析">
+                  <i class="fa fa-chevron-left"></i> 几种 Proximity Graphs 的单调性分析
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/06/30/vldb2021/" rel="prev" title="高维数据检索：基于近邻图的近似最近邻搜索算法实验综述">
+                  高维数据检索：基于近邻图的近似最近邻搜索算法实验综述 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它内容"><span class="nav-number">8.</span> <span class="nav-text">其它内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">9.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

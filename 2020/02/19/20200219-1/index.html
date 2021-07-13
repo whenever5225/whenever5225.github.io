@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目M2LSH：基于LSH的高维数据近似最近邻查找算法 相关信息作者与单位李 灿，钱江波，董一鸿，陈华辉； 宁波大学信息科学与工程学院 出处与时间电子学报；2017年6月 作者拟解决的主要问题虽然位置敏感哈希(LSH)算法在解决高维空间中近邻问题上取得了非常瞩目的成就，但在处理高维数据时却很少考虑分布不均的情况。在LSH算法的基础上，本文针对高维数据分布不均的情况，提出了一种新的解决方案。 论">
+<meta name="keywords" content="论文阅读,ANNS,Hashing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记">
+<meta property="og:url" content="http://whenever5225.github.io/2020/02/19/20200219-1/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目M2LSH：基于LSH的高维数据近似最近邻查找算法 相关信息作者与单位李 灿，钱江波，董一鸿，陈华辉； 宁波大学信息科学与工程学院 出处与时间电子学报；2017年6月 作者拟解决的主要问题虽然位置敏感哈希(LSH)算法在解决高维空间中近邻问题上取得了非常瞩目的成就，但在处理高维数据时却很少考虑分布不均的情况。在LSH算法的基础上，本文针对高维数据分布不均的情况，提出了一种新的解决方案。 论">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png">
+<meta property="og:updated_time" content="2020-08-07T12:13:20.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记">
+<meta name="twitter:description" content="论文题目M2LSH：基于LSH的高维数据近似最近邻查找算法 相关信息作者与单位李 灿，钱江波，董一鸿，陈华辉； 宁波大学信息科学与工程学院 出处与时间电子学报；2017年6月 作者拟解决的主要问题虽然位置敏感哈希(LSH)算法在解决高维空间中近邻问题上取得了非常瞩目的成就，但在处理高维数据时却很少考虑分布不均的情况。在LSH算法的基础上，本文针对高维数据分布不均的情况，提出了一种新的解决方案。 论">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/02/19/20200219-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/02/19/20200219-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">M2LSH：基于LSH的高维数据近似最近邻查找算法-阅读笔记
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-02-19 22:01:42" itemprop="dateCreated datePublished" datetime="2020-02-19T22:01:42+08:00">2020-02-19</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>M2LSH：基于LSH的高维数据近似最近邻查找算法</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>李 灿，钱江波，董一鸿，陈华辉；</p>
+<p>宁波大学信息科学与工程学院</p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>电子学报；2017年6月</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><p>虽然位置敏感哈希(LSH)算法在解决高维空间中近邻问题上取得了非常瞩目的成就，但在处理高维数据时却很少考虑分布不均的情况。在LSH算法的基础上，本文<strong>针对高维数据分布不均</strong>的情况，提出了一种新的解决方案。</p>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><p>本文提出了一种新的基于LSH的解决方案(M2LSH, 2 Layers Merging LSH)，研究内容总结：</p>
+<ol>
+<li>哈希方法如何应对数据分布不均匀的情况。</li>
+</ol>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><p>首先，将数据存放到具有计数功能的组合哈希向量表示的哈希桶中，然后通过二次哈希将这些桶号投影到一维空间，在此空间根据各个桶中存放的数据个数合并相邻哈希桶，使得新哈希桶中的数据量能够大致均衡。查询时仅访问有限个哈希桶，就能找到较优结果。具体如下：</p>
+<h3 id="索引构建"><a href="#索引构建" class="headerlink" title="索引构建"></a>索引构建</h3><p>对应于一个数据集可能有多个哈希表，下面是单个哈希表的构建过程。</p>
+<ol>
+<li>一个数据对象$o$，经过$k_1$个距离敏感哈希函数$(h_1,\cdots, h_{k_1})$的映射，得到$o$对应的组合哈希向量$(h_1(o),\cdots,h_{k_1}(o))$，它也是$o$应放入的哈希桶号。（第一次哈希）</li>
+<li>使用$k_2$个哈希函数将$(h_1(o),\cdots,h_{k_1}(o))$投影到$k_2$条线上，使相邻的哈希桶号投影到相邻的位置。（第二次哈希）</li>
+<li>对二次哈希后组合哈希向量表示的桶号进行桶合并。合并时需要考虑3个因素：①桶中存放数据的平均数(AC)；②哈希到相邻位置的哈希桶号之间的距离；③当前哈希桶中保存数据的个数。</li>
+</ol>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215346.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 M2LSH索引构建</div><br></center>
+
+<h3 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h3><p>下面是查询点$q$在一个哈希表中的查询过程。$q$经过第一次哈希后生成组合哈希向量，对其进行二次哈希后，可以知道它在直线上所映射的位置，这样只需要在直线上左右探测与其标记相同的其它桶号，那么这些桶中的数据对象也将作为$q$的查询候选集。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/02/19/20200219-1/2020-02-19_215553.png" width="500"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 M2LSH查询过程</div><br></center>
+
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><p>为了加快查询速度，采用了对第一次组合哈希后的组合哈希桶号进行<strong>二次哈希</strong>来找与该桶相近的其它桶的策略。并且在基于桶计数以及在实际的查询中需要返回的查询结果的数量提出了<strong>哈希桶合并</strong>的方式，使得最终索引文件中每个桶中的数据个数比较均衡。</p>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>实验表明，M2LSH的性能要优于参与比较的方法(C2LSH; Multi-probe LSH)，特别是当数据分布不均时，M2LSH的优势更显著。</p>
+<h2 id="相关内容学习"><a href="#相关内容学习" class="headerlink" title="相关内容学习"></a>相关内容学习</h2><h3 id="本文对ANNS解决方案的总结"><a href="#本文对ANNS解决方案的总结" class="headerlink" title="本文对ANNS解决方案的总结"></a>本文对ANNS解决方案的总结</h3><ol>
+<li>降维。先将高维的数据映射到一个较低维度的空间，然后根据已有的低维解决KNN问题的一些方法来建立索引结构。降维后一般使用基于树的空间划分方法。</li>
+<li>编码。在计算机视觉领域的研究比较活跃。这些方法大多假设内存足够储存数据集和索引，将高维数据重新编码为一个位串，然后通过计算这些位串与查询对象之间的AQD(Asymmetric Quantizer Distance)，返回与查询对象 AQD最小的数据作为结果。</li>
+<li>LSH。利用一系列具有“位置敏感”性质的哈希函数，把在空间中“比较接近”的数据对象以较高的概率映射到相同的哈希桶中。</li>
+</ol>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><p>本文从LSH的角度应对数据分布不均的问题，并没有对数据集分布不均问题做通用的处理。传统的LSH方法面对分布不均的数据时会存在这样的缺陷：某些桶中数据对象非常多，而另一些桶中数据对象又非常少，此时会使相应的LSH方法的性能很不稳定。本文经过二次哈希以及桶合并缓解了这一问题。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/Hashing/" rel="tag"># Hashing</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/16/patb1095/" rel="next" title="PAT乙级1095 || 解码PAT准考证（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1095 || 解码PAT准考证（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/04/18/NN-Descent/" rel="prev" title="NN-Descent构建K近邻图——论文超详细注解">
+                  NN-Descent构建K近邻图——论文超详细注解 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引构建"><span class="nav-number">5.1.</span> <span class="nav-text">索引构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询过程"><span class="nav-number">5.2.</span> <span class="nav-text">查询过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关内容学习"><span class="nav-number">8.</span> <span class="nav-text">相关内容学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本文对ANNS解决方案的总结"><span class="nav-number">8.1.</span> <span class="nav-text">本文对ANNS解决方案的总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">9.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

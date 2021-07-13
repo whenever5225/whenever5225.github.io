@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目Large-scale visual search with binary distributed graph at Alibaba 相关信息作者与单位Kang Zhao, Pan Pan, Yun Zheng, Yanhao Zhang, Changxu Wang, Yingya Zhang, Yinghui Xu, Rong Jin Machine Intelligence Techn">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG">
+<meta property="og:url" content="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目Large-scale visual search with binary distributed graph at Alibaba 相关信息作者与单位Kang Zhao, Pan Pan, Yun Zheng, Yanhao Zhang, Changxu Wang, Yingya Zhang, Yinghui Xu, Rong Jin Machine Intelligence Techn">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/202008060932.png">
+<meta property="og:image" content="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/202008070946.png">
+<meta property="og:updated_time" content="2020-08-07T12:32:05.096Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG">
+<meta name="twitter:description" content="论文题目Large-scale visual search with binary distributed graph at Alibaba 相关信息作者与单位Kang Zhao, Pan Pan, Yun Zheng, Yanhao Zhang, Changxu Wang, Yingya Zhang, Yinghui Xu, Rong Jin Machine Intelligence Techn">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/202008060932.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/08/07/binary-distributed-graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-08-07 20:17:30" itemprop="dateCreated datePublished" datetime="2020-08-07T20:17:30+08:00">2020-08-07</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>Large-scale visual search with binary distributed graph at Alibaba</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>Kang Zhao, Pan Pan, Yun Zheng, Yanhao Zhang, Changxu Wang, Yingya Zhang, Yinghui Xu, Rong Jin</p>
+<p>Machine Intelligence Technology Lab, Alibaba Group</p>
+<p>{zhaokang.zk,panpan.pp,zhengyun.zy,yanhao.zyh,changxu.wcx,yingya.zyy,renji.xyh,<a href="mailto:jinrong.jr}@alibaba-inc.com" target="_blank" rel="noopener">jinrong.jr}@alibaba-inc.com</a></p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>CIKM, 2019(CCF B类会议)</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><p>近邻图算法由于其在线搜索性能的优势在ANNS上已经得到了广泛的应用。但是，离线近邻图构建的效率和可扩展性却没有被现存研究很好的解决。对几十亿数据在数小时内构建一个亿级近邻图是非常必要的，然而现存方法几乎不能实现这一任务。</p>
+<p>Alibaba的拍立淘的核心技术是基于深度学习和大规模ANNS算法的可视化搜索。不幸的是，现存基于近邻图的ANNS方法由于以下两个原因导致其很难应用于拍立淘。</p>
+<ol>
+<li>图构建所要求的内存一般要比图索引尺寸更大，这给预分配内存带来困难；</li>
+<li>构建一个大规模，高质量近邻图非常耗时。</li>
+</ol>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><ol>
+<li>分布式构建图索引（MapReduce）</li>
+<li>二进制码对原始向量处理</li>
+<li>更快地构建索引和执行搜索</li>
+</ol>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><p>本文提出Binary Distributed Graph将图结构与二进制编码结合同时加速离线构建和在线搜索过程。本文方法通过召回和重排更多的二进制候选能够达到与真值特征（原始向量）相当的性能。而且，图构建过程通过完全分布式的实施，这显著加速离线构建过程。</p>
+<ol>
+<li>产生二进制码</li>
+</ol>
+<p>将原始向量映射到汉明空间，使用LPH学习压缩d维二进制码。从开始就将查询和数据集向量转变为二进制码（包括索引构建和在线搜索）。</p>
+<ol start="2">
+<li>一遍分布式分治构图</li>
+</ol>
+<p>对二进制码表示的原始数据进行k-means聚类，从而达到对数据集划分的目的。如图1所示，分配某一个点到它所属的划分部分时，主要有三种方案，（a）分配该点至其最近类；（b）分配该点至其最近的t个类(t&gt;1)；（c）对数据集进行多重随机划分。本文采用的是第（b）个方案。方案（a）构建的图不保证连通性，方案（c）构建过程比较费时，存在冗余计算。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/08/07/binary-distributed-graph/202008060932.png" width="700"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 不同的划分数据集方案</div><br></center>
+
+
+
+<p>图2展示了分治构图的总过程。编码后的原始数据作为<code>Map</code>的输入，其输出为每一个对象$l_i$所属的类，在图2中对应key，value中的flag为0对应的key是该对象所属的最近类，flag为1时为次近的几个类。经过<code>Shuffle1</code>之后，将同一个类包含的对象集中在一起，包括flag为0和flag为1的对象。以上即完成了划分的过程。接下来<code>Reduce1</code>是为每一个类中的每一个对象在该类中选择最近邻居的过程，文中描述仅选择flag=0的邻居。经过<code>Shuffle2</code>归并同一对象的不同邻居组，为什么会生成$l_i$的不同邻居组呢？因为同一对象会被划分到不止一个类中，而在每个类中都要选择它的最近邻居组。最后，在<code>Reduce2</code>中排序获取最终近邻结果。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/08/07/binary-distributed-graph/202008070946.png" width="900"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 分布式分治构图流程</div><br></center>
+
+
+
+<ol start="3">
+<li>分布式邻居扩展</li>
+</ol>
+<p>该过程的框架图请看论文原文Figure 7。经过一遍分治已经得到一个初始化的图，邻域扩展的过程是对该初始化图精细化的过程。对图中每个点，通过<code>Map</code>将它的邻居作为key，该点作为value，这很容易分布式执行。然后，经过<code>Shuffle1</code>将每个点的邻居（占一行）以及反向邻居（每个反向邻居对应一行，对于每一行，key为该点id，value为反向邻居）归并到一起。接着，经过<code>Reduce1</code>将上述反向邻居行的value作为key，现value为原key的邻居。<code>Shuffle2</code>将所有key相同的归并到一块，经<code>Reduce2</code>对同一key的所有邻居排序，得到一遍邻居扩展的结果。注意，在<code>Map</code>或<code>Reduce</code>阶段，为了实现分布式并行执行，每一操作仅对某一点及其邻居表执行，不能涉及其它邻居表。另外，我认为论文中的Figure 7是有问题的。</p>
+<ol start="4">
+<li>搜索过程</li>
+</ol>
+<p>随机取一些点作为入口点。执行贪婪搜索，使用汉明距离评估相似性（二进制哈希码）。召回非常多的点，最后用欧式距离对召回的点重排序（原始数据），作为最终返回的结果。</p>
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><ol>
+<li>完全分布式的构图过程</li>
+<li>哈希码与图结构的联合</li>
+</ol>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><p>现存图方法很少考虑近邻图离线构建效率问题，导致现存方法很难实际应用。本文提出的BDG联合哈希二进制码与图结构并在分布式系统中构建图，提升了近邻图的构建效率。在10亿级数据上构图不超过5小时，而且与当前最优的方法HNSW有相当的在线搜索性能。BDG已在淘宝拍立淘上得到实际应用。</p>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><ol>
+<li>NN-Descent的一个显著的特点是，在近邻图构建时他并不依赖全局索引，只需要局部搜索即可。但是，NN-Descent需要多次迭代，而且，每一次迭代他需要在不同节点间交换成对数据，这不利于分布式实施。</li>
+<li>NSW对数据的插入顺序比较敏感，而HNSW通过概率分层缓解了这一现象。</li>
+<li>索引构建的效率越来越成为一个重要因素。</li>
+<li>图结构与压缩编码方法联合逐渐成为近邻图算法各种优化部署的标配。</li>
+<li>分布式索引构建和搜索可能更有效的解决现存的一些问题。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/06/18/DiskANN/" rel="next" title="DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019">
+                  <i class="fa fa-chevron-left"></i> DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/08/14/query-driven-iterated-neighborhood-graph-search-for-large-scale-indexing/" rel="prev" title="通过查询历史优化近邻图上的贪婪搜索｜树与图联合索引｜微软亚洲研究院 CCF A类会议">
+                  通过查询历史优化近邻图上的贪婪搜索｜树与图联合索引｜微软亚洲研究院 CCF A类会议 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">8.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

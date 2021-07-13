@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文题目DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node 相关信息作者与单位Suhas Jayaram Subramanya(suhas@cmu.edu); Carnegie Mellon University; Devvrit(devvrit.03@gmail.com); Universit">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019">
+<meta property="og:url" content="http://whenever5225.github.io/2020/06/18/DiskANN/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文题目DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node 相关信息作者与单位Suhas Jayaram Subramanya(suhas@cmu.edu); Carnegie Mellon University; Devvrit(devvrit.03@gmail.com); Universit">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2020/06/18/DiskANN/diskann1.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/06/18/DiskANN/2020-06-18_214734.jpg">
+<meta property="og:image" content="http://whenever5225.github.io/2020/06/18/DiskANN/diskann3.jpg">
+<meta property="og:updated_time" content="2020-08-07T12:59:51.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019">
+<meta name="twitter:description" content="论文题目DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node 相关信息作者与单位Suhas Jayaram Subramanya(suhas@cmu.edu); Carnegie Mellon University; Devvrit(devvrit.03@gmail.com); Universit">
+<meta name="twitter:image" content="http://whenever5225.github.io/2020/06/18/DiskANN/diskann1.jpg">
+  <link rel="canonical" href="http://whenever5225.github.io/2020/06/18/DiskANN/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2020/06/18/DiskANN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">DiskANN：在单机上快速准确地进行十亿数据最近邻搜索(微软印度研究院)——NeurIPS2019
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-06-18 19:57:52" itemprop="dateCreated datePublished" datetime="2020-06-18T19:57:52+08:00">2020-06-18</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node</p>
+<h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><h3 id="作者与单位"><a href="#作者与单位" class="headerlink" title="作者与单位"></a>作者与单位</h3><p>Suhas Jayaram Subramanya(<a href="mailto:suhas@cmu.edu" target="_blank" rel="noopener">suhas@cmu.edu</a>); Carnegie Mellon University;</p>
+<p>Devvrit(<a href="mailto:devvrit.03@gmail.com" target="_blank" rel="noopener">devvrit.03@gmail.com</a>); University of Texas at Austin;</p>
+<p>Rohan Kadekodi(<a href="mailto:rak@cs.texas.edu" target="_blank" rel="noopener">rak@cs.texas.edu</a>); University of Texas at Austin;</p>
+<p>Ravishankar Krishaswamy(<a href="mailto:rakri@microsoft.com" target="_blank" rel="noopener">rakri@microsoft.com</a>); Microsoft Research India;</p>
+<p>Harsha Vardhan Simhadri(<a href="mailto:harshasi@microsoft.com" target="_blank" rel="noopener">harshasi@microsoft.com</a>); Microsoft Research India;</p>
+<h3 id="出处与时间"><a href="#出处与时间" class="headerlink" title="出处与时间"></a>出处与时间</h3><p>33rd Conference on Neural Information Processing Systems (NeurIPS 2019), Vancouver, Canada. (人工智能A类会议); 2019</p>
+<h2 id="作者拟解决的主要问题"><a href="#作者拟解决的主要问题" class="headerlink" title="作者拟解决的主要问题"></a>作者拟解决的主要问题</h2><h3 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h3><p>近似最近邻算法主要是在索引时间，索引尺寸，搜索时间，召回率等方面进行权衡。基于树的方法一般是生成紧凑索引，这些索引在低维情况下能够快速搜索，但是当维度超过20时，会面临”维数灾难”；基于哈希的方法能够在索引尺寸和搜索时间之间做一个更好的权衡，但它们一般没有利用数据点的分布；基于图的方法能在搜索时间和召回率方面做一个更好的权衡，相比其它索引方法，此类方法有更好的搜索性能。目前，很多应用都需要一个在亿级数据规模上快速精确的搜索算法。</p>
+<h3 id="现存解决方案"><a href="#现存解决方案" class="headerlink" title="现存解决方案"></a>现存解决方案</h3><p>现存已有两种方案。</p>
+<p>一是<strong>倒排搜索+数据压缩</strong>的方法，比如FAISS和IVFOADC+G+P。这类方法将数据集聚类为 $M$ 个部分，仅将查询 $q$ 与 $m$ （$m \ll M$）个与 $q$ 最近的部分中的点做比较。而且，因为原始数据不适合直接载入内存，这类方法将原始数据使用乘积量化（PQ）的方案压缩，因此，它们具有很小的内存占用，查询延迟很小。不过，由于对原始数据的压缩是有损压缩，它们的召回率是很低的。</p>
+<p>二是<strong>导航图+分布式</strong>的方法，比如NSG。这类方法将数据集划分为一定量个不相交的部分，在每一个部分都建立一个内存索引，每一部分处在不同的机器上。查询时，将查询点同时路由到每一个部分，在各部分并行执行查询，最后，将各部分返回的结果整合到一块选取最近的点作为最终结果。这类方法由于将原始数据载入内存，因此有很大的内存占用，而且，当数据规模增大时，就需要更多的机器，优点是能够实现高召回低延迟。</p>
+<h3 id="现存方法的问题"><a href="#现存方法的问题" class="headerlink" title="现存方法的问题"></a>现存方法的问题</h3><p>现存大部分方法的搜索过程是完全基于内存的，也就是所有的索引信息都要载入内存，如果将现存的这些完全基于内存算法的索引放在外存中（比如SSD），一个显著的不良后果就是延迟将会很高。如何将高搜索性能的算法和外存结合实现亿级快速高召回的搜索是本文要解决的核心问题。</p>
+<h3 id="本文的解决方案"><a href="#本文的解决方案" class="headerlink" title="本文的解决方案"></a>本文的解决方案</h3><p>采用具有高搜索性能的近邻图索引，将索引放在SSD上以减轻对内存的依赖。在查询时，通过尽可能少的次数在SSD上的读取原始数据实现快速高精度ANNS。</p>
+<h3 id="本文的贡献"><a href="#本文的贡献" class="headerlink" title="本文的贡献"></a>本文的贡献</h3><ol>
+<li>DiskANN可在一个64GB RAM工作站上为十亿规模维度为100+的数据集建立索引，实现不超过5ms 1-recall@1为95%以上；</li>
+<li>新图基算法Vamana，比NSG和HNSW有更小的直径（路径跳数），使DiskANN最小化顺序读取磁盘的次数；</li>
+<li>完全基于内存的Vamana实现比当前最优的图算法NSG, HNSW更优搜索性能；</li>
+<li>将数据集重叠划分为多个区域，在每个区域中建立小Vamana，然后再归并得到一个索引，它的性能与在整个数据集构建索引相当(不能完全载入内存的大规模数据)；</li>
+<li>将Vamana与矢量压缩方案结合，构建DiskANN系统，图索引和原始数据存在SSD中，压缩索引存在内存中。</li>
+</ol>
+<h2 id="论文主要研究内容"><a href="#论文主要研究内容" class="headerlink" title="论文主要研究内容"></a>论文主要研究内容</h2><ol>
+<li>如何构建一个适合放在外存中的具有高搜索性能的近邻图结构；</li>
+<li>如何在将内存搜索算法与外存结合实现在单机上亿级规模数据的快速高召回检索。</li>
+</ol>
+<h2 id="论文使用的方法"><a href="#论文使用的方法" class="headerlink" title="论文使用的方法"></a>论文使用的方法</h2><h3 id="Vamana近邻图算法"><a href="#Vamana近邻图算法" class="headerlink" title="Vamana近邻图算法"></a>Vamana近邻图算法</h3><p><strong>选边策略</strong></p>
+<p>现存的一些近邻图算法选边策略是这样的。如图1所示，现在要给绿色的点选邻居，假设要给他选两个邻居，从构建一个精确的近邻图的角度，一定是选离绿色点最近的两个点（点1，点2）。这样得到的图确是精确了，但是可能会造成邻居集中在一块的现象，不能在各个方向均匀分布。实验证明，一个精确的近邻图并不一定是最适合ANNS的。</p>
+<p>因此，从ANNS角度去构建一个近邻图就不能只考虑选最近的邻居。继续看图1，可以采用一种启发式的策略，先把离绿色点最近的点1选中（加入绿色点的邻居集），然后对点2进行一个判断：若d(1,2) &lt; d(2,绿点)，则点2不加入绿点的邻居集，后面依次对点3及左下角的其它点进行判断（顺序是离绿点由近到远），最后判断点4时，由于：d(4,1) &gt; d(4,绿点)，故点4加入绿点邻居集。HNSW的启发式选边便是这样的（详见：<a href="https://mp.weixin.qq.com/s/ynXT945swVVJDFk8UJ-xIQ" target="_blank" rel="noopener">入口</a>）。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/06/18/DiskANN/diskann1.jpg" width="300"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 启发式给绿点选边示例</div><br></center>
+
+
+<p>现在，我们考虑一种极端的情况，数据集中的点都在一条线上，看图2。当对这样的数据集执行上述图1所示的选边时，每个点只能和离它最近的两个点相连。在这样的图上执行ANNS时，会导致平均跳数很高，如果将这样的图配合外存执行搜索，可能会导致多次外存访问，从而造成高延迟。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/06/18/DiskANN/2020-06-18_214734.jpg" width="300"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 极端情况启发式选边结果</div><br></center>
+
+
+<p>本文对这种比较固定的选边策略稍稍改进，增加一个参数$\alpha$，就图2而言，a离b最近，a直接加入b的邻居集，接着判断c，由于d(a,c) &gt; d(b,c)，c加入b的候选集，按之前的策略，直线上的其它点就像被a和c屏蔽掉一样不会再与b连边，因为d(a,others) &lt; d(b,others)或者d(c,others) &lt; d(b,others)。现改动一下判断条件：$\alpha$d(a or c,others) &gt; d(b,others)，通过调节$\alpha$，从而可增加一些长边。</p>
+<p><strong>完整构图过程</strong></p>
+<ol>
+<li>随机初始化一个出度为R的图G；</li>
+<li>计算图G的导航点s(近似质心)；</li>
+<li>为每一个点p重新选邻居，候选集为从s点出发贪婪搜索访问到的所有点；</li>
+<li>对p的邻居添加反向边，当邻居的出度超过上界时，对邻居执行裁边；</li>
+<li>对步骤3和4执行两遍，第一遍𝜶=𝟏，第二遍𝜶≥𝟏。</li>
+</ol>
+<p>图3是原文里面的图，这是使用Vamana在二维空间构图的可视化过程。文章没有描述清楚这个图，合理推测作者想要表达的意思应该是这样的：第一行是第一遍构图过程（𝜶=𝟏），第二行是第二遍构图过程（𝜶≥𝟏）。直观可见，开始初始化的图很稠密，经过第一遍的选边图变得很稀疏，有长边但是并不多，接着第二行，经过第二遍的选边，肉眼可见增加了很多长边。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2020/06/18/DiskANN/diskann3.jpg" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图3 Vamana在二维空间构图的可视化过程</div><br></center>
+
+<h3 id="DiskANN"><a href="#DiskANN" class="headerlink" title="DiskANN"></a>DiskANN</h3><p><strong>索引设计</strong></p>
+<p>DiskANN索引设计的基本思想是：面对亿级规模的数据，将图索引和原始数据存在SSD中，搜索时，需要访问某点的邻居，就从SSD中读取。在这个基本思想下，有两个突出的问题：</p>
+<ol>
+<li>如何在十亿规模数据上构建图索引；</li>
+<li>原始数据不在内存中，如何比较点的距离。</li>
+</ol>
+<p>针对第一个问题，之前NSG的解决方案是，划分数据集为多个小子集，在每个子集上构建图索引，搜索在少量几个离查询更近的子图上执行。这种方案很简单，要想达到低延迟，在搜索时需要多个机器并行执行搜索，最后将各个机器查询的结果归并到一起排序。很明显这种方式对硬件要求很高。</p>
+<p>本文对第一个问题的解决方案是划分数据集为多个小子集，将每个点分配到离之最近的两个子集中，在每个子集中建立图索引，最后通过简单的边归并将所有子图归并为一个图。最后的实验也证实了这种方案与在整个数据集中建图的结果就最终的搜索性能而言是相当的。这种方案硬件成本很低。</p>
+<p>针对第二个问题，对数据集中的每一个原始向量使用量化技术压缩，搜索时，将压缩向量载入主存，图索引和原始向量存在SSD中；搜索时，将查询向量同样压缩，通过压缩向量之间的距离近似原始向量距离。</p>
+<p><strong>索引布局</strong></p>
+<p>总体布局是压缩向量载入主存，图索引和原始向量存在SSD中。在SSD中，在SSD中，某一点的原始向量和它的不超过R个邻居的ID存在一起（原因请往下看），不足R个邻居的位置用0填充。</p>
+<p><strong>集束搜索</strong></p>
+<p>如果按照常规的贪婪算法，每访问到一个点就从SSD中将该点的邻居取出，这种方式访问外存次数等于贪婪搜索访问点的个数，导致多次的访问SSD，多次访问SSD会增加搜索延迟。而从SSD中访问少量的随机部分与访问一个部分花费的时间几乎相同。因此，本文采用集束搜索，一次从SSD中载入未访问集中的W(4或8)个点的邻居集，但是W并不是越大越好。</p>
+<p><strong>原始向量重排序</strong></p>
+<p>使用乘积量化对原始向量的压缩是有损压缩，使用压缩向量进行距离计算必然会有一定误差。而若完全使用原始向量进行距离计算会导致对SSD访问次数增加。本文的解决方案是，将每个点的原始向量与其邻居ID在SSD中存放在一起，载入邻居时，将原始数据一起载入，最后进行精确距离计算重排序。这样一步是高召回率的主要保证。</p>
+<h2 id="论文的创新点"><a href="#论文的创新点" class="headerlink" title="论文的创新点"></a>论文的创新点</h2><ol>
+<li>构图时，选边策略增加了一个参数，这使选边过程更灵活，能够随不同的数据集进行调整，而且还可产生一些有益的长边；</li>
+<li>将近邻图算法与SSD结合形成一个基于SSD和高效内存算法的DiskANN，而且还将量化的方案参与其中，充分利用了各种方案的优势，避免了各自的不足，从而实现在单机上的高效亿级搜索。</li>
+</ol>
+<h2 id="论文的结论"><a href="#论文的结论" class="headerlink" title="论文的结论"></a>论文的结论</h2><ol>
+<li>比当前最优HNSW和NSG更优的Vamana内存图搜索算法；</li>
+<li>比当前最优单机亿级搜索算法FAISS和IVF-OADC+G+P更优的DiskANN(基于SSD)的高召回、低延迟和低内存占用搜索算法；</li>
+<li>DiskANN将图算法的高召回、低延迟与压缩方法的低内存占用、可扩展性结合在一起。</li>
+</ol>
+<h2 id="我的观点或思考"><a href="#我的观点或思考" class="headerlink" title="我的观点或思考"></a>我的观点或思考</h2><ol>
+<li>ANNS的四大流派各有各的优点和缺点，图算法搜索性能最好，但是它对原始数据非常依赖，而且，构建成本相比其它方法也比较高。与之相反，量化方法搜索性能一般（召回率不会达到很高），但其不依赖原始数据，内存占用很低；通过某种框架将各流派方案组合起来，实现一个优势互补，这是一个值得考虑的内容；</li>
+<li>图索引构建过程的核心还是选边问题，什么样的选边才是更适合ANNS的？选边候选集怎样去获取更好？</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/05/17/anns-dpg/" rel="next" title="同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记">
+                  <i class="fa fa-chevron-left"></i> 同时考虑距离因素和分布因素的多样化近邻图DPG——TKDE顶刊论文阅读笔记
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/08/07/binary-distributed-graph/" rel="prev" title="阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG">
+                  阿里巴巴淘宝拍立淘可视化搜索关键技术 | 二进制分布式近邻图：BDG <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文题目"><span class="nav-number">1.</span> <span class="nav-text">论文题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关信息"><span class="nav-number">2.</span> <span class="nav-text">相关信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作者与单位"><span class="nav-number">2.1.</span> <span class="nav-text">作者与单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出处与时间"><span class="nav-number">2.2.</span> <span class="nav-text">出处与时间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作者拟解决的主要问题"><span class="nav-number">3.</span> <span class="nav-text">作者拟解决的主要问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#研究背景"><span class="nav-number">3.1.</span> <span class="nav-text">研究背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#现存解决方案"><span class="nav-number">3.2.</span> <span class="nav-text">现存解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#现存方法的问题"><span class="nav-number">3.3.</span> <span class="nav-text">现存方法的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本文的解决方案"><span class="nav-number">3.4.</span> <span class="nav-text">本文的解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本文的贡献"><span class="nav-number">3.5.</span> <span class="nav-text">本文的贡献</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文主要研究内容"><span class="nav-number">4.</span> <span class="nav-text">论文主要研究内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文使用的方法"><span class="nav-number">5.</span> <span class="nav-text">论文使用的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vamana近邻图算法"><span class="nav-number">5.1.</span> <span class="nav-text">Vamana近邻图算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DiskANN"><span class="nav-number">5.2.</span> <span class="nav-text">DiskANN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的创新点"><span class="nav-number">6.</span> <span class="nav-text">论文的创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文的结论"><span class="nav-number">7.</span> <span class="nav-text">论文的结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我的观点或思考"><span class="nav-number">8.</span> <span class="nav-text">我的观点或思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

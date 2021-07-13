@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="导言为什么需要向量相似性检索？前人已有很多优秀的回答：参考1，参考2，参考3。总之，向量检索是很多AI应用的一个基础模块，它是与AI领域的发展共荣共损的。近年来，学术界和工业界提出了很多优秀的算法以及后续优化来应对高维向量的检索问题，这些方法旨在为向量检索提供一个更好的解决方案。然而，无论从算法设计和优化还是从工业应用考虑，当前都迫切需要对这些代表性的方法进行统一实验评估和比较分析。 我们的工作面">
+<meta name="keywords" content="ANNS,近邻图,VLDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高维数据检索：基于近邻图的近似最近邻搜索算法实验综述">
+<meta property="og:url" content="http://whenever5225.github.io/2021/06/30/vldb2021/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="导言为什么需要向量相似性检索？前人已有很多优秀的回答：参考1，参考2，参考3。总之，向量检索是很多AI应用的一个基础模块，它是与AI领域的发展共荣共损的。近年来，学术界和工业界提出了很多优秀的算法以及后续优化来应对高维向量的检索问题，这些方法旨在为向量检索提供一个更好的解决方案。然而，无论从算法设计和优化还是从工业应用考虑，当前都迫切需要对这些代表性的方法进行统一实验评估和比较分析。 我们的工作面">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2021/06/30/vldb2021/base_graphs.png">
+<meta property="og:image" content="http://whenever5225.github.io/2021/06/30/vldb2021/pipeline.png">
+<meta property="og:updated_time" content="2021-07-03T09:19:12.192Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高维数据检索：基于近邻图的近似最近邻搜索算法实验综述">
+<meta name="twitter:description" content="导言为什么需要向量相似性检索？前人已有很多优秀的回答：参考1，参考2，参考3。总之，向量检索是很多AI应用的一个基础模块，它是与AI领域的发展共荣共损的。近年来，学术界和工业界提出了很多优秀的算法以及后续优化来应对高维向量的检索问题，这些方法旨在为向量检索提供一个更好的解决方案。然而，无论从算法设计和优化还是从工业应用考虑，当前都迫切需要对这些代表性的方法进行统一实验评估和比较分析。 我们的工作面">
+<meta name="twitter:image" content="http://whenever5225.github.io/2021/06/30/vldb2021/base_graphs.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2021/06/30/vldb2021/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>高维数据检索：基于近邻图的近似最近邻搜索算法实验综述 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2021/06/30/vldb2021/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">高维数据检索：基于近邻图的近似最近邻搜索算法实验综述
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-06-30 08:36:54" itemprop="dateCreated datePublished" datetime="2021-06-30T08:36:54+08:00">2021-06-30</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>为什么需要向量相似性检索？前人已有很多优秀的回答：<a href="https://zhuanlan.zhihu.com/p/100716181" target="_blank" rel="noopener">参考1</a>，<a href="https://mp.weixin.qq.com/s/Yiax-NpEQqdKFIjVQpWgnw" target="_blank" rel="noopener">参考2</a>，<a href="https://zhuanlan.zhihu.com/p/50143204" target="_blank" rel="noopener">参考3</a>。总之，向量检索是很多AI应用的一个基础模块，它是与AI领域的发展共荣共损的。近年来，学术界和工业界提出了很多优秀的算法以及后续优化来应对高维向量的检索问题，这些方法旨在为向量检索提供一个更好的解决方案。然而，无论从算法设计和优化还是从工业应用考虑，当前都迫切需要对这些代表性的方法进行统一实验评估和比较分析。</p>
+<p>我们的工作面向上述需要，聚焦实现效率和精度最优权衡的近邻图索引。论文全文arXiv地址：<a href="https://arxiv.org/pdf/2101.12631.pdf" target="_blank" rel="noopener">这里</a>（Researchgate地址：<a href="https://www.researchgate.net/publication/348929233_A_Comprehensive_Survey_and_Experimental_Comparison_of_Graph-Based_Approximate_Nearest_Neighbor_Search" target="_blank" rel="noopener">这里</a>）。最近，该论文已被国际数据库顶级会议VLDB2021收录。论文综述了13种具有代表性相关算法，实验在大量数据集上执行。我们的贡献可总结如下：</p>
+<ol>
+<li>基于图索引的特征给近邻图向量检索算法做了一个分类（便于梳理算法的发展脉络）；</li>
+<li>根据算法的执行流程打破每一个算法为7个组件（更细粒度的划分，实现算法优化的更公平评估）；</li>
+<li>大量的算法，大量的数据集，大量的实验（让结论更具说服力）；</li>
+<li>算法推荐，优化导向，当前最优的算法，有希望的研究方向，一些挑战（类似tutorial？）。</li>
+</ol>
+<h2 id="综述论文的动机"><a href="#综述论文的动机" class="headerlink" title="综述论文的动机"></a>综述论文的动机</h2><p>在近邻图上是怎么做向量检索的呢？前人已有非常形象的解释：<a href="https://zilliz.blog.csdn.net/article/details/104013138" target="_blank" rel="noopener">参考1</a>，<a href="https://www.zhihu.com/people/fu-cong-92-43/posts" target="_blank" rel="noopener">参考2</a>。</p>
+<p>目前在学术届和工业界经常提到的近邻图算法大概10多种，它们需要一个实验综述的原因可主要总结为以下几条：</p>
+<ul>
+<li>这些算法缺乏一个合理的分类和比较分析。尽管已有很多近邻图算法，但它们的索引结构都可归结为4个经典的近邻图。从这个角度来看算法的话，我们可能会产生一种感觉：近邻图算法也不过这么点东西。举个例子，当前很多算法都涉及对相对邻域图（RNG）优化，比如HNSW，DPG，NGT，NSG，SPTAG。</li>
+<li>很多论文评估近邻图算法是从“分子”角度（类比，二氧化硫和二氧化碳），我们发现这些算法有一个统一的“化学表达式”（类比，$A_{x}B$），它们还可再分为“原子”（类比，A, B），从“原子”角度分析产生了一些新发现。</li>
+<li>对用于向量检索的近邻图算法而言，搜索效率和精度的权衡最受关注。然而，近邻图算法的其它特征（包括索引构建和搜索）也在间接影响着最终的搜索性能。在搜索性能逐渐达到瓶颈的情况下，索引构建效率，内存消耗等指标也越来越受重视。</li>
+<li>一个算法的优越性并不是一成不变的，数据集的特征在其中起着至关重要的作用，想更全面的了解算法，数据集的多样性是必然。</li>
+</ul>
+<h2 id="近邻图算法综述"><a href="#近邻图算法综述" class="headerlink" title="近邻图算法综述"></a>近邻图算法综述</h2><p>在分析近邻图向量检索算法之前，先给大家介绍4个经典的近邻图结构，不负责任的说，当前的近邻图向量检索算法的索引都逃不过这4个结构，即德劳内图（DG）、相对领域图（RNG）、K近邻图（KNNG）、最小生成树（MST）。相信大家通过图1可领会它们各自的特征以及之间的差异。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2021/06/30/vldb2021/base_graphs.png" width="800"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图1 四种基图在相同的数据集上的构建结果</div><br></center>
+
+
+<p>下面就基于图1中的4个近邻图结构来简单给大家理一下13个近邻图向量检索算法。为了避免翻译不尽如人意，算法名就直接用英文简称，然后也会给出算法的原论文链接，如果有比较好的或仅有的中文介绍的话，我也会放上链接。各算法之间更宏观的联系可参考论文中的表2和图3。</p>
+<p><strong>算法1：NSW</strong>（<a href="https://www.sciencedirect.com/science/article/abs/pii/S0306437913001300" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/u011233351/article/details/85116719" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/kakao/n2" target="_blank" rel="noopener">代码</a>）。NSW是对DG的近似，考虑到DG能确保从任意一个顶点出发通过贪婪路由获取精确的结果（即召回率为1）。NSW是一个无向图，这会导致某些顶点的出度激增（类似于“交通枢纽”），从论文的表11可知，NSW在某些数据集上的最大出度可达几十万。NSW通过增量插入式的构建，这确保了全局连通性（论文表4中可知，NSW的连通分量数均为1）。NSW具有小世界导航性质，在构建早期形成的边距离较远（“高速公路”），这将提升搜索效率，在构建后期形成的边距离较近，这将确保搜索精度。</p>
+<p><strong>算法2：HNSW</strong>（<a href="https://ieeexplore.ieee.org/abstract/document/8594636" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/u011233351/article/details/85116719" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/kakao/n2" target="_blank" rel="noopener">代码</a>）。HNSW在NSW的基础上有两个优化：一是层次化；二是选边策略。层次化很直观，不同距离范围的边通过层次呈现出来，这样可以在搜索时类似于跳表结构，效率更高。选边策略优化简单的说：如果要给某个顶点连接K个邻居的话，NSW选择K个距离最近的，而HNSW从大于K个最近的顶点里面选出更离散分布的邻居（详细：<a href="https://blog.csdn.net/whenever5225/article/details/106061653?spm=1001.2014.3001.5501" target="_blank" rel="noopener">参考</a>）。因此，HNSW是对DG和RNG（从选边策略考虑）的近似。</p>
+<p><strong>算法3：FANNG</strong>（<a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Harwood_FANNG_Fast_Approximate_CVPR_2016_paper.html" target="_blank" rel="noopener">原文</a>）。FANNG的选边策略与HNSW是一样的（都是对RNG近似）。从发布时间上来说，FANNG是比HNSW更早提出的算法，不过当前得到普遍应用的是HNSW。可能的原因是：（1）FANNG的选边策略是在暴力构建的近邻图的基础上实现的，构建效率很低；（2）HNSW通过增量式构建且引入分层策略，构建和搜索效率都很高；（3）HNSW开源了代码，FANNG没有。</p>
+<p><strong>算法4：NGT</strong>（<a href="https://link.springer.com/chapter/10.1007/978-3-319-46759-7_2" target="_blank" rel="noopener">原文1</a>，<a href="https://arxiv.org/abs/1810.07355" target="_blank" rel="noopener">原文2</a>，<a href="https://github.com/yahoojapan/NGT" target="_blank" rel="noopener">代码</a>）。NGT是雅虎日本开源的向量检索库，核心算法是基于近邻图索引的。NGT在构建近邻图时类似于NSW，也是对DG的近似，后续有一些度调整优化，其中最有效的路径优化也是对RNG的近似（论文的附件B也给出了证明）。</p>
+<p><strong>算法5：SPTAG</strong>（<a href="https://dl.acm.org/doi/abs/10.1145/2393347.2393378" target="_blank" rel="noopener">原文1</a>，<a href="https://ieeexplore.ieee.org/abstract/document/6247790" target="_blank" rel="noopener">原文2</a>，<a href="https://ieeexplore.ieee.org/abstract/document/6549106" target="_blank" rel="noopener">原文3</a>，<a href="https://blog.csdn.net/whenever5225/article/details/108013045" target="_blank" rel="noopener">中文介绍1</a>，<a href="https://cloud.tencent.com/developer/article/1429751" target="_blank" rel="noopener">中文介绍2</a>，<a href="https://github.com/microsoft/SPTAG" target="_blank" rel="noopener">代码</a>，<a href="https://blog.csdn.net/qq_40250862/article/details/95000703" target="_blank" rel="noopener">代码使用</a>）。SPTAG是微软发布的向量检索库，它的构建过程基于分治策略，即迭代地划分数据集，然后在每个子集上构建近邻图，接着归并子图，最后通过邻域传播策略进一步优化近邻图。上述过程旨在构建一个尽可能精确的KNNG。在搜索时，SPTAG采用树索引和图索引交替执行的方案，即先从树上获取距查询较近的点作为在图上搜索的起始点执行路由，当陷入局部最优时继续从树索引上获取入口点，重复上述操作直至满足终止条件。</p>
+<p><strong>算法6：KGraph</strong>（<a href="https://dl.acm.org/doi/abs/10.1145/1963405.1963487" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/whenever5225/article/details/105598694" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/aaalgo/kgraph" target="_blank" rel="noopener">代码</a>）。KGraph是对KNNG的近似，是一种面向一般度量空间的近邻图构建方案。基于邻居的邻居更可能是邻居的思想，KGraph能够快速构建一个高精度的KNNG。后续的很多算法（比如EFANNA，DPG，NSG，NSSG）都是在该算法的基础上的进一步优化。</p>
+<p><strong>算法7：EFANNA</strong>（<a href="https://arxiv.org/abs/1609.07228" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/whenever5225/article/details/104527500" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/ZJULearning/ssg" target="_blank" rel="noopener">代码</a>）。EFANNA是基于KGraph的优化。两者的差别主要体现在近邻图的初始化：KGraph是随机初始化一个近邻图，而EFANNA是通过KD树初始化一个更精确的近邻图。此外，在搜索时，EFANNA通过KD树获取入口点，而KGraph随机获取入口点。</p>
+<p><strong>算法8：IEH</strong>（<a href="https://ieeexplore.ieee.org/abstract/document/6734715/" target="_blank" rel="noopener">原文</a>）。类比EFANNA，IEH暴力构建一个精确的近邻图，在搜索时，它通过哈希表获取入口点。</p>
+<p><strong>算法9：DPG</strong>（<a href="https://ieeexplore.ieee.org/abstract/document/8681160" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/whenever5225/article/details/106176175" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/DBWangGroupUNSW/nns_benchmark/tree/master/algorithms/DPG" target="_blank" rel="noopener">代码</a>）。在KGraph的基础上，DPG考虑顶点的邻居分布多样性，避免彼此之间非常接近的邻居重复与目标顶点连边，最大化邻居之间的夹角（论文的附件4证明了DPG的选边策略也是对RNG的近似）。此外，DPG最终添加了反向边，是无向图，因此，它的最大出度也是非常高的（见论文附件表11）。</p>
+<p><strong>算法10：NSG</strong>（<a href="http://www.vldb.org/pvldb/vol12/p461-fu.pdf" target="_blank" rel="noopener">原文</a>，<a href="https://zhuanlan.zhihu.com/p/50143204" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/ZJULearning/nsg" target="_blank" rel="noopener">代码</a>）。NSG的设计思路与DPG几乎是一样的。在KGraph的基础上，NSG通过MRNG的选边策略考虑邻居分布的均匀性。NSG的论文中将MRNG的选边策略与HNSW的选边策略做了对比，例证了MRNG的优越性。本文在附件1证明了NSG的这种选边策略与HNSW选边策略的等价性。NSG的入口点是固定的，是与全局质心最近的顶点。此外，NSG通过DFS的方式强制从入口点至其它所有点都是可达的。</p>
+<p><strong>算法11：NSSG</strong>（<a href="https://ieeexplore.ieee.org/abstract/document/9383170" target="_blank" rel="noopener">原文</a>，<a href="https://zhuanlan.zhihu.com/p/100716181" target="_blank" rel="noopener">中文介绍</a>，<a href="https://github.com/ZJULearning/ssg" target="_blank" rel="noopener">代码</a>）。NSSG的设计思路与NSG、DPG几乎是一样的。在KGraph的基础上，NSSG通过SSG选边策略考虑邻居分布的多样性。NSSG认为，NSG过度裁边了（更低的平均出度，见论文表4），相比之下，SSG的裁边要松弛一些。NSG与NSSG另一个重要的差异是，NSG通过贪婪路由获取候选邻居，而NSSG通过邻居的1介拓展获取候选邻居，因此，NSSG的构建效率更高。</p>
+<p><strong>算法12：Vamana</strong>（<a href="http://harsha-simhadri.org/pubs/DiskANN19.pdf" target="_blank" rel="noopener">原文</a>，<a href="https://blog.csdn.net/whenever5225/article/details/106863674" target="_blank" rel="noopener">中文介绍</a>）。简单总结一下Vamana：KGraph、HNSW和NSG三者的结合优化。在选边策略上，Vamana在HNSW（或NSG ）的基础上增加了一个调节参数$\alpha$，当$\alpha = 1$时，Vamana的选边策略即为HNSW的启发式选边。Vamana取不同的$\alpha$值执行了两遍选边。</p>
+<p><strong>算法13：HCNNG</strong>（<a href="https://www.sciencedirect.com/science/article/abs/pii/S0031320319302730" target="_blank" rel="noopener">原文</a>，<a href="https://whenever5225.github.io/2019/08/17/HCNNG/">中文介绍</a>）。HCNNG是目前为止唯一一个以MST为基本的构图策略的向量检索算法。它的构建过程是基于分治策略（类似SPTAG），在搜索时，HCNNG通过KD树获取入口点。</p>
+<h2 id="近邻图算法“原子”级分析"><a href="#近邻图算法“原子”级分析" class="headerlink" title="近邻图算法“原子”级分析"></a>近邻图算法“原子”级分析</h2><p>我们发现所有的近邻图算法遵循一个统一的处理流程框架，流程里面有几个公共的模块（如图2的C1–C7）。一个近邻图算法通过该流程“打破”之后，我们可以很容易了解该算法是如何设计组装的，这将给后续近邻图向量检索算法的设计带来很大的便利性。此外，我们也可固定其它模块完全相同，从而更公平地评估不同算法在某一模块实现上的性能差异。</p>
+<center><br>    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="//whenever5225.github.io/2021/06/30/vldb2021/pipeline.png" width="900"><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图2 近邻图向量检索算法遵循的统一流程框架图</div><br></center>
+
+
+<p>下面以HNSW和NSG为例说明如何通过图2的流程框架分析算法，在此之前我们要先熟悉这两个算法的索引构建和搜索过程。</p>
+<p>首先是HNSW，HNSW的构建策略是增量式的。因此，每插入一个数据点都要执行一遍C1–C3过程。</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>HNSW具体实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>生成新插入点所处的最大层；获取搜索入口点</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>新插入点作为查询点，从入口点开始，贪婪搜索，返回新插入点一定量最近邻作为邻居候选</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>启发式选边策略</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>无额外步骤，最高层中的顶点作为入口</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>无额外步骤，增量式构建已隐式确保连通性（启发式选边又一定程度破坏连通性）</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>最高层的顶点作为入口</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>最佳优先搜索</td>
+</tr>
+</tbody>
+</table>
+<p>下面是NSG的。</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>NSG具体实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>NN-Descent初始化近邻图</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>顶点作为查询，贪婪搜索获取邻居候选</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>MRNG选边策略</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>全局质心作为查询，贪婪搜索获取最近顶点作为入口</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>从入口开始，DFS确保连通性</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>C4获取的入口</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>最佳优先搜索</td>
+</tr>
+</tbody>
+</table>
+<p>由于HNSW的C3与NSG的C3是等价的，因此，从上面两个表格可知，HNSW与NSG这两个算法差别并不大。其实，论文涉及到的13种算法中很多算法之间都是很相似的，详见论文第4章。</p>
+<h2 id="实验和讨论"><a href="#实验和讨论" class="headerlink" title="实验和讨论"></a>实验和讨论</h2><p>实验评估参考论文第5章。下面主要简单介绍一下根据实验观测结果的讨论。</p>
+<p><strong>一些推荐</strong>。NSG和NSSG普遍有最小的索引构建时间和索引尺寸，因此，它们适用于有大量数据频繁更新的场景；如果我们想要快速构建一个精确的KNNG（不仅用于向量检索），KGraph，EFANNA和DPG更适合；DPG和HCNNG有最小的平均搜索路径长度，因此，它们适合需要I/O的场景；对于较难数据集（LID值较高），HNSW，NSG，HCNNG适合；对于较简单数据集(LID值较低)，DPG，NSG，HCNNG和NSSG适合；NGT有更小的候选集尺寸，因此适用于GPU加速（考虑到GPU的内存限制）；当对内存消耗要求较高时，NSG和NSSG适合，因为它们内存占用更小。</p>
+<p><strong>算法设计向导</strong>。一个好的近邻图向量检索算法一般满足一下4个方面：（1）高的构建效率；（2）高的路由效率；（3）高的搜索精度；（4）低的内存负载。针对（1），我们不要在提升近邻图索引质量（一个顶点的邻居中真实的最近邻居所占的比例）花费太多的时间，因为最好的图质量不一定实现最佳搜索性能（结合论文中表4和图7，8）。针对（2），我们应当控制适当的平均出度，多样化邻居的分布，减少获取入口点的花费，优化路由策略，从而减少收敛到查询点的邻域所需的距离计算次数。针对（3），合理设计邻居的分布，确保连通性，从而提升对陷入局部最优的“抵抗力”。针对（4），优化邻居选择策略和路由策略，从而减小出度和候选集尺寸。</p>
+<p><strong>优化算法示例</strong>。基于上面的向导，我们组装了一个优化算法，该算法实现了当前最优的综合性能。</p>
+<p><strong>一些趋势</strong>。基于RNG的选边策略设计在当前近邻图向量检索算法的效率提升中起到了关键作用。在论文的评估中，唯一一个基于MST的算法HCNNG也表现出来很好的综合性能。在上述纯近邻图算法基础上，后续发展有三个主要方向：（1）硬件优化；（2）机器学习优化；（3）更高级的查询需求，比如结构化和非结构化混合查询。</p>
+<p><strong>一些挑战</strong>。（1）数据编码技术与图索引如何有机结合以解决近邻图向量检索算法高内存消耗问题；（2）硬件加速近邻图索引构建减少近邻图索引构建时间；（3）自适应算法选择。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+              <a href="/tags/VLDB/" rel="tag"># VLDB</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/03/12/multiattribute-anns-nsw/" rel="next" title="导航小世界图上实现有标签过滤约束的近似最近邻搜索">
+                  <i class="fa fa-chevron-left"></i> 导航小世界图上实现有标签过滤约束的近似最近邻搜索
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/07/03/服务器代理/" rel="prev" title="Ubuntu服务器代理配置完整流程">
+                  Ubuntu服务器代理配置完整流程 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#导言"><span class="nav-number">1.</span> <span class="nav-text">导言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#综述论文的动机"><span class="nav-number">2.</span> <span class="nav-text">综述论文的动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#近邻图算法综述"><span class="nav-number">3.</span> <span class="nav-text">近邻图算法综述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#近邻图算法“原子”级分析"><span class="nav-number">4.</span> <span class="nav-text">近邻图算法“原子”级分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验和讨论"><span class="nav-number">5.</span> <span class="nav-text">实验和讨论</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="引言两种改进方法HNSW内存开销大，基于量化编码的检索算法能够压缩数据集向量，大幅度降低内存占用。将量化编码与HNSW结合，有两种改进方法：  使用标量量化编码向量的HNSWSQ算法 使用乘积量化编码向量的HNSWPQ算法  HNSW内存开销大的原因 需要存储全部的数据集元素 需要存储每一层中节点之间的连接关系  乘积量化PQ乘积量化建立码本和量化编码 将N * 128的数据集进行切分，划分为4个">
+<meta name="keywords" content="论文阅读,ANNS,近邻图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="量化编码的分层可通航小世界图（HNSW）笔记">
+<meta property="og:url" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="引言两种改进方法HNSW内存开销大，基于量化编码的检索算法能够压缩数据集向量，大幅度降低内存占用。将量化编码与HNSW结合，有两种改进方法：  使用标量量化编码向量的HNSWSQ算法 使用乘积量化编码向量的HNSWPQ算法  HNSW内存开销大的原因 需要存储全部的数据集元素 需要存储每一层中节点之间的连接关系  乘积量化PQ乘积量化建立码本和量化编码 将N * 128的数据集进行切分，划分为4个">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/pq.png">
+<meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/pq2.png">
+<meta property="og:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png">
+<meta property="og:updated_time" content="2020-08-07T12:13:20.234Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="量化编码的分层可通航小世界图（HNSW）笔记">
+<meta name="twitter:description" content="引言两种改进方法HNSW内存开销大，基于量化编码的检索算法能够压缩数据集向量，大幅度降低内存占用。将量化编码与HNSW结合，有两种改进方法：  使用标量量化编码向量的HNSWSQ算法 使用乘积量化编码向量的HNSWPQ算法  HNSW内存开销大的原因 需要存储全部的数据集元素 需要存储每一层中节点之间的连接关系  乘积量化PQ乘积量化建立码本和量化编码 将N * 128的数据集进行切分，划分为4个">
+<meta name="twitter:image" content="http://whenever5225.github.io/2019/08/11/Q-HNSW/pq.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/08/11/Q-HNSW/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>量化编码的分层可通航小世界图（HNSW）笔记 | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/08/11/Q-HNSW/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">量化编码的分层可通航小世界图（HNSW）笔记
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-08-11 18:23:46" itemprop="dateCreated datePublished" datetime="2019-08-11T18:23:46+08:00">2019-08-11</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><h3 id="两种改进方法"><a href="#两种改进方法" class="headerlink" title="两种改进方法"></a>两种改进方法</h3><p>HNSW内存开销大，基于量化编码的检索算法能够压缩数据集向量，大幅度降低内存占用。将量化编码与HNSW结合，有两种改进方法：</p>
+<ol>
+<li>使用标量量化编码向量的HNSWSQ算法</li>
+<li>使用乘积量化编码向量的HNSWPQ算法</li>
+</ol>
+<h3 id="HNSW内存开销大的原因"><a href="#HNSW内存开销大的原因" class="headerlink" title="HNSW内存开销大的原因"></a>HNSW内存开销大的原因</h3><ol>
+<li>需要存储全部的数据集元素</li>
+<li>需要存储每一层中节点之间的连接关系</li>
+</ol>
+<h2 id="乘积量化"><a href="#乘积量化" class="headerlink" title="乘积量化"></a>乘积量化</h2><h3 id="PQ乘积量化"><a href="#PQ乘积量化" class="headerlink" title="PQ乘积量化"></a>PQ乘积量化</h3><h4 id="建立码本和量化编码"><a href="#建立码本和量化编码" class="headerlink" title="建立码本和量化编码"></a>建立码本和量化编码</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq.png"></p>
+<p>将<code>N * 128</code>的数据集进行切分，划分为4个子空间，每个子空间中向量的维数为32，得到<code>N * 4 * 32</code>。每个字段（子空间）同样有<code>N</code>个向量，对这<code>N</code>个向量进行聚类得到256个类中心，这样4个字段一共有<code>4 * 256</code>个类中心。每个子空间的所有<code>N</code>个向量都可以用该子空间的256个类中心的某一向量表示，对256个类中心进行编码只需8位即可，从而任一向量在该子空间的子向量的编码就可以用该子向量所属的类中心的编码来表示。</p>
+<p>待编码样本如何编码？</p>
+<p>对于待编码的样本，将它进行相同的切分，然后在各个子空间里逐一找到距离它们最近的类中心，然后用类中心的id来表示它们，即完成了待编码样本的编码。</p>
+<h4 id="码字的搜索算法"><a href="#码字的搜索算法" class="headerlink" title="码字的搜索算法"></a>码字的搜索算法</h4><p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/pq2.png"></p>
+<p>对于某个查询向量，要查询离其最近的k个向量，关键就是计算查询向量与dataset中的样本距离了。暴力方法就是计算数据集中所有的样本与查询向量的距离，然后进行排序，选出top@k个最近的样本返回。对数据集进行PQ乘积量化编码后，这个过程就变成下面的方式：</p>
+<p>将查询向量进行切分，切分方式与对数据集切分的相同，计算查询向量的每个子向量在相应的子空间中到256个类中心的距离，从而得到<code>4 * 256</code>的距离矩阵。某个样本到查询向量的距离就可以通过以下方式得到（不需单独计算了）：</p>
+<p>比如该样本的编码是(124, 56, 132, 222)，在<code>4 * 256</code>的距离矩阵中依次找出（查表）查询向量的相应子向量到编码为124（第一个子空间），编码为56（第二个子空间），编码为132（第三个子空间），编码为222（第四个子空间）的类中心的距离，将这4个距离相加的和作为该样本（编码是(124, 56, 132, 222)）到查询向量的距离。</p>
+<h4 id="PQ乘积量化能够加速索引的原理"><a href="#PQ乘积量化能够加速索引的原理" class="headerlink" title="PQ乘积量化能够加速索引的原理"></a>PQ乘积量化能够加速索引的原理</h4><ul>
+<li>将全样本的距离计算，转化为到子空间类中心的距离计算（加快查询）</li>
+<li>对特征进行编码后，可以用一个相对比较短的编码来表示样本（降低内存消耗）</li>
+<li>存储时只需存储类中心的向量值（计算距离时只需要它们 ）</li>
+</ul>
+<p>注：暴力搜索的距离计算的次数随样本数目<code>N</code>成线性增长，对于上面的例子，PQ乘积量化只需<code>4 * 256</code>次距离计算。</p>
+<h2 id="HNSWPQ算法"><a href="#HNSWPQ算法" class="headerlink" title="HNSWPQ算法"></a>HNSWPQ算法</h2><p>与原始的HNSW算法相比，不再需要在内存中保持原始向量。将HNSW算法作为索引算法，采用PQ算法进行向量编码，由于使用PQ算法对原始向量编码，需要将HNSW算法插入过程中与近邻点距离的计算相应地修改为PQ的距离计算。</p>
+<h3 id="HNSWPQ的构建过程"><a href="#HNSWPQ的构建过程" class="headerlink" title="HNSWPQ的构建过程"></a>HNSWPQ的构建过程</h3><ol>
+<li>对<strong>原始向量</strong>量化编码建立码本存储在内存中</li>
+<li>新插入的结点作为查询结点，得到其能达到的最大层（指数衰减概率分布）</li>
+<li>选邻居时，计算某结点与查询向量的距离应为PQ的距离计算</li>
+</ol>
+<p>与原HNSW算法相比，主要有两方面的不同：</p>
+<ul>
+<li>原HNSW算法直接在原始向量上构建，而HNSWPQ算法需要先对原始向量进行量化编码建立码本在此基础上再逐个插入结点构建（增加了一步）</li>
+<li>原HNSW算法计算距离时是直接计算，而HNSWPQ算法采用PQ距离计算方法（计算速度快）</li>
+</ul>
+<h2 id="HNSWSQ算法"><a href="#HNSWSQ算法" class="headerlink" title="HNSWSQ算法"></a>HNSWSQ算法</h2><p>标量量化（SQ）对向量的每一维都进行量化，HNSWSQ算法采用最大最小量化方法。对于向量的第 $ i $ 维，通过样本集训练获取该维出现的最大值 $ vmax[i] $ 和最小值 $ vmin[i] $ ，然后将向量 $ \vec{a} $ 第 $ i $ 维的值量化为:<br>$$<br>\frac{x_i - vmin[i]} {vmax[i]}<br>$$<br>其中，$ i = 1, …, n $ ，量化后的值编码存储，假设每一维编码为１个字节，则进一步处理为：<br>$$<br>f(x_i) = \lfloor \varphi( \frac{x_i - vmin[i]} {vmax[i]} ) \times 255\rfloor<br>$$<br>其中：</p>
+<p>$$<br> \varphi(x) = \begin{cases}<br>1 &amp; x \geq 1\<br>x &amp; 0 &lt; x &lt; 1\<br>0 &amp; x \leq 0<br>\end{cases}<br>$$<br>HNSWSQ算法在插入结点计算距离时，首先将编码后的向量解码还原，然后计算查询向量与解码向量的距离。</p>
+<p><img src="//whenever5225.github.io/2019/08/11/Q-HNSW/SQ量化计算示例.png"></p>
+<h2 id="量化后性能分析"><a href="#量化后性能分析" class="headerlink" title="量化后性能分析"></a>量化后性能分析</h2><h3 id="HNSWPQ算法性能分析"><a href="#HNSWPQ算法性能分析" class="headerlink" title="HNSWPQ算法性能分析"></a>HNSWPQ算法性能分析</h3><p>与原始的HNSW算法相比，HNSWPQ算法在同样查询时间下Recall@1准确率要低很多，内存占用几乎只有 HNSW算法的一半（主要是结点连接关系），构建索引耗时是HNSW的几倍，主要是编码引起。</p>
+<p>随着PQ子量化器（子空间）的增多，由于量化误差的降低，各算法的Recall@1准确率逐步提高。</p>
+<h3 id="HNSWSQ算法性能分析"><a href="#HNSWSQ算法性能分析" class="headerlink" title="HNSWSQ算法性能分析"></a>HNSWSQ算法性能分析</h3><p>在GIST-1M数据集上HNSWSQ8的内存开销只有HNSW算法的29.5%，两者性能相当；在SIFT-1M数据集上，两者性能相当，构建索引耗时相当，HNSWSQ8的内存占用比HNSW低45%。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>[1]李秋珍,白兴强,李立夏,王赢.量化编码的分层可通航小世界图算法[J].计算机工程与科学,2019,41(04):618-625.<br>[2]Yong Yuan, 图像检索：再叙ANN Search, <a href="http://yongyuan.name/blog/ann-search.html" target="_blank" rel="noopener">http://yongyuan.name/blog/ann-search.html</a>, 2019.7.30.</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/08/11/pat1004/" rel="next" title="PAT乙级1004 || 成绩排名（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1004 || 成绩排名（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/08/12/anns-nsg-code1/" rel="prev" title="C++读取ivecs格式数据">
+                  C++读取ivecs格式数据 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两种改进方法"><span class="nav-number">1.1.</span> <span class="nav-text">两种改进方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HNSW内存开销大的原因"><span class="nav-number">1.2.</span> <span class="nav-text">HNSW内存开销大的原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乘积量化"><span class="nav-number">2.</span> <span class="nav-text">乘积量化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PQ乘积量化"><span class="nav-number">2.1.</span> <span class="nav-text">PQ乘积量化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#建立码本和量化编码"><span class="nav-number">2.1.1.</span> <span class="nav-text">建立码本和量化编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#码字的搜索算法"><span class="nav-number">2.1.2.</span> <span class="nav-text">码字的搜索算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PQ乘积量化能够加速索引的原理"><span class="nav-number">2.1.3.</span> <span class="nav-text">PQ乘积量化能够加速索引的原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HNSWPQ算法"><span class="nav-number">3.</span> <span class="nav-text">HNSWPQ算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HNSWPQ的构建过程"><span class="nav-number">3.1.</span> <span class="nav-text">HNSWPQ的构建过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HNSWSQ算法"><span class="nav-number">4.</span> <span class="nav-text">HNSWSQ算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#量化后性能分析"><span class="nav-number">5.</span> <span class="nav-text">量化后性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HNSWPQ算法性能分析"><span class="nav-number">5.1.</span> <span class="nav-text">HNSWPQ算法性能分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HNSWSQ算法性能分析"><span class="nav-number">5.2.</span> <span class="nav-text">HNSWSQ算法性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

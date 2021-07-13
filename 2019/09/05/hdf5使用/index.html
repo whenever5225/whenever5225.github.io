@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="做近似最近邻搜索的实验时，需要用到一些开源数据集，这些数据集的格式并不都是统一的，常见的有fvecs&amp;amp;ivecs格式，hdf5格式。能够读取和保存这些格式的文件是实验的基础，另一方面，测试不同的数据集时，可能需要将一种格式转换成另一种格式。 因为实验代码是以载入fvecs格式数据写的，需要将hdf5格式转换成fvecs&amp;amp;ivecs格式可以用python很方便的读取hdf5格式的数据">
+<meta name="keywords" content="HDF5,python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python读取HDF5格式文件（HDF5格式文件的结构,附高速下载gist数据集）">
+<meta property="og:url" content="http://whenever5225.github.io/2019/09/05/hdf5使用/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="做近似最近邻搜索的实验时，需要用到一些开源数据集，这些数据集的格式并不都是统一的，常见的有fvecs&amp;amp;ivecs格式，hdf5格式。能够读取和保存这些格式的文件是实验的基础，另一方面，测试不同的数据集时，可能需要将一种格式转换成另一种格式。 因为实验代码是以载入fvecs格式数据写的，需要将hdf5格式转换成fvecs&amp;amp;ivecs格式可以用python很方便的读取hdf5格式的数据">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://whenever5225.github.io/2019/09/05/hdf5使用/hdf5结构1.png">
+<meta property="og:updated_time" content="2020-08-07T12:13:20.240Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python读取HDF5格式文件（HDF5格式文件的结构,附高速下载gist数据集）">
+<meta name="twitter:description" content="做近似最近邻搜索的实验时，需要用到一些开源数据集，这些数据集的格式并不都是统一的，常见的有fvecs&amp;amp;ivecs格式，hdf5格式。能够读取和保存这些格式的文件是实验的基础，另一方面，测试不同的数据集时，可能需要将一种格式转换成另一种格式。 因为实验代码是以载入fvecs格式数据写的，需要将hdf5格式转换成fvecs&amp;amp;ivecs格式可以用python很方便的读取hdf5格式的数据">
+<meta name="twitter:image" content="http://whenever5225.github.io/2019/09/05/hdf5使用/hdf5结构1.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2019/09/05/hdf5使用/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>python读取HDF5格式文件（HDF5格式文件的结构,附高速下载gist数据集） | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">17</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">5</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">119</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2019/09/05/hdf5使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">python读取HDF5格式文件（HDF5格式文件的结构,附高速下载gist数据集）
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-05 21:34:39" itemprop="dateCreated datePublished" datetime="2019-09-05T21:34:39+08:00">2019-09-05</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/HDF5/" itemprop="url" rel="index"><span itemprop="name">HDF5</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>做近似最近邻搜索的实验时，需要用到一些开源数据集，这些数据集的格式并不都是统一的，常见的有<strong>fvecs</strong>&amp;<strong>ivecs</strong>格式，<strong>hdf5</strong>格式。能够读取和保存这些格式的文件是实验的基础，另一方面，测试不同的数据集时，可能需要将一种格式转换成另一种格式。</p>
+<p>因为实验代码是以载入<strong>fvecs</strong>格式数据写的，需要将<strong>hdf5</strong>格式转换成<strong>fvecs</strong>&amp;<strong>ivecs</strong>格式可以用python很方便的读取<strong>hdf5</strong>格式的数据集，在此基础上转换为<strong>fvec</strong>&amp;<strong>ivecs</strong>格式。</p>
+<h2 id="hdf5格式的结构"><a href="#hdf5格式的结构" class="headerlink" title="hdf5格式的结构"></a>hdf5格式的结构</h2><p>一个hdf5格式的文件是一个包含两个对象的容器，一个是<strong>数据集</strong>（datasets），另一个是<strong>组</strong>（groups）。数据集的结构非常类似于Numpy的<strong>array</strong>，组的结构非常类似于python的字典，它像一个文件夹一样，它可以包含数据集和其它的组。总结起来：<strong>组像字典一样工作，数据集像NumPy数组一样工作</strong>。</p>
+<p>拿hdf5格式数据集<strong>gist-960-euclidean.hdf5</strong>为例（<a href="http://ann-benchmarks.com/gist-960-euclidean.hdf5" target="_blank" rel="noopener">下载地址</a>），整个文件有一个<strong>根组</strong>，就是下图的<code>&quot;/&quot;</code>。</p>
+<center><br><img src="//whenever5225.github.io/2019/09/05/hdf5使用/hdf5结构1.png"><br></center>
+
+<p>根组下有四个键，分别为<strong>distances</strong>、<strong>neighbors</strong>、<strong>test</strong>和<strong>train</strong>，类比于上图中的<strong>A</strong>、<strong>B</strong>和<strong>C</strong>。<strong>distances</strong>对应的是shape为<strong>(1000, 100)</strong>的数据集（类比于Numpy的<strong>array</strong>），为每个查询向量最近的100个向量距该查询向量的距离，数据类型为<strong>float32</strong>；<strong>neighbors</strong>对应的是shape为<strong>(1000, 100)</strong>的数据集，为每个查询向量最近的100个向量，数据类型为<strong>int32</strong>；<strong>test</strong>对应的是shape为<strong>(1000000, 960)</strong>的数据集，这是基数据（原始数据），一共1000000个向量，每个向量的维度为960维，数据类型为<strong>float32</strong>；<strong>train</strong>对应的是shape为<strong>(1000, 960)</strong>的数据集，只是查询数据，一共1000个向量，向量的维度为960维，数据类型为<strong>float32</strong>。</p>
+<h2 id="读取转换过程"><a href="#读取转换过程" class="headerlink" title="读取转换过程"></a>读取转换过程</h2><p>安装<strong>h5py</strong>模块。我的python是用<strong>anaconda</strong>装的，可以用下面命令安装。</p>
+<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="SHELL"><figure class="iseeu highlight /shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install h5py</span><br></pre></td></tr></table></figure></div>
+<p>读取<strong>hdf5</strong>格式文件</p>
+<div class="highlight-wrap"autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" contenteditable="true"data-rel="PYTHON"><figure class="iseeu highlight /python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> h5py</span><br><span class="line"></span><br><span class="line">f = h5py.File(<span class="string">'gist-960-euclidean.hdf5'</span>, <span class="string">'r'</span>)	<span class="comment">#gist-960-euclidean.hdf5为hdf5格式的文件</span></span><br><span class="line">print(list(f.keys()))	<span class="comment">#展示所有的键</span></span><br></pre></td></tr></table></figure></div>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>[1]GZKPeng, HDF5 的介绍以及在python中的应用, <a href="https://blog.csdn.net/zkp_987/article/details/79852236" target="_blank" rel="noopener">https://blog.csdn.net/zkp_987/article/details/79852236</a>, 2019.9.1.</p>
+<p>[2]python中使用hdf5格式文件的文档：<a href="http://docs.h5py.org/en/stable/quick.html" target="_blank" rel="noopener">http://docs.h5py.org/en/stable/quick.html</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/HDF5/" rel="tag"># HDF5</a>
+            
+              <a href="/tags/python/" rel="tag"># python</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/08/27/patb1026/" rel="next" title="PAT乙级1026 || 程序运行时间（详解，C/C++示例，测试点分析）">
+                  <i class="fa fa-chevron-left"></i> PAT乙级1026 || 程序运行时间（详解，C/C++示例，测试点分析）
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/06/patb1027/" rel="prev" title="PAT乙级1027 || 打印沙漏（详解，C/C++示例，测试点分析）">
+                  PAT乙级1027 || 打印沙漏（详解，C/C++示例，测试点分析） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">119</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#hdf5格式的结构"><span class="nav-number">1.</span> <span class="nav-text">hdf5格式的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取转换过程"><span class="nav-number">2.</span> <span class="nav-text">读取转换过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>
