@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="文章总结视觉时装搜索时能够操纵属性是一个有意义的场景。文章的背景主要是应用导向的。面向的场景是，用户在搜索一个商品时，给出一张照片和一些文本描述，并通过文本描述修改照片的某些内容。本文的解决思路是将图像和文本嵌入到一个公共空间，通过查询给出的图像嵌入和文本嵌入之间的算术运算构建该空间中的一个新向量（对应用户的目标），用该新向量通过相似度计算检索用户的目标。下图清楚展示了这一过程。  研究内容概述一">
+<meta name="keywords" content="论文阅读,多模态检索,联合嵌入,向量检索">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索)">
+<meta property="og:url" content="http://whenever5225.github.io/2021/10/30/Multimodal_search_20211030/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="文章总结视觉时装搜索时能够操纵属性是一个有意义的场景。文章的背景主要是应用导向的。面向的场景是，用户在搜索一个商品时，给出一张照片和一些文本描述，并通过文本描述修改照片的某些内容。本文的解决思路是将图像和文本嵌入到一个公共空间，通过查询给出的图像嵌入和文本嵌入之间的算术运算构建该空间中的一个新向量（对应用户的目标），用该新向量通过相似度计算检索用户的目标。下图清楚展示了这一过程。  研究内容概述一">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3fb95673628c491291db670e6f30ff72.png">
+<meta property="og:updated_time" content="2021-11-30T03:16:13.217Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索)">
+<meta name="twitter:description" content="文章总结视觉时装搜索时能够操纵属性是一个有意义的场景。文章的背景主要是应用导向的。面向的场景是，用户在搜索一个商品时，给出一张照片和一些文本描述，并通过文本描述修改照片的某些内容。本文的解决思路是将图像和文本嵌入到一个公共空间，通过查询给出的图像嵌入和文本嵌入之间的算术运算构建该空间中的一个新向量（对应用户的目标），用该新向量通过相似度计算检索用户的目标。下图清楚展示了这一过程。  研究内容概述一">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/3fb95673628c491291db670e6f30ff72.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2021/10/30/Multimodal_search_20211030/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索) | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">21</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">6</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">122</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2021/10/30/Multimodal_search_20211030/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索)
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-10-30 21:17:30" itemprop="dateCreated datePublished" datetime="2021-10-30T21:17:30+08:00">2021-10-30</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/多模态检索/" itemprop="url" rel="index"><span itemprop="name">多模态检索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>视觉时装搜索时能够操纵属性是一个有意义的场景。文章的背景主要是应用导向的。面向的场景是，用户在搜索一个商品时，给出一张照片和一些文本描述，并通过文本描述修改照片的某些内容。本文的解决思路是将图像和文本嵌入到一个公共空间，通过查询给出的图像嵌入和文本嵌入之间的算术运算构建该空间中的一个新向量（对应用户的目标），用该新向量通过相似度计算检索用户的目标。下图清楚展示了这一过程。</p>
+<p><img src="https://img-blog.csdnimg.cn/3fb95673628c491291db670e6f30ff72.png" alt="image-20211030211300700" style="zoom:50%;"></p>
+<h2 id="研究内容概述"><a href="#研究内容概述" class="headerlink" title="研究内容概述"></a>研究内容概述</h2><p>一个令人惊奇的神器：<strong>向量的算术性质</strong></p>
+<ul>
+<li><p>“Paris” - “France” +“Italy” = “Rome”</p>
+</li>
+<li><p>given f I , a representing vector of an image of a blue car, f I - “blue” + “red” yields a representing vector of a red car image.</p>
+</li>
+</ul>
+<p>本文关注时装领域的多模态搜索，提出了Mini-Batch Match Retrieval，每个mini-batch由匹配和不匹配的图像-文本对组成。本文为每一个item学习一个embedding，并从mini-batch中尝试划分正确的图像-文本对。</p>
+<p>本文探索了视觉时装属性提取，只需要利用有噪声的catalog data，不需要额外的注释。</p>
+<p>本文设计3种不同的多模态搜索方法：（1）图像-文本联合嵌入，查询算术性质；（2）学习属性提取，视觉搜索+soft文本过滤；（3）查询算术性质+soft文本过滤。</p>
+<h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><p>训练数据：50万时装商品，每一个商品条目由图像+文本元数据组成；</p>
+<p>基数据（测试数据）：150万时装商品；</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p><strong>模型概览</strong></p>
+<p>如下图所示，整个模型由两大部分组成，一部分为Joint Embedding，即联合嵌入训练，另一部分为Attribute Extraction，即属性提取。</p>
+<p>Joint Embedding:</p>
+<p>图像经图像编码器（ResNet-18）提取为视觉特征向量，文本通过文本编码器（word2vec，文本视为词袋，词嵌入相加得到文本嵌入）生成文本嵌入$f_{T}$。图像嵌入得到的视觉特征向量通过一个额外的全连接层（FC）映射到与文本相同的嵌入空间，即得到$f_{I}$。通过$f_{T}$和$f_{I}$计算一个损失函数$\mathcal{L}_{M B M R}$。<br><img src data-echo="https://img-blog.csdnimg.cn/1e57b96cb910473694b778a7d0bb4741.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA56iL5bqP5ZGY546L5ZCM5a2m,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="在这里插入图片描述"></p>
+<p>Attribute Extraction:</p>
+<p>该部分的输入为上一部分的$f_{I}$，其经FC+Sigmoid（多标签分类）转化为属性概率向量$p_{\boldsymbol{w}}(I)$（它的维度由词典的尺寸决定），条目的文本元数据作为属性的真值，此时损失函数$\mathcal{L}_{a}$根据上述两者计算。</p>
+<p>总的损失函数是上述两个损失函数的加权之和。</p>
+<p><strong>文本元数据预处理</strong></p>
+<p>（1）Tokenization: 描述文本划分为一组标记; (2) 将单词标准化为其基本形式，以避免具有相同视觉含义的多个单词变体；（3）识别更可能具有视觉意义的名词和形容词标记，并忽略其余部分；（4）在数据集中出现次数少于某个硬截止阈值（本文设为500）的单词被删除，从而减少噪音并避免不必要的大词汇量。</p>
+<p><strong>Joint Embedding</strong> (Mini-Batch Match Retrieval Objective)</p>
+<p>目标概述：相匹配的图像-文本对彼此之间应该互相接近（在公共嵌入空间中）。</p>
+<p>在训练集中，每一个mini-batch由$N$​​​​​个商品条目组成，即<code>\{I_i, T_i\}^{N}_{i=1}</code>，$I_{i}$是图像，$T_i$是文本元数据。任意一图像嵌入$f_I$和文本嵌入$f_T$​​​​，计算两者的余弦相似度：<br>$$<br>S_{I, T}=\frac{f_{I} \cdot f_{T}}{\left|f_{I}\right|\left|f_{T}\right|}<br>$$<br>$I_i$匹配$T_j$的概率：<br>$$<br>P(T_{j} \mid I_{i})=\frac{\exp {S_{I_{i}, T_{j}} / \tau}}{\sum_{k} \exp {S_{I_{i}, T_{k}} / \tau}}<br>$$<br>$\tau$是一个温度参数。类似地，$T_i$匹配$I_j$的概率：<br>$$<br>P(I_{j} \mid T_{i})=\frac{\exp {S_{I_{j}, T_{i}} / \tau}}{\sum_{k} \exp {S_{I_{k}, T_{i}} / \tau}}<br>$$<br>因此，总的损失函数为（交叉熵）：<br>$$<br>\mathcal{L}_{MBMR} = - \sum _{i} \log P(T _{i} | I _{i})  - \sum _{i} \log P(I _{i} | T _{i})<br>$$<br><strong>Attributes Extraction</strong></p>
+<p>一个好的joint embedding模型学习到的图像嵌入和文本嵌入应达到：根据两者的余弦相似度可由其中一者（比如图像）得到另一相似的（对应的文本描述）。然而，存在下面两个问题：（1）不是所有的词都具有相同的视觉基础；（2）不同词的词频变化较大。</p>
+<p>为此，本文通过Attributes Extraction部分进一步优化模型。一个全连接层将图像嵌入映射为词典尺寸（紧接着一个sigmoid函数）。输出为${\hat{p}_{w}(I)}$​，它是词典中的一个词属于该图像的概率。真值是该图像的元数据描述存在的词。</p>
+<p>一个词$w$属于图像$I$的概率更多细节计算参考原文公式(5)-(8)。</p>
+<h2 id="三种不同的多模态检索方案（具体执行）"><a href="#三种不同的多模态检索方案（具体执行）" class="headerlink" title="三种不同的多模态检索方案（具体执行）"></a>三种不同的多模态检索方案（具体执行）</h2><p><strong>查询算术方法</strong></p>
+<p>给定一个查询，它由图像和一些喜欢的或不喜欢的属性组成。根据上一部分介绍的模型将图像和文本嵌入到相同的空间，通过图像嵌入和文本嵌入之间的算术运算得到<strong>一个</strong>独立的查询向量$q=f_{I}+f_{T}$，用该向量去执行查询。</p>
+<p><strong>属性过滤方法</strong></p>
+<p>先属性过滤，把与查询文本描述不一致的都过滤掉，然后对剩余的进行纯图像的检索。根据条目是否是完整无错误的分以下两种情况计算相似度。</p>
+<p>完整无错误的条目（理想的）：<br>$$<br>S=\frac{q \cdot f_{I_{r}}}{|q|\left|f_{I_{r}}\right|} \cdot \mathbb{1}\left(w \in T_{r} \quad \forall w \in \boldsymbol{w}^{+}\right) \cdot \mathbb{1}\left(w \notin T_{r} \quad \forall w \in \boldsymbol{w}^{-}\right)<br>$$<br>其中$q=f_{I}$，$T_r$是条目中文本元数据所包含词的集合，$w^{+}$是查询给出的喜欢的属性，$w^-$是查询给出的不喜欢的属性。</p>
+<p>有瑕疵的条目（正常的）：<br>$$<br>S=\frac{q \cdot f_{I_{r}}}{|q|\left|f_{I_{r}}\right|} \cdot p_{\boldsymbol{w}}\left(I_{r}\right)\tag{1}<br>$$<br>其中$q=f_{I}$，$p_{\boldsymbol{w}}\left(I_{r}\right)$是查询给出的喜欢（或者不喜欢）属性在（或不在）条目图像$I_r$中的概率。该方法即软属性过滤。</p>
+<p><strong>联合方法</strong></p>
+<p>将之前描述的两种方法结合成一个强大的方法。 通过使用软属性过滤以及基于查询算术运算执行搜索来做到这一点。 添加属性过滤的是为了更好地满足文本操作标准。 由于属性过滤是有瑕疵的，仅将其与视觉搜索一起使用是不够的，因为它会导致在不考虑文本操作的情况下检索视觉相似的条目。</p>
+<p>该方法计算公式与式(1)形式相同，不同处为：$q=f_{I}+f_{T}$。</p>
+<h2 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h2><p><strong>查询样本的构建</strong></p>
+<p>取样一些商品图片，从公共服装属性集合中提取一些想要的或不想要的文本描述（与图片一一对应）。文本要求（从相应的查询图像中）：添加；移除；取代。</p>
+<p><strong>评估结果</strong></p>
+<p>标准化折扣累积收益（nDCG）：评估每个查询前K个检索结果的相关性，并根据排序进行惩罚。<br>$$<br>DCG_K= \sum_{i=1}^{K} \frac{rel_{i}}{\log_{2}(i+1)} \tag{2}<br>$$<br>$rel_{i}$表示排在第$i$个位置结果与查询的相关性（<strong>根据一些准则计算，具体与模态有关</strong>）。</p>
+<p>根据公式（2）预先计算一个IDCG（Ideal-DCG），它是在理想排序结果上计算的（可认为是真值）；根据查询得到的结果由式（2）再计算一个qDCG，从而nDCG=qDCG/IDCG.</p>
+<p>针对具体的模态，相关性计算如下：</p>
+<ul>
+<li>视觉nDCG（$\mathrm{V}-\mathrm{nDCG}$）。基于从基线视觉搜索模型中提取的视觉相关性。 这个纯视觉模型在条目图像上使用triplet损失进行训练，其中对于每个查询图像，将同一条目的不同图像视为正样本，将不同条目的图像视为负样本。 相关性是从该基线模型中提取的条目和查询视觉特征之间的余弦相似度。</li>
+<li>文本nDCG（$\mathrm{T}-\mathrm{nDCG}$）。根据文本约束的要求是否满足，具体地，如果文本给出的渴望要求出现在参考条目的元数据描述中则满足，如果文本给出的不需要的要求没有出现在参考条目的元数据描述中则满足。要求被满足的比率即为文本的nDCG。</li>
+</ul>
+<p>多模态的nDCG即为各模态数据的nDCG的几何平均。即：<br>$$<br>\mathrm{MM} \triangleq \sqrt{\mathrm{V}-\mathrm{nDCG} \cdot \mathrm{T}-\mathrm{nDCG}}<br>$$</p>
+<h2 id="一些考虑"><a href="#一些考虑" class="headerlink" title="一些考虑"></a>一些考虑</h2><p>(1)将查询图片和文本转变为一个向量，然后检索，这种方案检索出的图片相似度较大，但多模态综合相似度一般；(2)文本过滤+图像相似度检索，文本的相似度较高，多模态综合相似度一般；(3)文本过滤+图像和文本转化为一个向量的检索，多模态综合相似度最好；</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/多模态检索/" rel="tag"># 多模态检索</a>
+            
+              <a href="/tags/联合嵌入/" rel="tag"># 联合嵌入</a>
+            
+              <a href="/tags/向量检索/" rel="tag"># 向量检索</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/10/30/Link_and_code_2021/" rel="next" title="CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度)">
+                  <i class="fa fa-chevron-left"></i> CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章总结"><span class="nav-number">1.</span> <span class="nav-text">文章总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究内容概述"><span class="nav-number">2.</span> <span class="nav-text">研究内容概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据"><span class="nav-number">3.</span> <span class="nav-text">数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#训练"><span class="nav-number">4.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三种不同的多模态检索方案（具体执行）"><span class="nav-number">5.</span> <span class="nav-text">三种不同的多模态检索方案（具体执行）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#评估"><span class="nav-number">6.</span> <span class="nav-text">评估</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些考虑"><span class="nav-number">7.</span> <span class="nav-text">一些考虑</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>

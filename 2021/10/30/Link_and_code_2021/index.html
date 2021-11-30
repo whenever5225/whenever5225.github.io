@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="论文概述相似性搜索是计算机视觉的一个基础模块。早期，一个图像将会对应几千个向量，因此，使用compact representation非常重要。最近，一个图像对应一个向量（通常从卷积神经网络的激活层提取）。 本文大致思路：（1）通过OPQ 压缩原始向量；（2）根据邻居执行量化回归不断优化量化码。通过交替优化学习一个回归码本（该码本即为通过离一个点的最近的几个点重构该点时的权重系数或回归系数或重构系">
+<meta name="keywords" content="论文阅读,ANNS,近邻图,向量编码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度)">
+<meta property="og:url" content="http://whenever5225.github.io/2021/10/30/Link_and_code_2021/index.html">
+<meta property="og:site_name" content="whenever">
+<meta property="og:description" content="论文概述相似性搜索是计算机视觉的一个基础模块。早期，一个图像将会对应几千个向量，因此，使用compact representation非常重要。最近，一个图像对应一个向量（通常从卷积神经网络的激活层提取）。 本文大致思路：（1）通过OPQ 压缩原始向量；（2）根据邻居执行量化回归不断优化量化码。通过交替优化学习一个回归码本（该码本即为通过离一个点的最近的几个点重构该点时的权重系数或回归系数或重构系">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/6bdad17708d7483ba01c2ce5bd67a2c4.png">
+<meta property="og:updated_time" content="2021-11-30T02:40:17.191Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度)">
+<meta name="twitter:description" content="论文概述相似性搜索是计算机视觉的一个基础模块。早期，一个图像将会对应几千个向量，因此，使用compact representation非常重要。最近，一个图像对应一个向量（通常从卷积神经网络的激活层提取）。 本文大致思路：（1）通过OPQ 压缩原始向量；（2）根据邻居执行量化回归不断优化量化码。通过交替优化学习一个回归码本（该码本即为通过离一个点的最近的几个点重构该点时的权重系数或回归系数或重构系">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/6bdad17708d7483ba01c2ce5bd67a2c4.png">
+  <link rel="canonical" href="http://whenever5225.github.io/2021/10/30/Link_and_code_2021/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度) | whenever</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">whenever</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">21</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">6</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">122</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://whenever5225.github.io/2021/10/30/Link_and_code_2021/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mengzhao Wang">
+      <meta itemprop="description" content="Try? All the way !">
+      <meta itemprop="image" content="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="whenever">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">CVPR2018-Link and code：Fast indexing with graphs and compact regression codes (图结构提升向量编码精度)
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2021-10-30 20:17:30" itemprop="dateCreated datePublished" datetime="2021-10-30T20:17:30+08:00">2021-10-30</time>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/近似最近邻搜索/" itemprop="url" rel="index"><span itemprop="name">近似最近邻搜索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="论文概述"><a href="#论文概述" class="headerlink" title="论文概述"></a>论文概述</h2><p>相似性搜索是计算机视觉的一个基础模块。早期，一个图像将会对应几千个向量，因此，使用compact representation非常重要。最近，一个图像对应一个向量（通常从卷积神经网络的激活层提取）。</p>
+<p>本文大致思路：（1）通过OPQ 压缩原始向量；（2）根据邻居执行量化回归不断优化量化码。通过交替优化学习一个回归码本（该码本即为通过离一个点的最近的几个点重构该点时的权重系数或回归系数或重构系数）以最小化重构误差。</p>
+<p>贡献：</p>
+<ol>
+<li>近似一个点时，粗质心比最近邻效果更好。向量能被它的少量邻居的线性组合（带有固定混合权重）更好的近似，如果能存储每一个向量的权重，效果会更好；</li>
+<li>HNSW比基于倒排列表的方法提供了更好的可选择性，因此更适用于更大的representations;</li>
+<li>提供了使用紧凑码的近邻图算法，并提供了基于邻居的量化回归，在十亿级数据集上取得最好效果。</li>
+</ol>
+<h2 id="如何近似一个向量？"><a href="#如何近似一个向量？" class="headerlink" title="如何近似一个向量？"></a>如何近似一个向量？</h2><p>获取一个向量的粗略近似的几种方式：</p>
+<p><strong>Centroid.</strong> 通过k-means聚类学习一个粗码本，可以在整个数据集上执行也可在一个有区分度的训练集上执行。我们可以通过一个向量在码本中最近的向量来近似该向量。</p>
+<p><strong>Nearest neighbor.</strong> 计算整个数据集上一个向量的最近邻居近似该向量。</p>
+<p><strong>Weighted average</strong>. 通过一个向量的k个最近向量的加权平均近似(权重向量$\beta^{\star}$​​是固定的)。<br>$$<br>\overline{x}=\beta ^{*T}N(x)<br>$$<br><strong>Regression.</strong> 仍然通过$N(x)$近似x, 但权重$\beta$不再是固定的常数，而是与x有关的函数$\beta (x)$, 我们通过学习获取最优的回归系数$\beta (x)$以最小化x的重构误差<br>$$<br>\hat{x}=\beta (x) ^{T}N(x)<br>$$<br>其中$\beta (x)$通过对超定方程$||x-\beta (x) ^{T}N(x)||$进行最小二乘法求解获取。</p>
+<p><img src="https://img-blog.csdnimg.cn/6bdad17708d7483ba01c2ce5bd67a2c4.png" alt="image-20211020200220334" style="zoom:30%;"></p>
+<p>上图是对几种不同算法 的实验评估，横坐标为欧氏距离平方误差，纵坐标反映近似的质量。可见，centriod（q(x)是在原数据集上训练，q(x)*是在训练集上训练）比nearest neighbor（n1(x)）近似的效果更好。</p>
+<p>对$\overline{x}$而言，我们可以通过改进它的邻居(当前所有x共享同一个$\beta$)进一步提升近似；从$\hat{x}$可知，我们可以通过为每一个x设定一个不同的$\beta(x)$进一步提升近似.</p>
+<h2 id="本文提出的方法"><a href="#本文提出的方法" class="headerlink" title="本文提出的方法"></a>本文提出的方法</h2><p><strong><u>Overview.</u></strong> 采用当前的方案将向量编码（2层编码，因为更好），与索引结构无关；采用HNSW结构，但是距离计算采用非对称距离计算（即查询或插入的新向量还是原始向量，索引中的向量采用编码向量）；本文采用两种Refinement策略，主要用在下面的第二阶段。</p>
+<p>搜索时是两阶段，第一阶段：通过量化编码获取一个候选集（索引向量仅通过紧凑码重构,即$q(x)$）；第二阶段：在第一阶段获得的候选集上继续执行搜索（索引向量通过更精确的方案重构）。</p>
+<p><u><strong>方案一：</strong></u></p>
+<p>0-byte refinement (每个向量不需要额外存储自己的重构系数)</p>
+<p>对于向量x (量化器编码$q(x)$)，它的k个邻居为$g_{1}(x),\cdots,g_{k}(x)$，经量化器编码后，$q(g_{1}(x))$，$\cdots,q(g_{k}(x))$，构造一个矩阵<br>$$<br>\textbf{G}(x)=[q(x),q(g_1(x),\cdots,q(g_k(x)))]<br>$$<br>使用上面的矩阵重构一个更好的x，即在整个数据集$\mathcal{X}$上平方误差最小<br>$$<br>L(\beta)=\sum_{x \in \mathcal{X}}||x-\beta ^{T}\textbf{G}(x)||^2 \tag{1}<br>$$<br>对于<br>$$<br>\mathrm{X}=\left[\begin{array}{c}x_{1} \ \vdots \ x_{N}\end{array}\right],<br>\mathbf{Y}=\left[\begin{array}{c}\mathbf{G}\left(x_{1}\right) \ \vdots \ \mathbf{G}\left(x_{N}\right)\end{array}\right] \tag{2}<br>$$<br>上式对应数据集里面的所有x. (2)带入(1)得到矩阵方程$L(\beta)=\left|X-\beta^{\top} \mathbf{Y}\right|^{2}$​，这是一个最小二乘问题，解得$L(\beta)$​取最小对应$\beta^{\star}=\mathbf{Y}^{\star} X$​, 其中$\mathbf{Y}^{*}$​是$\mathbf{Y}$​的摩尔彭若斯广义逆。</p>
+<p>从而，我们可以通过$\overline{x}$较精确地估计x：<br>$$<br>\bar{x}=\beta^{\star^{\top}} \mathbf{G}(x)<br>$$<br>文中举了一个例子从侧面反映了通过上述方法比单纯通过$q(x)$估计x更准确：通过查看权重系数$\beta^{\star}$，当量化器较粗的时候，$q(x)$的权重是0.5, 当量化器较好的时候，$q(x)$的权重系数是0.9.</p>
+<p>该方案操作起来比较简单，但是该方案对所有数据点采用无差别的重构系数，而不同的数据点的最优重构系数一般是不同的。</p>
+<p><u><strong>方案二：</strong></u></p>
+<p>regression codebook (每个向量有自己的重构系数，不过重构系数通过类似PQ的形式进行了编码)</p>
+<p>如果每一个向量都有一个重构系数的话，存储重构系数会耗费大量的内存。因此，本文提出学习一个重构系数的码本$\mathcal{B}={\beta_{1}, \ldots, \beta_{B}}$​​, 以最小化下面的误差:<br>$$<br>L^{\prime}(\mathcal{B})=\sum_{x \in \mathcal{X}} \min _{\beta \in \mathcal{B}}\left|x-\beta^{\top} \mathbf{G}(x)\right|^{2}<br>$$<br>实际操作时，首先通过k-means初始化回归码本$\mathcal{B}$（在此之前可先得到每个向量的最优重构系数），然后执行以下步骤：</p>
+<p>Step 1: 每个向量分配到使其重构误差最小的码字$\beta_{i}$中（即$\mathcal{B}$中的一个元素），从而每一个码字对应一些向量，这些向量通过该码字$\beta_{i}$对应的重构系数重构具有最小的重构误差。对应的公式为：<br>$$<br>\beta(x)=\arg \min_{\beta \in \mathcal{B}}||x-\beta^{\top} \mathbf{G}(x)||^{2}<br>$$<br>Step 2: 对每一个类$\beta_{i}$（或码字），通过下式计算最优重构系数$\beta_{i}^{\star}$（与公式(1)相同的方法）并以此更新该类的重构系数$\beta_{i} \leftarrow \beta_{i}^{\star}$<br>$$<br>\beta_{i}^{\star}=\arg \min_{\beta} \sum_{x \in \mathcal{X}: \beta(x)=\beta_{i}}||x-\beta^{\top} \mathbf{G}(x)||^{2}<br>$$<br>上述两步骤可迭代执行。实际操作时，需要$\mathcal{X}$的一个子集训练上述过程即可。</p>
+<p>然而，随着码本尺寸的提升，上述过程很容易达到饱和，这主要因为：$\beta(x)^{\top} \mathbf{G}(x)$仅考虑了k+1维的子空间，$k \ll d$，因此x的有些部分无法恢复（或重构）。针对该问题，本文采用类似PQ的方案将向量划分为多个子空间，对每个子空间执行上述过程。</p>
+<h2 id="一些考虑"><a href="#一些考虑" class="headerlink" title="一些考虑"></a>一些考虑</h2><p>本文虽然是近邻图和量化编码的联合优势互补，但其整个论文是从如何更好进行数据近似这个角度撰写的，因此论文中主要从量化编码的角度讨论问题，可以说，近邻图是他们拿来降低量化编码误差的。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        <div id="reward-container">
+  <div>稀罕作者</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/jwB6tQd6_YH2q.png" alt="Mengzhao Wang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+        
+      
+      <div style="display: inline-block">
+        <img src="https://image.135editor.com/files/users/646/6469581/201908/SGckz7yS_d36B.png" alt="Mengzhao Wang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/论文阅读/" rel="tag"># 论文阅读</a>
+            
+              <a href="/tags/ANNS/" rel="tag"># ANNS</a>
+            
+              <a href="/tags/近邻图/" rel="tag"># 近邻图</a>
+            
+              <a href="/tags/向量编码/" rel="tag"># 向量编码</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/09/18/MRNG_theory/" rel="next" title="基于近邻图的向量检索算法：单调相对邻域图MRNG的一些重要理论性质">
+                  <i class="fa fa-chevron-left"></i> 基于近邻图的向量检索算法：单调相对邻域图MRNG的一些重要理论性质
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/10/30/Multimodal_search_20211030/" rel="prev" title="Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索)">
+                  Joint Visual-Textual Embedding for Multimodal Style Search (图像+文本多模态检索) <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="https://135editor.cdn.bcebos.com/files/users/646/6469581/202102/MksK9aYY_uXLW.jpg"
+      alt="Mengzhao Wang">
+  <p class="site-author-name" itemprop="name">Mengzhao Wang</p>
+  <div class="site-description motion-element" itemprop="description">Try? All the way !</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#论文概述"><span class="nav-number">1.</span> <span class="nav-text">论文概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何近似一个向量？"><span class="nav-number">2.</span> <span class="nav-text">如何近似一个向量？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本文提出的方法"><span class="nav-number">3.</span> <span class="nav-text">本文提出的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些考虑"><span class="nav-number">4.</span> <span class="nav-text">一些考虑</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mengzhao Wang</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function() {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+</body>
+</html>
